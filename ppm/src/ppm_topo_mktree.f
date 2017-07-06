@@ -24,10 +24,10 @@
       !                                  the mesh serves only as a guide
       !                                  for the decomposition and is not
       !                                  stored as a ppm compute mesh.
-      !                 min_phys(:)  (F) the minimum coordinate of the 
-      !                                  physical/computational domain 
-      !                 max_phys(:)  (F) the maximum coordinate of the 
-      !                                  physical/computational domain 
+      !                 min_phys(:)  (F) the minimum coordinate of the
+      !                                  physical/computational domain
+      !                 max_phys(:)  (F) the maximum coordinate of the
+      !                                  physical/computational domain
       !                 treetype     (I) One of:
       !                                      ppm_param_tree_bin
       !                                      ppm_param_tree_quad
@@ -44,7 +44,7 @@
       !                                  library METIS and is only
       !                                  available if ppm was compiled with
       !                                  METIS support.
-      !                 bcdef(:)     (I) the definition of the BC 
+      !                 bcdef(:)     (I) the definition of the BC
       !                 minboxsize   (F) the min size of the boxes
       !                 pruneboxes   (L) keep empty boxes or not?
       !                 weights(3,2) (F) weights for particles, mesh points
@@ -100,7 +100,7 @@
       !                                  decomposoiton result on output.
       !                 cost(:)      (F) estimated cost associated with
       !                                  subdomains. Either user-specified
-      !                                  on input or decomp. result. 
+      !                                  on input or decomp. result.
       !
       !  Output       : isublist(:)  (I) list of subdomains handled by the
       !                                  local processor
@@ -205,7 +205,7 @@
       !-------------------------------------------------------------------------
 #include "ppm_define.h"
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_mesh
@@ -231,7 +231,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), POINTER       :: xp
       INTEGER                 , INTENT(IN   ) :: Npart,assig,treetype
@@ -252,7 +252,7 @@
       INTEGER                 , INTENT(  OUT) :: nsublist,nsubs
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER                           :: i,topoid,j,nbox,iopt,isub
       INTEGER, DIMENSION(2  )           :: ldc
@@ -264,11 +264,11 @@
       CHARACTER(LEN=ppm_char)           :: mesg
       LOGICAL                           :: have_particles,have_mesh
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_topo_mktree',t0,info)
 #if    __KIND == __SINGLE_PRECISION
@@ -334,7 +334,7 @@
      &     'topo_id was reset for non-null decomposition',__LINE__, info)
          topo_id = -1
       ENDIF
-     
+
       !-------------------------------------------------------------------------
       !  Check if we have particles and mesh
       !-------------------------------------------------------------------------
@@ -349,6 +349,8 @@
               IF ((Nm(1).GT.1).AND.(Nm(2).GT.1)) have_mesh = .TRUE.
           ENDIF
       ENDIF
+
+      NULLIFY(ineigh,subs_bc,nneigh,nchld,min_box,max_box)
 
       !-------------------------------------------------------------------------
       !  Call the tree routine
@@ -399,14 +401,14 @@
          CALL ppm_error(ppm_err_alloc,'ppm_topo_mktree',  &
      &       'mesh start indices ISTART',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
       CALL ppm_alloc(ndata,ldc,iopt,info)
       IF (info .NE. 0) THEN
          info = ppm_error_fatal
          CALL ppm_error(ppm_err_alloc,'ppm_topo_mktree',  &
      &       'mesh sizes NDATA',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Define meshes on the subs
@@ -446,7 +448,7 @@
          !-------------------------------------------------------------------
          !  internal assignment routine
          !-------------------------------------------------------------------
-         CALL ppm_topo_subs2proc(cost,nneigh,ineigh,nsubs,sub2proc, & 
+         CALL ppm_topo_subs2proc(cost,nneigh,ineigh,nsubs,sub2proc, &
      &       isublist,nsublist,info)
          IF (info.NE.0) THEN
             info = ppm_error_error
@@ -502,7 +504,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Find and define the boundary conditions on the subs on the local 
+      !  Find and define the boundary conditions on the subs on the local
       !  processor (the routine will allocate the requried memory)
       !-------------------------------------------------------------------------
       CALL ppm_define_subs_bc(min_phys,max_phys,bcdef,min_sub,max_sub, &
@@ -528,8 +530,8 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Get internal topoid. If no topology has ever been defined, set 
-      !  this as the current topology. 
+      !  Get internal topoid. If no topology has ever been defined, set
+      !  this as the current topology.
       !-------------------------------------------------------------------------
       topoid = ppm_internal_topoid(topo_id)
       IF (ppm_topoid .EQ. -1) ppm_topoid = topoid
@@ -550,7 +552,7 @@
              CALL ppm_error(ppm_err_alloc,'ppm_topo_mktree',  &
      &           'maximum mesh id MAXMESHID',__LINE__,info)
              GOTO 9999
-          ENDIF 
+          ENDIF
 
           !---------------------------------------------------------------------
           !  Grow ppm_meshid if needed. The following is basically a
@@ -604,7 +606,7 @@
       !
       !    DO j=1,nsublist
       !        i = isublist(j)
-      !  
+      !
       !        ! x-y plan
       !        WRITE(10,'(2e12.4)') min_sub(1,i),min_sub(2,i)
       !        WRITE(10,'(2e12.4)') max_sub(1,i),min_sub(2,i)
@@ -628,7 +630,7 @@
       !ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_topo_mktree',t0,info)

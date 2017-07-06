@@ -1,20 +1,20 @@
       !-------------------------------------------------------------------------
       !     Subroutine   :                 ppm_hamjac_reinit_2d
       !-------------------------------------------------------------------------
-      !     
+      !
       !     Purpose      : Solve Hamilton-Jacobi for Gowas reinit
-      !      
-      !     Input        : 
-      !                    
-      !     Input/Output : 
-      !                    
-      !     Output       : 
-      !      
-      !     Remarks      : 
-      !                    
-      !     
+      !
+      !     Input        :
+      !
+      !     Input/Output :
+      !
+      !     Output       :
+      !
+      !     Remarks      :
+      !
+      !
       !     References   :
-      !     
+      !
       !     Revisions    :
       !-------------------------------------------------------------------------
       !     $Log: ppm_hamjac_reinit_2d.f,v $
@@ -44,7 +44,7 @@
            &                     topo_id, mesh_id, ghostsize, info)
 #endif
 #elif __MODE == __VEC
-#error VECTOR NOT IMPLEMENTED       
+#error VECTOR NOT IMPLEMENTED
 #endif
 
         USE ppm_module_data
@@ -62,7 +62,7 @@
 #if    __KIND == __SINGLE_PRECISION
         INTEGER, PARAMETER :: MK = ppm_kind_single
         INTEGER, PARAMETER :: MPTYPE = MPI_REAL
-#elif  __KIND == __DOUBLE_PRECISION       
+#elif  __KIND == __DOUBLE_PRECISION
         INTEGER, PARAMETER :: MK = ppm_kind_double
         INTEGER, PARAMETER :: MPTYPE = MPI_DOUBLE_PRECISION
 #endif
@@ -86,7 +86,7 @@
         INTEGER, DIMENSION(:,:), POINTER      :: ndata
         INTEGER                               :: topoid,meshid
         REAL(mk), DIMENSION(:,:), POINTER     :: min_phys, max_phys
-        
+
         !-----------------------------------------------------
         !  standard stuff
         !-----------------------------------------------------
@@ -97,7 +97,7 @@
         CHARACTER(len=256)                    :: msg
 
         CALL substart('ppm_hamjac_reinit_2d',t0,info)
-        
+
         !-----------------------------------------------------
         !  Get the mesh data
         !-----------------------------------------------------
@@ -110,11 +110,13 @@
 #if    __KIND == __SINGLE_PRECISION
         min_phys => ppm_min_physs
         max_phys => ppm_max_physs
-#elif  __KIND == __DOUBLE_PRECISION       
+#elif  __KIND == __DOUBLE_PRECISION
         min_phys => ppm_min_physd
         max_phys => ppm_max_physd
 #endif
 
+
+        NULLIFY(tphi)
 
         !-----------------------------------------------------
         !  RATIONALE Thu May 26 20:51:19 PDT 2005
@@ -155,7 +157,7 @@
            CALL ppm_map_field_ghost(phi,topo_id,mesh_id,ghostsize,maptype,info)
            maptype = ppm_param_map_pop
            CALL ppm_map_field_ghost(phi,topo_id,mesh_id,ghostsize,maptype,info)
-           
+
            CALL ppm_hamjac_reinit_step(phi,tphi,trgt,lres,topo_id,mesh_id&
                 &,                  ghostsize,info)
            DO isub=1,nsublist
@@ -190,15 +192,15 @@
         CALL substop('ppm_hamjac_reinit_2d',t0,info)
 
 #if   __KIND == __SINGLE_PRECISION
-      END SUBROUTINE ppm_hamjac_reinit_2ds 
+      END SUBROUTINE ppm_hamjac_reinit_2ds
 #elif __KIND == __DOUBLE_PRECISION
-      END SUBROUTINE ppm_hamjac_reinit_2dd 
+      END SUBROUTINE ppm_hamjac_reinit_2dd
 #endif
 
 
-        
-           
 
-        
-        
+
+
+
+
 

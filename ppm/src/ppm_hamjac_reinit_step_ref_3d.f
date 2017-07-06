@@ -1,21 +1,21 @@
       !-------------------------------------------------------------------------
       !     Subroutine   :           ppm_hamjac_reinit_step_ref_3d
       !-------------------------------------------------------------------------
-      !     
+      !
       !     Purpose      : Solve Hamilton-Jacobi for Gowas reinit in ref
       !                    spc
-      !      
-      !     Input        : 
-      !                    
-      !     Input/Output : 
-      !                    
-      !     Output       : 
-      !      
-      !     Remarks      : 
-      !                    
-      !     
+      !
+      !     Input        :
+      !
+      !     Input/Output :
+      !
+      !     Output       :
+      !
+      !     Remarks      :
+      !
+      !
       !     References   :
-      !     
+      !
       !     Revisions    :
       !-------------------------------------------------------------------------
       !     $Log: ppm_hamjac_reinit_step_ref_3d.f,v $
@@ -43,7 +43,7 @@
       SUBROUTINE ppm_hamjac_reinit_step_ref_3dd (phi, chi, tphi, trgt, res, topo_id, mesh_id, ghostsize, info)
 #endif
 #elif __MODE == __VEC
-#error VECTOR NOT IMPLEMENTED       
+#error VECTOR NOT IMPLEMENTED
 #endif
 
         USE ppm_module_data
@@ -51,12 +51,12 @@
         USE ppm_module_error
         USE ppm_module_substart
         USE ppm_module_substop
-        
+
         IMPLICIT NONE
-        
+
 #if    __KIND == __SINGLE_PRECISION
         INTEGER, PARAMETER :: MK = ppm_kind_single
-#elif  __KIND == __DOUBLE_PRECISION       
+#elif  __KIND == __DOUBLE_PRECISION
         INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
 
@@ -79,7 +79,7 @@
         INTEGER, DIMENSION(:,:), POINTER      :: ndata
         INTEGER                               :: topoid, meshid
         REAL(mk), DIMENSION(:,:), POINTER     :: min_phys, max_phys
-        
+
         !-----------------------------------------------------
         !  standard stuff
         !-----------------------------------------------------
@@ -95,13 +95,12 @@
         REAL(mk) :: dxitwelve, dyitwelve, dzitwelve
         INTEGER  :: ilap, order, jsub
         REAL(mk) :: ji(3,3), jac(3,3)
-        INTEGER, PARAMETER, DIMENSION(3,3) :: offs &
-             & = RESHAPE((/2,1,0,1,0,-1,0,-1,-2/),(/3,3/))
+        INTEGER, PARAMETER, DIMENSION(3,3) :: offs = RESHAPE((/2,1,0,1,0,-1,0,-1,-2/),(/3,3/))
         REAL(mk) :: t0
 
-        
+
         CALL substart('ppm_hamjac_step_3d',t0,info)
-        
+
         !-----------------------------------------------------
         !  Get the mesh data
         !-----------------------------------------------------
@@ -114,7 +113,7 @@
 #if    __KIND == __SINGLE_PRECISION
         min_phys => ppm_min_physs
         max_phys => ppm_max_physs
-#elif  __KIND == __DOUBLE_PRECISION       
+#elif  __KIND == __DOUBLE_PRECISION
         min_phys => ppm_min_physd
         max_phys => ppm_max_physd
 #endif
@@ -134,7 +133,7 @@
         dxitwelve   = dxi(1)/12.0_mk
         dyitwelve   = dxi(2)/12.0_mk
         dzitwelve   = dxi(3)/12.0_mk
-        
+
         wenoeps = 1.0e-6_mk
         wenotau = 0.5_mk*MINVAL(dx)
 
@@ -216,8 +215,8 @@
                     phipx(1) = jac(1,1)*phip(1)+jac(2,1)*phip(2)+jac(3,1)*phip(3)
                     phipx(2) = jac(1,2)*phip(1)+jac(2,2)*phip(2)+jac(3,2)*phip(3)
                     phipx(3) = jac(1,3)*phip(1)+jac(2,3)*phip(2)+jac(3,3)*phip(3)
-                    
-                    
+
+
                     !--- collect
                     IF(phi(i,j,k,isub).GT.0.0_mk) THEN
                        pbs = SQRT( &
@@ -235,7 +234,7 @@
                        pbs = 0.0_mk
                     END IF
                     dphi_dt =  pbs * phi(i,j,k,isub) / &
-                         & SQRT(phi(i,j,k,isub)**2+0.25_mk*SUM(phimid**2)) 
+                         & SQRT(phi(i,j,k,isub)**2+0.25_mk*SUM(phimid**2))
                     tphi(i,j,k,isub) = phi(i,j,k,isub) - wenotau * dphi_dt
 
                     rms = MAX(rms,ABS(dphi_dt))
@@ -253,22 +252,22 @@
         CALL substop('ppm_hamjac_step_3d',t0,info)
 
 #if   __KIND == __SINGLE_PRECISION
-      END SUBROUTINE ppm_hamjac_reinit_step_ref_3ds 
+      END SUBROUTINE ppm_hamjac_reinit_step_ref_3ds
 #elif __KIND == __DOUBLE_PRECISION
-      END SUBROUTINE ppm_hamjac_reinit_step_ref_3dd 
+      END SUBROUTINE ppm_hamjac_reinit_step_ref_3dd
 #endif
 
-      
-                    
-
-
-                    
-           
-           
 
 
 
-        
-        
-        
-        
+
+
+
+
+
+
+
+
+
+
+

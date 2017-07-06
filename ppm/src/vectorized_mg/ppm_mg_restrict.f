@@ -1,14 +1,14 @@
       !-----------------------------------------------------------------------
-      !  Subroutine   :            ppm_mg_restrict  
+      !  Subroutine   :            ppm_mg_restrict
       !-----------------------------------------------------------------------
       !  Purpose      : In this routine we restrict the error from finer
       !                 to coarser levels
-      !                    
-      !  
+      !
+      !
       !  Input        :
-      !  
+      !
       !  Input/output :
-      ! 
+      !
       !  Output       : info       (I) return status. 0 upon success
       !
       !  Remarks      :
@@ -30,12 +30,12 @@
       !  Revision 1.1  2004/09/22 18:38:03  kotsalie
       !  MG new version
       !
-      !-----------------------------------------------------------------------  
+      !-----------------------------------------------------------------------
       !  Parallel Particle Mesh Library (PPM)
       !  Institute of Computational Science
       !  ETH Zentrum, Hirschengraben 84
       !  CH-8092 Zurich, Switzerland
-      !----------------------------------------------------------------------- 
+      !-----------------------------------------------------------------------
 
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
@@ -71,8 +71,8 @@
         !-----------------------------------------------------------------
 #include "ppm_define.h"
 
-        !---------------------------------------------------------------------- 
-        !  Modules 
+        !----------------------------------------------------------------------
+        !  Modules
         !-----------------------------------------------------------------------
         USE ppm_module_data
         USE ppm_module_write
@@ -82,7 +82,7 @@
         USE ppm_module_error
         USE ppm_module_alloc
         USE ppm_module_map_field_ghost
-       
+
 
         IMPLICIT NONE
 #if    __KIND == __SINGLE_PRECISION
@@ -91,12 +91,12 @@
         INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
         !----------------------------------------------------------------------
-        !  Arguments     
+        !  Arguments
         !----------------------------------------------------------------------
         INTEGER,                   INTENT(IN)      ::  mlev
         INTEGER,                   INTENT(INOUT)   ::  info
-        !---------------------------------------------------------------------- 
-        !  Local variables 
+        !----------------------------------------------------------------------
+        !  Local variables
         !---------------------------------------------------------------------
         CHARACTER(LEN=256)                         :: cbuf
         INTEGER                                    :: isub,j,j2,i,i2
@@ -107,8 +107,8 @@
         INTEGER                                    :: iopt,topoid
 #if __MESH_DIM == __3D
         INTEGER                                    :: k,k2
-#endif        
-        REAL(MK)                                   :: t0 
+#endif
+        REAL(MK)                                   :: t0
 
 
 #if __DIM == __SFIELD
@@ -196,6 +196,9 @@
                   GOTO 9999
             ENDIF
         ENDIF
+
+        NULLIFY(uc_dummy)
+
         !-----------------------------------------------------------------------
         !Definition of necessary variables and allocation of arrays
         !-----------------------------------------------------------------------
@@ -237,14 +240,14 @@
         IF (l_print) THEN
          WRITE(cbuf,*) 'WELCOME TO THE RESTRICTION LEVEL:',mlev
          CALL PPM_WRITE(ppm_rank,'mg_restrict',cbuf,info)
-        ENDIF 
+        ENDIF
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
         !----------------------------------------------------------------------
         !Restriction using a 9-point operator(bilinear interpolation)
         !linear is not accurate enough
-        !---------------------------------------------------------------------- 
-         
+        !----------------------------------------------------------------------
+
 
         topoid=ppm_field_topoid
         iopt = ppm_param_alloc_fit
@@ -262,12 +265,12 @@
            GOTO 9999
         ENDIF
        DO isub=1,nsubs
-        
-        terr=>mgfield(isub,mlevm1)%err 
+
+        terr=>mgfield(isub,mlevm1)%err
         uc_dummy(:,:,isub)=&
      &                             terr(:,:)
-       ENDDO 
-       
+       ENDDO
+
 
            CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlevm1),&
      &                         ghostsize,ppm_param_map_ghost_get,info)
@@ -280,15 +283,15 @@
 
 
          DO isub=1,nsubs
-        terr=>mgfield(isub,mlevm1)%err 
-        pfc=>mgfield(isub,mlev)%fc 
+        terr=>mgfield(isub,mlevm1)%err
+        pfc=>mgfield(isub,mlev)%fc
             terr(:,:)=uc_dummy(&
      &                 :,:,isub)
 
 
-       
+
            DO j=start(2,isub,mlev),stop(2,isub,mlev)
-              j2=2*j 
+              j2=2*j
               DO i=start(1,isub,mlev),stop(1,isub,mlev)
                  i2=2*i
                     pfc(i,j)= &
@@ -300,7 +303,7 @@
      &                   0.0625_MK * (terr(i2,j2-2)+&
      &                               terr(i2-2,j2) +  &
      &                               terr(i2-2,j2-2)&
-     &                               + terr(i2,j2)) 
+     &                               + terr(i2,j2))
 
               ENDDO
            ENDDO
@@ -342,7 +345,7 @@
         ENDIF
        DO isub=1,nsubs
 
-        terr=>mgfield(isub,mlevm1)%err 
+        terr=>mgfield(isub,mlevm1)%err
          DO k=1-ghostsize(3),max_node(3,mlevm1)+ghostsize(3)
         DO j=1-ghostsize(2),max_node(2,mlevm1)+ghostsize(2)
          DO i=1-ghostsize(1),max_node(1,mlevm1)+ghostsize(1)
@@ -351,8 +354,8 @@
          ENDDO
         ENDDO
        ENDDO
-       ENDDO 
-       
+       ENDDO
+
 
            CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlevm1),&
      &                         ghostsize,ppm_param_map_ghost_get,info)
@@ -365,8 +368,8 @@
 
 
          DO isub=1,nsubs
-           terr=>mgfield(isub,mlevm1)%err 
-           pfc=>mgfield(isub,mlev)%fc 
+           terr=>mgfield(isub,mlevm1)%err
+           pfc=>mgfield(isub,mlev)%fc
 
 
        DO k=1-ghostsize(3),max_node(3,mlevm1)+ghostsize(3)
@@ -383,7 +386,7 @@
            DO k=start(3,isub,mlev),stop(3,isub,mlev)
               k2=2*k
               DO j=start(2,isub,mlev),stop(2,isub,mlev)
-                 j2=2*j 
+                 j2=2*j
                  DO i=start(1,isub,mlev),stop(1,isub,mlev)
                     i2=2*i
                        pfc(i,j,k)= &
@@ -398,7 +401,7 @@
      &                                    terr(i2,j2-2,k2-1)+ &
      &                                    terr(i2-2,j2,k2-1) +  &
      &                                    terr(i2-2,j2-2,k2-1) +&
-     &                                    terr(i2,j2,k2-1)) 
+     &                                    terr(i2,j2,k2-1))
 
                        pfc(i,j,k)= &
      &                                   pfc(i,j,k)+&
@@ -413,7 +416,7 @@
      &                                     terr(i2,j2-2,k2)+ &
      &                                     terr(i2-2,j2,k2) +  &
      &                                     terr(i2-2,j2-2,k2) + &
-     &                                     terr(i2,j2,k2)) 
+     &                                     terr(i2,j2,k2))
 
                        pfc(i,j,k)= &
      &                                  pfc(i,j,k) +&
@@ -428,7 +431,7 @@
      &                                 terr(i2,j2-2,k2-2)+&
      &                                 terr(i2-2,j2,k2-2) +  &
      &                                 terr(i2-2,j2-2,k2-2)+&
-     &                                 terr(i2,j2,k2-2)) 
+     &                                 terr(i2,j2,k2-2))
                  ENDDO
               ENDDO
            ENDDO
@@ -457,8 +460,8 @@
         !----------------------------------------------------------------------
         !Restriction using a 9-point operator(bilinear interpolation)
         !linear is not accurate enough
-        !---------------------------------------------------------------------- 
-         
+        !----------------------------------------------------------------------
+
 
         topoid=ppm_field_topoid
         iopt = ppm_param_alloc_fit
@@ -481,8 +484,8 @@
         terr=>mgfield(isub,mlevm1)%err
         uc_dummy(:,:,:,isub)=&
      &                             terr(:,:,:)
-       ENDDO 
-       
+       ENDDO
+
 
            CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlevm1),&
      &                         ghostsize,ppm_param_map_ghost_get,info)
@@ -501,9 +504,9 @@
      &                 :,:,:,isub)
 
 
-       
+
            DO j=start(2,isub,mlev),stop(2,isub,mlev)
-              j2=2*j 
+              j2=2*j
               DO i=start(1,isub,mlev),stop(1,isub,mlev)
                  i2=2*i
                 DO ilda=1,vecdim
@@ -516,8 +519,8 @@
      &                   0.0625_MK * (terr(ilda,i2,j2-2)+&
      &                               terr(ilda,i2-2,j2) +  &
      &                               terr(ilda,i2-2,j2-2)&
-     &                               + terr(ilda,i2,j2)) 
-                 
+     &                               + terr(ilda,i2,j2))
+
                ENDDO
               ENDDO
            ENDDO
@@ -578,9 +581,9 @@
      &                             terr(3,i,j,k)
          ENDDO
         ENDDO
-       ENDDO  
-       ENDDO 
-       
+       ENDDO
+       ENDDO
+
 
            CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlevm1),&
      &                         ghostsize,ppm_param_map_ghost_get,info)
@@ -606,7 +609,7 @@
         &            uc_dummy(2,i,j,k,isub)
            terr(3,i,j,k)=&
         &            uc_dummy(3,i,j,k,isub)
-       
+
          ENDDO
         ENDDO
        ENDDO
@@ -614,7 +617,7 @@
            DO k=start(3,isub,mlev),stop(3,isub,mlev)
               k2=2*k
               DO j=start(2,isub,mlev),stop(2,isub,mlev)
-                 j2=2*j 
+                 j2=2*j
                  DO i=start(1,isub,mlev),stop(1,isub,mlev)
                     i2=2*i
                        pfc(1,i,j,k)= &
@@ -629,7 +632,7 @@
      &                                    terr(1,i2,j2-2,k2-1)+ &
      &                                    terr(1,i2-2,j2,k2-1) +  &
      &                                    terr(1,i2-2,j2-2,k2-1) +&
-     &                                    terr(1,i2,j2,k2-1)) 
+     &                                    terr(1,i2,j2,k2-1))
 
                        pfc(1,i,j,k)= &
      &                                   pfc(1,i,j,k)+&
@@ -644,7 +647,7 @@
      &                                     terr(1,i2,j2-2,k2)+ &
      &                                     terr(1,i2-2,j2,k2) +  &
      &                                     terr(1,i2-2,j2-2,k2) + &
-     &                                     terr(1,i2,j2,k2)) 
+     &                                     terr(1,i2,j2,k2))
 
                        pfc(1,i,j,k)= &
      &                                  pfc(1,i,j,k) +&
@@ -659,7 +662,7 @@
      &                                 terr(1,i2,j2-2,k2-2)+&
      &                                 terr(1,i2-2,j2,k2-2) +  &
      &                                 terr(1,i2-2,j2-2,k2-2)+&
-     &                                 terr(1,i2,j2,k2-2)) 
+     &                                 terr(1,i2,j2,k2-2))
 
 
                        pfc(2,i,j,k)= &
@@ -674,7 +677,7 @@
      &                                    terr(2,i2,j2-2,k2-1)+ &
      &                                    terr(2,i2-2,j2,k2-1) +  &
      &                                    terr(2,i2-2,j2-2,k2-1) +&
-     &                                    terr(2,i2,j2,k2-1)) 
+     &                                    terr(2,i2,j2,k2-1))
 
                        pfc(2,i,j,k)= &
      &                                   pfc(2,i,j,k)+&
@@ -689,7 +692,7 @@
      &                                     terr(2,i2,j2-2,k2)+ &
      &                                     terr(2,i2-2,j2,k2) +  &
      &                                     terr(2,i2-2,j2-2,k2) + &
-     &                                     terr(2,i2,j2,k2)) 
+     &                                     terr(2,i2,j2,k2))
 
                        pfc(2,i,j,k)= &
      &                                  pfc(2,i,j,k) +&
@@ -704,7 +707,7 @@
      &                                 terr(2,i2,j2-2,k2-2)+&
      &                                 terr(2,i2-2,j2,k2-2) +  &
      &                                 terr(2,i2-2,j2-2,k2-2)+&
-     &                                 terr(2,i2,j2,k2-2)) 
+     &                                 terr(2,i2,j2,k2-2))
 
 
 
@@ -721,7 +724,7 @@
      &                                    terr(3,i2,j2-2,k2-1)+ &
      &                                    terr(3,i2-2,j2,k2-1) +  &
      &                                    terr(3,i2-2,j2-2,k2-1) +&
-     &                                    terr(3,i2,j2,k2-1)) 
+     &                                    terr(3,i2,j2,k2-1))
 
                        pfc(3,i,j,k)= &
      &                                   pfc(3,i,j,k)+&
@@ -736,7 +739,7 @@
      &                                     terr(3,i2,j2-2,k2)+ &
      &                                     terr(3,i2-2,j2,k2) +  &
      &                                     terr(3,i2-2,j2-2,k2) + &
-     &                                     terr(3,i2,j2,k2)) 
+     &                                     terr(3,i2,j2,k2))
 
                        pfc(3,i,j,k)= &
      &                                  pfc(3,i,j,k) +&
@@ -751,7 +754,7 @@
      &                                 terr(3,i2,j2-2,k2-2)+&
      &                                 terr(3,i2-2,j2,k2-2) +  &
      &                                 terr(3,i2-2,j2-2,k2-2)+&
-     &                                 terr(3,i2,j2,k2-2)) 
+     &                                 terr(3,i2,j2,k2-2))
 
 
                  ENDDO
@@ -782,7 +785,7 @@
 #endif
         !----------------------------------------------------------------------
         ! Return
-        !----------------------------------------------------------------------    
+        !----------------------------------------------------------------------
 9999    CONTINUE
         CALL substop('ppm_mg_restrict',t0,info)
         RETURN

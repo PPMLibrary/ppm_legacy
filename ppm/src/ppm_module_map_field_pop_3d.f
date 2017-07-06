@@ -6,7 +6,7 @@
       !                 definitions that are PRIVATE to the mesh routines.
       !                 It also included those routines and provides
       !                 INTERFACEs.
-      !                
+      !
       !  Remarks      : The terminology distinguishes between meshes and
       !                 fields (the data living on the meshes). Several
       !                 fields can use the same mesh. Meshes are defined as
@@ -52,7 +52,8 @@
          !----------------------------------------------------------------------
          !  Work lists
          !----------------------------------------------------------------------
-         INTEGER, DIMENSION(:), POINTER :: invsublist,sublist
+         INTEGER, DIMENSION(:), POINTER :: invsublist => NULL()
+         INTEGER, DIMENSION(:), POINTER :: sublist => NULL()
 
          PRIVATE :: invsublist,sublist
 
@@ -90,11 +91,11 @@
 #define __KIND __DOUBLE_PRECISION
 #include "ppm_map_field_pop_3d.f"
 #undef __KIND
-         
+
 #define __KIND __SINGLE_PRECISION_COMPLEX
 #include "ppm_map_field_pop_3d.f"
 #undef __KIND
-         
+
 #define __KIND __DOUBLE_PRECISION_COMPLEX
 #include "ppm_map_field_pop_3d.f"
 #undef __KIND

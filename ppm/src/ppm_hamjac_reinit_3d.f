@@ -1,20 +1,20 @@
       !-------------------------------------------------------------------------
       !     Subroutine   :                 ppm_hamjac_reinit_3d
       !-------------------------------------------------------------------------
-      !     
+      !
       !     Purpose      : Solve Hamilton-Jacobi for Gowas reinit
-      !      
-      !     Input        : 
-      !                    
-      !     Input/Output : 
-      !                    
-      !     Output       : 
-      !      
-      !     Remarks      : 
-      !                    
-      !     
+      !
+      !     Input        :
+      !
+      !     Input/Output :
+      !
+      !     Output       :
+      !
+      !     Remarks      :
+      !
+      !
       !     References   :
-      !     
+      !
       !     Revisions    :
       !-------------------------------------------------------------------------
       !     $Log: ppm_hamjac_reinit_3d.f,v $
@@ -66,7 +66,7 @@
         USE ppm_module_map
         IMPLICIT NONE
 
-        INCLUDE 'mpif.h'        
+        INCLUDE 'mpif.h'
 
 #if    __KIND == __SINGLE_PRECISION
         INTEGER, PARAMETER :: MK = ppm_kind_single
@@ -100,7 +100,7 @@
         INTEGER, DIMENSION(:,:), POINTER      :: ndata
         INTEGER                               :: topoid,meshid
         REAL(mk), DIMENSION(:,:), POINTER     :: min_phys, max_phys
-        
+
         !-----------------------------------------------------
         !  standard stuff
         !-----------------------------------------------------
@@ -113,7 +113,7 @@
 
 
         CALL substart('ppm_hamjac_reinit_3d',t0,info)
-        
+
         !-----------------------------------------------------
         !  Get the mesh data
         !-----------------------------------------------------
@@ -126,10 +126,12 @@
 #if    __KIND == __SINGLE_PRECISION
         min_phys => ppm_min_physs
         max_phys => ppm_max_physs
-#elif  __KIND == __DOUBLE_PRECISION       
+#elif  __KIND == __DOUBLE_PRECISION
         min_phys => ppm_min_physd
         max_phys => ppm_max_physd
 #endif
+
+        NULLIFY(tphi)
 
         !-----------------------------------------------------
         !  RATIONALE Thu May 26 20:51:19 PDT 2005:
@@ -162,7 +164,7 @@
         CALL ppm_map_field_ghost(phi,topo_id,mesh_id,ghostsize,maptype,info)
 #elif __MODE == __VEC
         CALL ppm_map_field_ghost(phi,lda,topo_id,mesh_id,ghostsize,maptype,info)
-#endif        
+#endif
 
         !-----------------------------------------------------
         !  COMMENT Thu May 26 21:05:23 PDT 2005:  simple euler here, DO TVD
@@ -207,7 +209,7 @@
                  phi(i,j,k,isub) = tphi(i,j,k,isub)
 #elif __MODE == __VEC
                  phi(idx,i,j,k,isub) = tphi(i,j,k,isub)
-#endif                 
+#endif
               END DO; END DO; END DO
            END DO
            CALL MPI_Allreduce(lres,gres,1,MPTYPE,MPI_MAX,ppm_comm,info)
@@ -240,21 +242,21 @@
 
 #if   __MODE == __SCA
 #if   __KIND == __SINGLE_PRECISION
-      END SUBROUTINE ppm_hamjac_reinit_3ds 
+      END SUBROUTINE ppm_hamjac_reinit_3ds
 #elif __KIND == __DOUBLE_PRECISION
-      END SUBROUTINE ppm_hamjac_reinit_3dd 
+      END SUBROUTINE ppm_hamjac_reinit_3dd
 #endif
 #elif __MODE == __VEC
 #if   __KIND == __SINGLE_PRECISION
-      END SUBROUTINE ppm_hamjac_reinit_3dsV 
+      END SUBROUTINE ppm_hamjac_reinit_3dsV
 #elif __KIND == __DOUBLE_PRECISION
-      END SUBROUTINE ppm_hamjac_reinit_3ddV 
+      END SUBROUTINE ppm_hamjac_reinit_3ddV
 #endif
-#endif      
+#endif
 
-        
-           
 
-        
-        
+
+
+
+
 

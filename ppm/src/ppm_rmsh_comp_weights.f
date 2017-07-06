@@ -1,10 +1,10 @@
       !-------------------------------------------------------------------------
       !     Subroutine   :                   ppm_rmsh_comp_weights
       !-------------------------------------------------------------------------
-      !     
-      !     Purpose      : This routine computes the weights of the particles 
+      !
+      !     Purpose      : This routine computes the weights of the particles
       !                    which need to be remeshed in 2D.
-      !      
+      !
       !     Input        : xp(:,:)            (F) particle positions
       !                    Np                 (I) number of particles.
       !                    topo_id            (I) topology identifier (user
@@ -13,18 +13,18 @@
       !                    mesh_id            (I) id of the mesh (user)
       !                    kernel             (I) Choice of the kernel used to
       !                                           compute the weights.
-      !     
+      !
       !     Input/Output : wx1,2,3_user(:,:,:)(F) Optional :
       !                                           if present, this routine does
-      !                                           nothing, because these 
-      !                                           weights are used after for 
+      !                                           nothing, because these
+      !                                           weights are used after for
       !                                           remeshing
       !     Output       : info               (I) return status
-      !      
-      !     Remarks      : 
-      !     
+      !
+      !     Remarks      :
+      !
       !     References   :
-      !     
+      !
       !     Revisions    :
       !-------------------------------------------------------------------------
       !     $Log: ppm_rmsh_comp_weights.f,v $
@@ -107,7 +107,7 @@
       !-------------------------------------------------------------------------
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_error
       USE ppm_module_alloc
@@ -119,14 +119,14 @@
       USE ppm_module_write
       USE ppm_module_util_time
       IMPLICIT NONE
-            
+
 #if   __KIND == __SINGLE_PRECISION
       INTEGER, PARAMETER :: MK = ppm_kind_single
 #elif __KIND == __DOUBLE_PRECISION
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
      !--------------------------------------------------------------------------
-     ! Arguments     
+     ! Arguments
      !--------------------------------------------------------------------------
      REAL(MK), DIMENSION(:,:)       , POINTER       :: xp
      INTEGER                        , INTENT(IN   ) :: Np
@@ -138,7 +138,7 @@
           &                                            wx3_user
 
      !--------------------------------------------------------------------------
-     ! Local variables 
+     ! Local variables
      !--------------------------------------------------------------------------
      INTEGER,  DIMENSION(:,:)     , POINTER :: istart
      INTEGER,  DIMENSION(:)       , POINTER :: ilist1,ilist2
@@ -168,9 +168,9 @@
      REAL(mk)                               :: tim1s, tim1e
      CHARACTER(len=256)                     :: msg
 
-     
+
      !--------------------------------------------------------------------------
-     !  Initialise 
+     !  Initialise
      !--------------------------------------------------------------------------
 
      !--------------------------------------------------------------------------
@@ -178,9 +178,7 @@
      !  ppm_module_data_rmsh module
      !--------------------------------------------------------------------------
      ppm_rmsh_kernelsize = (/1,2,2,4/)
-     
-     NULLIFY(wx1,wx2,wx3)
-     
+
      CALL substart('ppm_rmsh_comp_weights',t0,info)
 
      internal_weights = .FALSE.
@@ -214,11 +212,11 @@
            GOTO 9999
         END IF
      END IF
-        
+
      !--------------------------------------------------------------------------
      !  Check arguments
      !--------------------------------------------------------------------------
-     IF (ppm_debug .GT. 0) THEN 
+     IF (ppm_debug .GT. 0) THEN
         IF (Np .GT. 0) THEN
            IF (SIZE(xp,2) .LT. Np) THEN
               info = ppm_error_error
@@ -249,7 +247,7 @@
            GOTO 9999
         END IF
         kernel_support = ppm_rmsh_kernelsize(kernel)*2
-        IF(.NOT.((kernel_support.EQ.2).OR.(kernel_support.EQ.4) & 
+        IF(.NOT.((kernel_support.EQ.2).OR.(kernel_support.EQ.4) &
              &  .OR.(kernel_support.EQ.6))) THEN
            info = ppm_error_error
            CALL ppm_error(ppm_err_argument,'ppm_rmsh_comp_weights',  &
@@ -257,7 +255,7 @@
            GOTO 9999
         ENDIF
      ENDIF
-     
+
      !--------------------------------------------------------------------------
      !  Check meshid and topoid validity
      !--------------------------------------------------------------------------
@@ -273,7 +271,7 @@
                 & 'topo_id cannot be negative!',__LINE__,info)
            GOTO 9999
         ENDIF
-        
+
         !-----------------------------------------------------------------------
         !  check that the user topoid is less that the maximum length of the
         !  ppm_internal_topoid array
@@ -284,7 +282,7 @@
                 & 'topo_id too large',__LINE__,info)
            GOTO 9999
         ENDIF
-        
+
         !-----------------------------------------------------------------------
         !  Check that the topology is defined
         !-----------------------------------------------------------------------
@@ -302,8 +300,11 @@
      !  If theres nothing to do do nothing
      !--------------------------------------------------------------------------
      IF(np.EQ.0) GOTO 9999
-     
-     
+
+
+     NULLIFY(ilist1,ilist2)
+     NULLIFY(wx1,wx2,wx3)
+
      !--------------------------------------------------------------------------
      !  Get the internal topoid
      !--------------------------------------------------------------------------
@@ -330,22 +331,22 @@
      !  Get the internal meshid
      !--------------------------------------------------------------------------
      meshid = ppm_meshid(topoid)%internal(mesh_id)
-     
 
-     
-     
+
+
+
      !--------------------------------------------------------------------------
      !  Get istart
      !--------------------------------------------------------------------------
      istart => ppm_cart_mesh(meshid,topoid)%istart
-     
+
      !--------------------------------------------------------------------------
      !  Assignment of the useful arrays/scalar
      !--------------------------------------------------------------------------
      Nm(1:ppm_dim) = ppm_cart_mesh(meshid,topoid)%Nm
      bcdef(1:(2*ppm_dim)) = ppm_bcdef(1:(2*ppm_dim),topoid)
      nsubs = ppm_nsublist(topoid)
-    
+
      !--------------------------------------------------------------------------
      !  Alloc memory for particle lists
      !  The awesome ppm_alloc will (re)allocate them, so we dont need an init
@@ -388,7 +389,7 @@
      min_phys => ppm_min_physd
      max_phys => ppm_max_physd
 #endif
-     
+
      DO i = 1,ppm_dim
         Nc(i)       = Nm(i) - 1
         len_phys(i) = max_phys(i,topoid) - min_phys(i,topoid)
@@ -396,7 +397,7 @@
      ENDDO
      dxi     = 1.0_mk/dx
      epsilon = 0.000001_mk
-     
+
      !--------------------------------------------------------------------------
      !  Initialize the particle list
      !--------------------------------------------------------------------------
@@ -422,16 +423,16 @@
      !  to be empty, we look backwards to reduce the number of elements in
      !  nlist2 as fast as possible)
      !--------------------------------------------------------------------------
-     DO idom = ppm_nsublist(topoid),1,-1   
+     DO idom = ppm_nsublist(topoid),1,-1
         idoml = ppm_isublist(idom,topoid)
         !-----------------------------------------------------------------------
-        !  Loop over the remaining particles 
+        !  Loop over the remaining particles
         !-----------------------------------------------------------------------
         nlist2 = 0
         npart = 0
         DO i=1,nlist1
            ipart = ilist1(i)
-           
+
            !--------------------------------------------------------------------
            !  If the particle is inside the current subdomain, assign it
            !--------------------------------------------------------------------
@@ -467,19 +468,19 @@
                  ilist2(nlist2) = ipart
               END IF
            ELSEIF (ppm_dim.EQ.2) THEN
-              
+
               IF( ( xp(1,ipart).GE.min_sub(1,idoml,topoid) .AND. &
                    &xp(2,ipart).GE.min_sub(2,idoml,topoid) .AND. &
                    &xp(1,ipart).LE.max_sub(1,idoml,topoid) .AND. &
                    &xp(2,ipart).LE.max_sub(2,idoml,topoid) ) ) THEN
-                 
+
                  IF(   (xp(1,ipart).LT.max_sub(1,idoml,topoid) .OR.  &
                       & (ppm_subs_bc(2,idoml,topoid).EQ.1   .AND.    &
                       & bcdef(2).NE. ppm_param_bcdef_periodic)).AND.&
                       &(xp(2,ipart).LT.max_sub(2,idoml,topoid) .OR.  &
                       & (ppm_subs_bc(4,idoml,topoid).EQ.1   .AND.    &
                       & bcdef(4).NE. ppm_param_bcdef_periodic))) THEN
-                    
+
                     npart = npart + 1
                     store_info(idom) = npart
                  ELSE
@@ -501,14 +502,14 @@
               ilist1(i) = ilist2(i)
            ENDDO
         ENDIF
-        
+
         !-----------------------------------------------------------------------
         !  Exit if the list is empty
         !-----------------------------------------------------------------------
         IF (nlist1.EQ.0) EXIT
      END DO
      !--------------------------------------------------------------------------
-     !  Check that we sold all the particles 
+     !  Check that we sold all the particles
      !--------------------------------------------------------------------------
      IF (nlist2.GT.0) THEN
         info = ppm_error_fatal
@@ -516,11 +517,11 @@
              &       'MAJOR PROBLEM',__LINE__,info)
         GOTO 9999
      ENDIF
-     
+
      !--------------------------------------------------------------------------
      ! select the particle for with several domain computation (french)
      !--------------------------------------------------------------------------
-     
+
      max_partnumber = 0
      DO idom=1,ppm_nsublist(topoid)
         IF(store_info(idom).GE.max_partnumber) THEN
@@ -530,7 +531,7 @@
      iopt   = ppm_param_alloc_fit
      ldu(1) = ppm_nsublist(topoid)
      ldu(2) = max_partnumber
-     
+
      CALL ppm_alloc(list_sub,ldu,iopt,info)
      IF(info.NE.0) THEN
         info = ppm_error_fatal
@@ -538,9 +539,9 @@
              &        'problem in internal allocation',__LINE__,info)
         GOTO 9999
      END IF
-     
+
      list_sub=0
-     
+
      !--------------------------------------------------------------------------
      !  Initialize the particle list
      !--------------------------------------------------------------------------
@@ -549,8 +550,8 @@
         nlist1         = nlist1 + 1
         ilist1(nlist1) = ipart
      ENDDO
-     
-     
+
+
      !--------------------------------------------------------------------------
      !  Loop over the subdomains (since the first domains are most likely
      !  to be empty, we look backwards to reduce the number of elements in
@@ -559,14 +560,14 @@
      DO idom = ppm_nsublist(topoid),1,-1
         idoml = ppm_isublist(idom,topoid)
         !-----------------------------------------------------------------------
-        !  loop over the remaining particles 
+        !  loop over the remaining particles
         !-----------------------------------------------------------------------
         nlist2 = 0
         npart = 0
 
         DO i=1,nlist1
            ipart = ilist1(i)
-           
+
            !--------------------------------------------------------------------
            !  If the particle is inside the current subdomain, assign it
            !--------------------------------------------------------------------
@@ -577,7 +578,7 @@
                    &xp(1,ipart).LE.max_sub(1,idoml,topoid) .AND. &
                    &xp(2,ipart).LE.max_sub(2,idoml,topoid) .AND. &
                    &xp(3,ipart).LE.max_sub(3,idoml,topoid) ) ) THEN
-                 
+
                  IF(   (xp(1,ipart).LT.max_sub(1,idoml,topoid) .OR.  &
                       & (ppm_subs_bc(2,idoml,topoid).EQ.1   .AND.    &
                       & bcdef(2).NE. ppm_param_bcdef_periodic)).AND.&
@@ -587,8 +588,8 @@
                       &(xp(3,ipart).LT.max_sub(3,idoml,topoid) .OR.  &
                       & (ppm_subs_bc(6,idoml,topoid).EQ.1   .AND.    &
                       & bcdef(6).NE. ppm_param_bcdef_periodic))   ) THEN
-                    
-                    
+
+
                     npart = npart + 1
                     list_sub(idom,npart) = ipart
                  ELSE
@@ -605,14 +606,14 @@
                    &xp(2,ipart).GE.min_sub(2,idoml,topoid) .AND. &
                    &xp(1,ipart).LE.max_sub(1,idoml,topoid) .AND. &
                    &xp(2,ipart).LE.max_sub(2,idoml,topoid) ) ) THEN
-                                    
+
                  IF(   (xp(1,ipart).LT.max_sub(1,idom,topoid) .OR.  &
                       & (ppm_subs_bc(2,idoml,topoid).EQ.1   .AND.    &
                       & bcdef(2).NE. ppm_param_bcdef_periodic)).AND.&
                       &(xp(2,ipart).LT.max_sub(2,idoml,topoid) .OR.  &
                       & (ppm_subs_bc(4,idoml,topoid).EQ.1   .AND.    &
                       & bcdef(4).NE. ppm_param_bcdef_periodic))) THEN
-                    
+
                     npart = npart + 1
                     list_sub(idom,npart) = ipart
                  ELSE
@@ -624,7 +625,7 @@
                  ilist2(nlist2) = ipart
               END IF
            END IF
-           
+
         END DO
         !-----------------------------------------------------------------------
         !  Copy the lists (well, only if nlist2 changed - decreased)
@@ -635,8 +636,8 @@
               ilist1(i) = ilist2(i)
            ENDDO
         ENDIF
-        
-        
+
+
         !-----------------------------------------------------------------------
         !  Exit if the list is empty
         !-----------------------------------------------------------------------
@@ -644,7 +645,7 @@
      END DO
 
      !--------------------------------------------------------------------------
-     !  Check that we sold all the particles 
+     !  Check that we sold all the particles
      !--------------------------------------------------------------------------
      IF (nlist2.GT.0) THEN
         info = ppm_error_fatal
@@ -652,14 +653,14 @@
              &       'MAJOR PROBLEM',__LINE__,info)
         GOTO 9999
      ENDIF
-     
+
      !--------------------------------------------------------------------------
      !  Allocate and alias the weights if we need them.
      !--------------------------------------------------------------------------
      max_partnumber = 0
      DO idom = 1,ppm_nsublist(topoid)
         IF(store_info(idom).GE.max_partnumber) THEN
-           max_partnumber = store_info(idom)  
+           max_partnumber = store_info(idom)
         END IF
      END DO
 
@@ -671,8 +672,8 @@
      ldu(1) = ppm_rmsh_kernelsize(kernel)*2
      ldu(2) = ppm_nsublist(topoid)
      ldu(3) = max_partnumber + ppm_rmsh_kernelsize(kernel)
-     
-     
+
+
      IF(((PRESENT(wx1_user)).AND.PRESENT(wx2_user).AND. &
           & PRESENT(wx3_user).AND.ppm_dim.EQ.3).OR.&
           &(PRESENT(wx1_user).AND.PRESENT(wx2_user).AND.&
@@ -704,7 +705,7 @@
            END IF
 
            wx1_user => wx1_d
-           
+
 #endif
 
 #if   __KIND == __SINGLE_PRECISION
@@ -717,7 +718,7 @@
            END IF
 
            wx2_user => wx2_s
-                      
+
 #elif __KIND == __DOUBLE_PRECISION
            CALL ppm_alloc(wx2_d,ldl,ldu,iopt,info)
            IF (info.NE.0) THEN
@@ -728,15 +729,15 @@
            END IF
 
            wx2_user => wx2_d
-           
+
 #endif
 
         END IF
         IF(PRESENT(wx3_user)) THEN
            IF(ppm_dim.EQ.3.AND.&
                 &.NOT.ASSOCIATED(wx3_user)) THEN
-              
-              
+
+
 #if   __KIND == __SINGLE_PRECISION
               CALL ppm_alloc(wx3_s,ldl,ldu,iopt,info)
               IF (info.NE.0) THEN
@@ -745,7 +746,7 @@
                       &            'pb in weights allocation',__LINE__,info)
                  GOTO 9999
               END IF
-              
+
               wx3_user => wx3_s
 #elif __KIND == __DOUBLE_PRECISION
               CALL ppm_alloc(wx3_d,ldl,ldu,iopt,info)
@@ -755,21 +756,21 @@
                       &            'pb in weights allocation',__LINE__,info)
                  GOTO 9999
               END IF
-           
+
               wx3_user => wx3_d
-#endif       
+#endif
            END IF
-           
+
         END IF
-        
-        
+
+
         wx1 => wx1_user
         wx2 => wx2_user
         IF(ppm_dim.EQ.3) wx3 => wx3_user
-        
+
      ELSE
-        
-        
+
+
 #if   __KIND == __SINGLE_PRECISION
         CALL ppm_alloc(wx1_s,ldl,ldu,iopt,info)
         IF (info.NE.0) THEN
@@ -779,7 +780,7 @@
            GOTO 9999
         END IF
         wx1 => wx1_s
-           
+
 #elif __KIND == __DOUBLE_PRECISION
         CALL ppm_alloc(wx1_d,ldl,ldu,iopt,info)
         IF (info.NE.0) THEN
@@ -789,8 +790,8 @@
            GOTO 9999
         END IF
         wx1 => wx1_d
-        
-#endif       
+
+#endif
 #if   __KIND == __SINGLE_PRECISION
         CALL ppm_alloc(wx2_s,ldl,ldu,iopt,info)
         IF (info.NE.0) THEN
@@ -800,7 +801,7 @@
            GOTO 9999
         END IF
         wx2 => wx2_s
-        
+
 #elif __KIND == __DOUBLE_PRECISION
         CALL ppm_alloc(wx2_d,ldl,ldu,iopt,info)
         IF (info.NE.0) THEN
@@ -810,7 +811,7 @@
            GOTO 9999
         END IF
         wx2 => wx2_d
-        
+
 #endif
         IF(ppm_dim.EQ.3) THEN
 #if   __KIND == __SINGLE_PRECISION
@@ -822,7 +823,7 @@
               GOTO 9999
            END IF
            wx3 => wx3_s
-           
+
 #elif __KIND == __DOUBLE_PRECISION
            CALL ppm_alloc(wx3_d,ldl,ldu,iopt,info)
            IF (info.NE.0) THEN
@@ -832,8 +833,8 @@
               GOTO 9999
            END IF
            wx3 => wx3_d
-           
-#endif       
+
+#endif
         END IF
      END IF
      !--------------------------------------------------------------------------
@@ -848,60 +849,60 @@
      !--------------------------------------------------------------------------
      !  loop over subs
      SELECT CASE(kernel)
-        
+
      CASE(ppm_param_rmsh_kernel_bsp2)
-        
+
         DO isub = 1,ppm_nsublist(topoid)
            !  loop over particles therein
            DO ip = 1,store_info(isub)
               isubl = ppm_isublist(isub,topoid)
-              
+
               ip1 = INT((xp(1,list_sub(isub,ip))-min_phys(1,topoid) &
      &             )*dxi(1))+2-istart(1,isubl)
-              
+
               ip2 = INT((xp(2,list_sub(isub,ip))-min_phys(2,topoid) &
      &             )*dxi(2))+2-istart(2,isubl)
               IF(ppm_dim.EQ.3) THEN
                  ip3 = INT((xp(3,list_sub(isub,ip))-min_phys(3,topoid) &
      &             )*dxi(3))+2-istart(3,isubl)
               END IF
-              
+
               iidec = 0
               jjdec = 0
               kkdec = 0
-              
+
               !-----------------------------------------------------------------
               !  Bsplines 2
               !-----------------------------------------------------------------
-              
+
               DO ii    = ip1,ip1+1
                  iidec = iidec + 1
                  x1 = ABS(REAL(ii-2+istart(1,isubl),mk)-( &
      &               xp(1,list_sub(isub,ip))-min_phys(1,topoid))*dxi(1))
-                 
-                 IF(x1.LE.1.0_mk) THEN            
+
+                 IF(x1.LE.1.0_mk) THEN
                     wx1(iidec,isub,ip) =  1.0_mk - x1
                  END IF
               END DO
-              
+
               ! Loop over y direction
               DO jj    = ip2,ip2+1
                  jjdec = jjdec + 1
                  x2 = ABS(REAL(jj-2+istart(2,isubl),mk)-( &
      &               xp(2,list_sub(isub,ip))-min_phys(2,topoid))*dxi(2))
-                 
-                 IF(x2.LE.1.0_mk) THEN     
+
+                 IF(x2.LE.1.0_mk) THEN
                     wx2(jjdec,isub,ip) =  1.0_mk - x2
                  END IF
               END DO
-              IF(ppm_dim.EQ.3) THEN              
+              IF(ppm_dim.EQ.3) THEN
                  ! Loop over z direction
                  DO kk    = ip3,ip3+1
                     kkdec = kkdec + 1
                     x3 = ABS(REAL(kk-2+istart(3,isubl),mk)- (&
-     &                  xp(3,list_sub(isub,ip))-min_phys(3,topoid))*dxi(3)) 
-                    
-                    IF(x3.LE.1.0_mk) THEN     
+     &                  xp(3,list_sub(isub,ip))-min_phys(3,topoid))*dxi(3))
+
+                    IF(x3.LE.1.0_mk) THEN
                        wx3(kkdec,isub,ip) =  1.0_mk - x3
                     END IF
                  END DO
@@ -920,27 +921,27 @@
            !  loop over particles therein
            DO ip = 1,store_info(isub)
               isubl = ppm_isublist(isub,topoid)
-              
+
               ip1 = INT((xp(1,list_sub(isub,ip))-min_phys(1,topoid) &
                    &         )*dxi(1))+2-istart(1,isubl)
-              
+
               ip2 = INT((xp(2,list_sub(isub,ip))-min_phys(2,topoid) &
                    &         )*dxi(2))+2-istart(2,isubl)
               IF(ppm_dim.EQ.3) THEN
                  ip3 = INT((xp(3,list_sub(isub,ip))-min_phys(3,topoid) &
                       &         )*dxi(3))+2-istart(3,isubl)
               END IF
-              
+
               iidec = 0
               jjdec = 0
               kkdec = 0
 
               DO ii = ip1-1,ip1+2
-                 
+
                  iidec = iidec + 1
                  x1 = ABS(REAL(ii-2+istart(1,isubl),mk)-( &
      &               xp(1,list_sub(isub,ip))-min_phys(1,topoid))*dxi(1))
-                 
+
                  IF(x1.LE.2.0_mk) THEN
                     IF(x1.LE.1.0_mk) THEN
                        wx1(iidec,isub,ip) = 1.0_mk - x1**2*(2.5_mk-1.5_mk*x1)
@@ -950,13 +951,13 @@
                     END IF
                  END IF
               END DO
-              
+
               DO jj = ip2-1,ip2+2
-                 
+
                  jjdec = jjdec + 1
                  x2 = ABS(REAL(jj-2+istart(2,isubl),mk)-( &
      &               xp(2,list_sub(isub,ip))-min_phys(2,topoid))*dxi(2))
-                 
+
                  IF(x2.LE.2.0_mk) THEN
                     IF(x2.LE.1.0_mk) THEN
                        wx2(jjdec,isub,ip) = 1.0_mk - x2**2*(2.5_mk-1.5_mk*x2)
@@ -965,18 +966,18 @@
      &                     (2.5_MK - 0.5_MK * x2)*x2)*x2
                     END IF
                  END IF
-                 
+
               END DO
-              
+
               IF(ppm_dim.EQ.3) THEN
-                 
+
                  DO kk    = ip3 - 1, ip3+2
-                    
+
                     kkdec = kkdec + 1
                     x3 = ABS(REAL(kk-2+istart(3,isubl),mk)- (&
      &                  xp(3,list_sub(isub,ip))-min_phys(3,topoid))*dxi(3))
                     IF(x3.LE.2.0_MK) THEN
-                       IF(x3.LE.1.0_MK) THEN     
+                       IF(x3.LE.1.0_MK) THEN
                           wx3(kkdec,isub,ip) =  1.0_MK - x3**2*(2.5_MK - &
                                & 1.5_MK*x3)
                        ELSE
@@ -985,7 +986,7 @@
                        END IF
                     END IF
                  END DO
-                 
+
               END IF
 
            END DO
@@ -1063,7 +1064,7 @@
       END IF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
 9999  CONTINUE
       CALL substop('ppm_rmsh_comp_weights',t0,info)
@@ -1074,4 +1075,4 @@
       END SUBROUTINE ppm_rmsh_comp_weights_d
 #endif
 
-     
+

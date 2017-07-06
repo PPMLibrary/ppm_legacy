@@ -6,18 +6,18 @@
       !                 geometry-based decompositions, i.e. without
       !                 particles and without meshes.
       !                     ppm_param_decomp_bisection
-      !                     ppm_param_decomp_xpencil 
-      !                     ppm_param_decomp_ypencil 
-      !                     ppm_param_decomp_zpencil 
+      !                     ppm_param_decomp_xpencil
+      !                     ppm_param_decomp_ypencil
+      !                     ppm_param_decomp_zpencil
       !                     ppm_param_decomp_xy_slab
       !                     ppm_param_decomp_xz_slab
       !                     ppm_param_decomp_yz_slab
       !                     ppm_param_decomp_cuboid
       !                     ppm_param_decomp_user_defined
       !
-      !                 In the user_defined case, the user must submit 
-      !                 existing subdomains and all of min_sub, max_sub, 
-      !                 cost, nsubs must be provided. 
+      !                 In the user_defined case, the user must submit
+      !                 existing subdomains and all of min_sub, max_sub,
+      !                 cost, nsubs must be provided.
       !                 Subs are then mapped onto processors and
       !                 the topology is stored.
       !
@@ -34,12 +34,12 @@
       !                                  library METIS and is only
       !                                  available if ppm was compiled with
       !                                  METIS support.
-      !                 min_phys(:)  (F) the minimum coordinate of the 
-      !                                  physical/computational domain 
-      !                 max_phys(:)  (F) the maximum coordinate of the 
-      !                                  physical/computational domain 
-      !                 bcdef(:)     (I) the definition of the BC 
-      !                 ghostsize    (F) the size (width) of the GL 
+      !                 min_phys(:)  (F) the minimum coordinate of the
+      !                                  physical/computational domain
+      !                 max_phys(:)  (F) the maximum coordinate of the
+      !                                  physical/computational domain
+      !                 bcdef(:)     (I) the definition of the BC
+      !                 ghostsize    (F) the size (width) of the GL
       !
       !  Input/output : topo_id      (I) topology identifier (user
       !                                  numbering) for which to create a
@@ -153,7 +153,7 @@
       !-------------------------------------------------------------------------
 #include "ppm_define.h"
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -175,7 +175,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       INTEGER                 , INTENT(IN   ) :: assig
       REAL(MK), DIMENSION(:  ), INTENT(IN   ) :: min_phys,max_phys
@@ -189,7 +189,7 @@
       INTEGER                 , INTENT(  OUT) :: nsublist
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER                           :: i,topoid,j,treetype,nbox,isub,iopt
       INTEGER, DIMENSION(:,:), POINTER  :: ineigh,subs_bc
@@ -204,11 +204,11 @@
       REAL(MK), DIMENSION(:,:), POINTER :: min_box,max_box
       CHARACTER(LEN=ppm_char)           :: mesg
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_topo_mkgeom',t0,info)
 #if    __KIND == __SINGLE_PRECISION
@@ -314,7 +314,7 @@
      &              'faulty subdomains defined',__LINE__,info)
                GOTO 9999
             ENDIF
-         ENDIF   
+         ENDIF
       ENDIF
 
       IF (topo_id .EQ. 0) THEN
@@ -323,7 +323,9 @@
      &     'topo_id was reset for non-null decomposition',__LINE__, info)
          topo_id = -1
       ENDIF
-     
+
+      NULLIFY(ineigh,subs_bc,nneigh,nchld,min_box,max_box)
+
       !-------------------------------------------------------------------------
       !  Dummy arguments for non-existing particles and meshes
       !-------------------------------------------------------------------------
@@ -338,7 +340,7 @@
          ! build a binary tree
          treetype         = ppm_param_tree_bin
          ! no particles and no mesh
-         weights(1,1:2)   = 0.0_MK 
+         weights(1,1:2)   = 0.0_MK
          weights(2,1:2)   = 0.0_MK
          ! geometry has unit weight
          weights(3,1:2)   = 1.0_MK
@@ -379,7 +381,7 @@
          treetype         = ppm_param_tree_quad
          IF (ppm_dim .EQ. 2) treetype = ppm_param_tree_bin
          ! no particles and no mesh
-         weights(1,1:2)   = 0.0_MK 
+         weights(1,1:2)   = 0.0_MK
          weights(2,1:2)   = 0.0_MK
          ! geometry has unit weight
          weights(3,1:2)   = 1.0_MK
@@ -428,7 +430,7 @@
          ! build a binary tree
          treetype         = ppm_param_tree_bin
          ! no particles and no mesh
-         weights(1,1:2)   = 0.0_MK 
+         weights(1,1:2)   = 0.0_MK
          weights(2,1:2)   = 0.0_MK
          ! geometry has unit weight
          weights(3,1:2)   = 1.0_MK
@@ -474,7 +476,7 @@
          ! and a quad tree in 2d
          IF (ppm_dim .EQ. 2) treetype = ppm_param_tree_quad
          ! no particles and no mesh
-         weights(1,1:2)   = 0.0_MK 
+         weights(1,1:2)   = 0.0_MK
          weights(2,1:2)   = 0.0_MK
          ! geometry has unit weight
          weights(3,1:2)   = 1.0_MK
@@ -546,7 +548,7 @@
          !-------------------------------------------------------------------
          !  internal assignment routine
          !-------------------------------------------------------------------
-         CALL ppm_topo_subs2proc(cost,nneigh,ineigh,nsubs,sub2proc, & 
+         CALL ppm_topo_subs2proc(cost,nneigh,ineigh,nsubs,sub2proc, &
      &       isublist,nsublist,info)
          IF (info.NE.0) THEN
             info = ppm_error_error
@@ -602,7 +604,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Find and define the boundary conditions on the subs on the local 
+      !  Find and define the boundary conditions on the subs on the local
       !  processor (the routine will allocate the requried memory)
       !-------------------------------------------------------------------------
       CALL ppm_define_subs_bc(min_phys,max_phys,bcdef,min_sub,max_sub, &
@@ -629,8 +631,8 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Get internal topoid. If no topology has ever been defined, set 
-      !  this as the current topology. 
+      !  Get internal topoid. If no topology has ever been defined, set
+      !  this as the current topology.
       !-------------------------------------------------------------------------
       topoid = ppm_internal_topoid(topo_id)
       IF (ppm_topoid .EQ. -1) ppm_topoid = topoid
@@ -644,7 +646,7 @@
       !
       !    DO j=1,nsublist
       !        i = isublist(j)
-      !  
+      !
       !        ! x-y plan
       !        WRITE(10,'(2e12.4)') min_sub(1,i),min_sub(2,i)
       !        WRITE(10,'(2e12.4)') max_sub(1,i),min_sub(2,i)
@@ -668,7 +670,7 @@
       !ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_topo_mkgeom',t0,info)

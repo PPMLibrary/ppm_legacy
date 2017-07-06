@@ -157,7 +157,7 @@
       INTEGER , DIMENSION(:)  , POINTER :: id2
       INTEGER , DIMENSION(:,:), POINTER :: cd_local,pmap
       REAL(MK), DIMENSION(:,:), POINTER :: xp_con,vp_con,fp_con
-      ! USER: if allocation of the following varaibles fails due to stack 
+      ! USER: if allocation of the following varaibles fails due to stack
       ! size limitations, try putting them in a module and add a USE
       ! statement for it above.
       REAL(MK), DIMENSION(:,:), POINTER :: xp2,vp2,fp2
@@ -170,7 +170,7 @@
       REAL(MK), DIMENSION(:,:), POINTER :: lb
       REAL(MK), DIMENSION(:)  , POINTER :: ip,ivp
       REAL(MK)                          :: integral
-      
+
       !-------------------------------------------------------------------------
       !  Externals
       !-------------------------------------------------------------------------
@@ -678,7 +678,7 @@
      &        'deallocation failed on line ',__LINE__
           GOTO 9999
       ENDIF
-      
+
       !-------------------------------------------------------------------------
       !  Return
       !-------------------------------------------------------------------------

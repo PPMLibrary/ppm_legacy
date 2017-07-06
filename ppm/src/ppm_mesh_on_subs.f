@@ -12,15 +12,15 @@
       !                                  cells) in each direction of the
       !                                  global comput. domain. (including
       !                                  those ON the boundaries)
-      !                 min_phys(:)  (F) the minimum coordinate of the 
-      !                                  physical/computational domain 
-      !                 max_phys(:)  (F) the maximum coordinate of the 
-      !                                  physical/computational domain 
+      !                 min_phys(:)  (F) the minimum coordinate of the
+      !                                  physical/computational domain
+      !                 max_phys(:)  (F) the maximum coordinate of the
+      !                                  physical/computational domain
       !                 min_sub(:,:) (F) min. extent of the subdomains
       !                 max_sub(:,:) (F) max. extent of the subdomains
       !                 nsubs        (I) total number of subdomains
       !
-      !  Input/output : 
+      !  Input/output :
       !
       !  Output       : istart(:,:)  (I) start indices (i,j,k) (first
       !                                  index) of mesh in sub isub (second
@@ -30,7 +30,7 @@
       !                                  (second index).
       !                 info         (I) return status
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   :
       !
@@ -80,7 +80,7 @@
      &              nsubs,istart,ndata,info)
 #endif
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_write
@@ -95,7 +95,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:  ), INTENT(IN   ) :: min_phys,max_phys
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: min_sub,max_sub
@@ -104,7 +104,7 @@
       INTEGER                 , INTENT(IN   ) :: nsubs
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK)                          :: t0,lmyeps
       REAL(MK), DIMENSION(ppm_dim)      :: len_phys,dx,rat
@@ -112,11 +112,11 @@
       INTEGER                           :: iopt,i,j
       CHARACTER(LEN=ppm_char)           :: mesg
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_mesh_on_subs',t0,info)
 #if   __KIND == __SINGLE_PRECISION
@@ -183,7 +183,7 @@
       ENDDO
 
       !-------------------------------------------------------------------------
-      !  Allocate memory for the meshes 
+      !  Allocate memory for the meshes
       !-------------------------------------------------------------------------
       iopt = ppm_param_alloc_fit
       ldu(1) = ppm_dim
@@ -243,9 +243,9 @@
      &                mesg,__LINE__,info)
                   GOTO 9999
               ENDIF
-              ndata(1,i) = Nc(1) + 1 
-              ndata(2,i) = Nc(2) + 1 
-              ndata(3,i) = Nc(3) + 1 
+              ndata(1,i) = Nc(1) + 1
+              ndata(2,i) = Nc(2) + 1
+              ndata(3,i) = Nc(3) + 1
           ENDDO
       ELSE
           DO i=1,nsubs
@@ -271,8 +271,8 @@
      &                mesg,__LINE__,info)
                   GOTO 9999
               ENDIF
-              ndata(1,i) = Nc(1) + 1 
-              ndata(2,i) = Nc(2) + 1 
+              ndata(1,i) = Nc(1) + 1
+              ndata(2,i) = Nc(2) + 1
           ENDDO
       ENDIF
 
@@ -326,7 +326,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_mesh_on_subs',t0,info)

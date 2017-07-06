@@ -98,7 +98,7 @@
       USE ppm_module_data_mg
       USE ppm_module_substart
       USE ppm_module_substop
-      USE ppm_module_error 
+      USE ppm_module_error
       IMPLICIT NONE
 #if    __KIND == __SINGLE_PRECISION | __KIND == __SINGLE_PRECISION_COMPLEX
       INTEGER, PARAMETER :: MK = ppm_kind_single
@@ -106,18 +106,18 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
-#if __KIND ==__SINGLE_PRECISION 
+#if __KIND ==__SINGLE_PRECISION
       TYPE(bc_value_2d_sca_s), DIMENSION(:), POINTER :: field
 #elif __KIND == __DOUBLE_PRECISION
       TYPE(bc_value_2d_sca_d), DIMENSION(:), POINTER :: field
 #endif
 #elif __MESH_DIM == __3D
 #if __KIND ==__SINGLE_PRECISION
-      TYPE(bc_value_3d_sca_s), DIMENSION(:), POINTER :: field 
+      TYPE(bc_value_3d_sca_s), DIMENSION(:), POINTER :: field
 #elif __KIND == __DOUBLE_PRECISION
       TYPE(bc_value_3d_sca_d), DIMENSION(:), POINTER  :: field
 #endif
@@ -142,7 +142,7 @@
 
       INTEGER                           , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER            :: i
       INTEGER, DIMENSION(1) :: ldc
@@ -150,14 +150,14 @@
 
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
-#if __KIND ==__SINGLE_PRECISION 
+#if __KIND ==__SINGLE_PRECISION
       TYPE(bc_value_2d_sca_s), DIMENSION(:), POINTER :: work_field
 #elif __KIND == __DOUBLE_PRECISION
       TYPE(bc_value_2d_sca_d), DIMENSION(:), POINTER :: work_field
 #endif
 #elif __MESH_DIM == __3D
 #if __KIND ==__SINGLE_PRECISION
-      TYPE(bc_value_3d_sca_s), DIMENSION(:), POINTER ::  work_field 
+      TYPE(bc_value_3d_sca_s), DIMENSION(:), POINTER ::  work_field
 #elif __KIND == __DOUBLE_PRECISION
       TYPE(bc_value_3d_sca_d), DIMENSION(:), POINTER  :: work_field
 #endif
@@ -180,11 +180,11 @@
 
       LOGICAL            :: lcopy,lalloc,lrealloc,ldealloc
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_mg_alloc_bc',t0,info)
 
@@ -279,7 +279,7 @@
               ldealloc = .TRUE.
           ENDIF
       ENDIF
-              
+
       !-------------------------------------------------------------------------
       !  Perform the actual alloc action
       !-------------------------------------------------------------------------
@@ -346,7 +346,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_mg_alloc_bc',t0,info)

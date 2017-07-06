@@ -9,20 +9,20 @@
       !                                  index: 1...n; 2nd: 1...nin.
       !                 nin          (I) length of inlist.
       !
-      !  Output       : outlist(:,:) (I) collapsed list of n-plets. The 
+      !  Output       : outlist(:,:) (I) collapsed list of n-plets. The
       !                                  list is sorted and has the same
       !                                  LBOUND as inlist.
       !                 nout         (I) length of outlist, i.e. UBOUND
       !                                  = LBOUND + nout - 1.
-      !                 idx(:)       (I) Index array such that 
+      !                 idx(:)       (I) Index array such that
       !                                   outlist(i) = inlist(idx(i))
       !                                  OPTIONAL. Only returned if
       !                                  present.
-      !                 info         (I) return status. 
+      !                 info         (I) return status.
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
-      !  References   : 
+      !  References   :
       !
       !  Revisions    :
       !-------------------------------------------------------------------------
@@ -59,7 +59,7 @@
       USE ppm_module_util_qsort
       IMPLICIT NONE
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       ! non-negative integer list to be inverted
       INTEGER, DIMENSION(:,:) , POINTER       :: inlist
@@ -70,7 +70,7 @@
       ! return status
       INTEGER                 , INTENT(  OUT) :: nout,info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(ppm_kind_double)                 :: t0
       INTEGER, DIMENSION(2)                 :: ldl,ldu
@@ -80,14 +80,14 @@
       INTEGER, DIMENSION(:), POINTER        :: ids, sort
       INTEGER, DIMENSION(:), POINTER        :: spans,mins
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
       !  Initialization
       !-------------------------------------------------------------------------
       CALL substart('ppm_util_collapse_list',t0,info)
-      
+
       !-------------------------------------------------------------------------
       !  Check arguments
       !-------------------------------------------------------------------------
@@ -105,7 +105,9 @@
               GOTO 9999
           ENDIF
       ENDIF
-      
+
+      NULLIFY(ids,sort,spans,mins)
+
       !-------------------------------------------------------------------------
       !  Determine geometry of inlist
       !-------------------------------------------------------------------------
@@ -113,7 +115,7 @@
       inmax = inmin + nin - 1
       l1    = LBOUND(inlist,1)
       u1    = UBOUND(inlist,1)
-      
+
       !-------------------------------------------------------------------------
       !  If inlist contains only one element, we are done
       !-------------------------------------------------------------------------
@@ -145,7 +147,7 @@
               ENDIF
               idx(inmin) = inmin
           ENDIF
-          GOTO 9999 
+          GOTO 9999
       ENDIF
 
       !-------------------------------------------------------------------------
@@ -177,7 +179,7 @@
      &        'mins list MINS',__LINE__,info)
           GOTO 9999
       ENDIF
-      
+
       !-------------------------------------------------------------------------
       !  Determine the min and max values in inlist
       !  and compute the spans of the values, needed to generate unique keys
@@ -188,7 +190,7 @@
           mins(j) = tmpmin
           spans(j) = tmpmax-tmpmin+1
       ENDDO
-      
+
       !-------------------------------------------------------------------------
       !  Set up the list to carry out the sorting
       !-------------------------------------------------------------------------
@@ -198,7 +200,7 @@
            ids(:) = ids(:) + tmpfact * (inlist(j,:)-mins(j))
            tmpfact = tmpfact * spans(j)
       ENDDO
-      
+
       !-------------------------------------------------------------------------
       !  Quicksort the IDs
       !-------------------------------------------------------------------------
@@ -209,7 +211,7 @@
      &        'qsort of IDS failed',__LINE__,info)
           GOTO 9999
       ENDIF
-      
+
       !-------------------------------------------------------------------------
       !  Compute new size
       !-------------------------------------------------------------------------
@@ -221,9 +223,9 @@
               prevdist = ids(sort(i))
           ENDIF
       ENDDO
-      
+
       !-------------------------------------------------------------------------
-      !  Allocate new collapsed list 
+      !  Allocate new collapsed list
       !-------------------------------------------------------------------------
       iopt = ppm_param_alloc_fit
       ldl(1) = l1
@@ -237,7 +239,7 @@
      &        'collapsed list OUTLIST',__LINE__,info)
           GOTO 9999
       ENDIF
-      
+
       !-------------------------------------------------------------------------
       !  Allocate index list if needed
       !-------------------------------------------------------------------------
@@ -261,7 +263,7 @@
       j = LBOUND(sort,1)
       outlist(:,i) = inlist(:,sort(j))
       prevdist = ids(sort(j))
-      DO 
+      DO
          IF ((i-inmin+1).EQ.nout) EXIT
          j = j+1
          IF (ids(sort(j)).NE.prevdist) THEN
@@ -273,7 +275,7 @@
              prevdist     = ids(sort(j))
          ENDIF
       ENDDO
-      
+
       !-------------------------------------------------------------------------
       !  Deallocate stuff
       !-------------------------------------------------------------------------

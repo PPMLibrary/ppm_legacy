@@ -16,7 +16,7 @@
       !                                xp is a 2d array. For 1d xp arrays,
       !                                omit this argument.
       !                 Npart      (I) the number of particles (on processor)
-      !                 to_topo    (I) user topology ID of destination. If 
+      !                 to_topo    (I) user topology ID of destination. If
       !                                is <=0, the current topology is used.
       !                 maptype    (I) Mapping action requested. One of:
       !                                     ppm_param_map_global
@@ -27,7 +27,7 @@
       !                                     ppm_param_map_pop
       !                                     ppm_param_map_cancel
       !
-      !  Input/output : Mpart      (I) the new number of particles after 
+      !  Input/output : Mpart      (I) the new number of particles after
       !                                sending to new topology (on processor)
       !
       !  Output       : info       (I) return status. 0 upon success.
@@ -94,7 +94,7 @@
       !  anymore
       !
       !  Revision 1.27  2004/04/13 15:15:13  oingo
-      !  The call of ppm_map_part_ring is now a subcase of map_part_global, 
+      !  The call of ppm_map_part_ring is now a subcase of map_part_global,
       !  thus removed the case for ppm_param_map_ring
       !
       !  Revision 1.26  2004/04/07 12:03:48  oingo
@@ -104,7 +104,7 @@
       !  Added success check after CALL to ppm_util_commopt.
       !
       !  Revision 1.24  2004/02/24 17:12:40  ivos
-      !  Added overloaded versions for single complex and double complex 
+      !  Added overloaded versions for single complex and double complex
       !  particle data.
       !
       !  Revision 1.23  2004/02/20 15:45:14  ivos
@@ -165,22 +165,22 @@
       !  Merged
       !
       !  Revision 1.6  2003/12/12 18:01:54  ivos
-      !  Added the following: (1) updates internal ppm_topoid upon completion 
-      !  of a mapping. (2) removed topoid argument from partial map routine 
-      !  as they always act on the current topology. (3) added translation 
-      !  from user topo IDs to internal ones. (4) added sanity checks for 
-      !  mappings in progress. (5) removed from_topo from argument list since 
-      !  this is always the current topology. (6) added map type 
+      !  Added the following: (1) updates internal ppm_topoid upon completion
+      !  of a mapping. (2) removed topoid argument from partial map routine
+      !  as they always act on the current topology. (3) added translation
+      !  from user topo IDs to internal ones. (4) added sanity checks for
+      !  mappings in progress. (5) removed from_topo from argument list since
+      !  this is always the current topology. (6) added map type
       !  ppm_param_map_cancel to cancel an unfinished mapping.
       !
       !  Revision 1.5  2003/12/09 08:59:59  ivos
       !  Now checks if the communication sequence has been optimized for this
-      !  topology before the partial map is called. If not, the optimizer is 
+      !  topology before the partial map is called. If not, the optimizer is
       !  called.
       !
       !  Revision 1.4  2003/12/05 14:42:49  ivos
       !  Before map_part_partial is called it is checked if the optimal
-      !  communication sequence has already been determined. If not, the 
+      !  communication sequence has already been determined. If not, the
       !  optimizer is called.
       !
       !  Revision 1.3  2003/12/05 11:54:05  ivos
@@ -211,7 +211,7 @@
       SUBROUTINE ppm_map_part_1di(xp,Npart,Mpart,to_topo,maptype,info)
 #elif  __KIND == __LOGICAL
       SUBROUTINE ppm_map_part_1dl(xp,Npart,Mpart,to_topo,maptype,info)
-#endif 
+#endif
 
 #elif  __DIM == 2
 #if    __KIND == __SINGLE_PRECISION
@@ -226,8 +226,8 @@
       SUBROUTINE ppm_map_part_2di(xp,lda,Npart,Mpart,to_topo,maptype,info)
 #elif  __KIND == __LOGICAL
       SUBROUTINE ppm_map_part_2dl(xp,lda,Npart,Mpart,to_topo,maptype,info)
-#endif 
-#endif 
+#endif
+#endif
 
       !-------------------------------------------------------------------------
       !  Includes
@@ -235,7 +235,7 @@
 #include "ppm_define.h"
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_part, ONLY: ppm_target_topoid
@@ -259,7 +259,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
 #if    __DIM == 1
 #if    __KIND == __INTEGER
@@ -292,7 +292,7 @@
       INTEGER                   , INTENT(IN   ) :: maptype
       INTEGER                   , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
 #if    __DIM == 1
       INTEGER, PARAMETER  :: lda = 1
@@ -302,11 +302,11 @@
       CHARACTER(ppm_char) :: mesg
       LOGICAL             :: valid
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialize 
+      !  Initialize
       !-------------------------------------------------------------------------
       CALL substart('ppm_map_part',t0,info)
 
@@ -403,8 +403,8 @@
          ENDIF
 
          IF (info.NE.0) GOTO 9999
-#endif 
-#endif 
+#endif
+#endif
 
       ELSEIF (maptype.EQ.ppm_param_map_partial) THEN
          !----------------------------------------------------------------------
@@ -438,7 +438,7 @@
          ! first check if the optimal communication protocol is known
          IF (.NOT. ppm_isoptimized(ppm_target_topoid)) THEN
              ! if not: determine it before calling map_part_partial
-             CALL ppm_util_commopt(ppm_target_topoid,info) 
+             CALL ppm_util_commopt(ppm_target_topoid,info)
              IF (info.NE.0) GOTO 9999
              IF (ppm_debug .GT. 1) THEN
                 DO i=1,ppm_nneighlist(ppm_target_topoid)
@@ -493,7 +493,7 @@
          ELSE
              ppm_target_topoid = ppm_internal_topoid(to_topo)
          ENDIF
-     
+
          !----------------------------------------------------------------------
          !  For a topoid of 0 use the ring mapping, remapping otherwise
          !----------------------------------------------------------------------
@@ -547,7 +547,7 @@
 
       ELSEIF (maptype.EQ.ppm_param_map_send) THEN
          !----------------------------------------------------------------------
-         !  Send/recv the packages 
+         !  Send/recv the packages
          !----------------------------------------------------------------------
          ! warn the user if no mapping has yet been defined
          IF (ppm_target_topoid .LT. 0) THEN
@@ -600,7 +600,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_map_part',t0,info)

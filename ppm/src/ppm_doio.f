@@ -13,7 +13,7 @@
       !                 actn           (I) I/O action. One of:
       !                                       ppm_param_io_read
       !                                       ppm_param_io_write
-      !                 dist           (I) I/O distribution. 
+      !                 dist           (I) I/O distribution.
       !                                    For read one of:
       !                                       ppm_param_io_same
       !                                       ppm_param_io_split
@@ -146,7 +146,7 @@
       SUBROUTINE ppm_doio_d(iUnit,adata,actn,dist,iofmt,ioprec,lchar,  &
      &    mptag,info)
 #elif __KIND == __SINGLE_PRECISION_COMPLEX
-      SUBROUTINE ppm_doio_sc(iUnit,adata,actn,dist,iofmt,ioprec,lchar, & 
+      SUBROUTINE ppm_doio_sc(iUnit,adata,actn,dist,iofmt,ioprec,lchar, &
      &    mptag,info)
 #elif __KIND == __DOUBLE_PRECISION_COMPLEX
       SUBROUTINE ppm_doio_dc(iUnit,adata,actn,dist,iofmt,ioprec,lchar, &
@@ -187,7 +187,7 @@
        INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       INTEGER                          , INTENT(IN   ) :: iUnit
 #if   __KIND == __SINGLE_PRECISION | __KIND == __DOUBLE_PRECISION
@@ -204,7 +204,7 @@
       CHARACTER(LEN=*)                 , INTENT(IN   ) :: iofmt
       LOGICAL                          , INTENT(IN   ) :: lchar
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER                          :: reclen
       REAL(MK)                         :: t0
@@ -241,9 +241,9 @@
 #endif
 #endif
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
       !  Initialise
       !-------------------------------------------------------------------------
@@ -254,6 +254,8 @@
       !-------------------------------------------------------------------------
       IF (ppm_debug .GT. 0) THEN
       ENDIF
+
+      NULLIFY(asize)
 
       !-------------------------------------------------------------------------
       !  Get the size of the data
@@ -311,11 +313,11 @@
       !-------------------------------------------------------------------------
       !  Set pointer to read buffer
       !-------------------------------------------------------------------------
-#if   __KIND == __SINGLE_PRECISION 
+#if   __KIND == __SINGLE_PRECISION
       rbuf => rbuf_s
 #elif __KIND == __DOUBLE_PRECISION
       rbuf => rbuf_d
-#elif __KIND == __SINGLE_PRECISION_COMPLEX 
+#elif __KIND == __SINGLE_PRECISION_COMPLEX
       rbuf => rbuf_sc
 #elif __KIND == __DOUBLE_PRECISION_COMPLEX
       rbuf => rbuf_dc
@@ -342,7 +344,7 @@
               !  Read from file
               !-----------------------------------------------------------------
               IF (ifmt .EQ. ppm_param_io_binary) THEN
-                  ibuffer = 0 
+                  ibuffer = 0
                   DO WHILE (ibuffer .LT. mdata)
                       !-----------------------------------------------------
                       !  Read record length from file
@@ -424,7 +426,7 @@
               info = ppm_error_error
               GOTO 9999
           ENDIF
-          
+
 #ifdef __MPI
       !-------------------------------------------------------------------------
       !  CENTRALIZED
@@ -432,16 +434,16 @@
       ELSEIF ((imode .EQ. ppm_param_io_centralized) .AND.   &
      &        (dist .NE. ppm_param_io_root)) THEN
 
-          !---------------------------------------------------------------------
+          !---------------------------------------------------------------------abuffer
           !  Set buffer pointer
           !---------------------------------------------------------------------
-#if   __KIND == __SINGLE_PRECISION 
+#if   __KIND == __SINGLE_PRECISION
           abuffer => abuffer_s
           bbuffer => bbuffer_s
 #elif __KIND == __DOUBLE_PRECISION
           abuffer => abuffer_d
           bbuffer => bbuffer_d
-#elif __KIND == __SINGLE_PRECISION_COMPLEX 
+#elif __KIND == __SINGLE_PRECISION_COMPLEX
           abuffer => abuffer_sc
           bbuffer => bbuffer_sc
 #elif __KIND == __DOUBLE_PRECISION_COMPLEX
@@ -496,7 +498,7 @@
           MPTYPE = MPI_REAL
 #elif __KIND == __SINGLE_PRECISION_COMPLEX
           MPTYPE = MPI_COMPLEX
-#elif __KIND == __DOUBLE_PRECISION 
+#elif __KIND == __DOUBLE_PRECISION
           MPTYPE = MPI_DOUBLE_PRECISION
 #elif __KIND == __DOUBLE_PRECISION_COMPLEX
           MPTYPE = MPI_DOUBLE_COMPLEX
@@ -560,7 +562,7 @@
      &                       __LINE__,info)
                       ENDIF
                   ENDDO
-              ENDIF      
+              ENDIF
               !-----------------------------------------------------------------
               !  If one fails, all have to fail
               !-----------------------------------------------------------------
@@ -578,7 +580,7 @@
      &                'Non-matching data found.',__LINE__,info)
                   GOTO 9999
               ENDIF
-                  
+
               !-----------------------------------------------------------------
               !  Allocate receive buffer for the sum
               !-----------------------------------------------------------------
@@ -611,7 +613,7 @@
                   ELSEIF (ifmt .EQ. ppm_param_io_ascii) THEN
                       CALL ppm_io_write_ascii(iUnit,abuffer,iofmt,lchar,info)
                   ENDIF
-              ENDIF    
+              ENDIF
 
               !-----------------------------------------------------------------
               !  If one failed, all have to fail
@@ -800,7 +802,7 @@
               !-----------------------------------------------------------------
               IF (ppm_rank .EQ. 0) THEN
                   IF (ifmt .EQ. ppm_param_io_binary) THEN
-                      ibuffer = 0 
+                      ibuffer = 0
                       DO WHILE (ibuffer .LT. mdata)
                           !-----------------------------------------------------
                           !  Read record length from file
@@ -911,10 +913,10 @@
                       GOTO 9999
                   ENDIF
                   !-------------------------------------------------------------
-                  !  Read first data chunk 
+                  !  Read first data chunk
                   !-------------------------------------------------------------
                   IF (ifmt .EQ. ppm_param_io_binary) THEN
-                      ibuffer = 0 
+                      ibuffer = 0
                       DO WHILE (ibuffer .LT. ndata)
                           !-----------------------------------------------------
                           !  Read record length from file
@@ -1165,7 +1167,7 @@
               ENDIF
 
           ENDIF    ! dist
-   
+
           !---------------------------------------------------------------------
           !  Deallocate data size list
           !---------------------------------------------------------------------

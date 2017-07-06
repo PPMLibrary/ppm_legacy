@@ -2,7 +2,7 @@
       !  Subroutine   :                 ppm_map_part_ghost
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : This routine is the main interface routine to the 
+      !  Purpose      : This routine is the main interface routine to the
       !                 mapping routines for the ghost particles.
       !
       !  Input        : pdata(:[,:]) (O) : the particle data (positions for
@@ -16,8 +16,8 @@
       !                                    important for push and pop) in
       !                                    case pdata is a 2d array. For 1d
       !                                    arrays, omit this argument.
-      !                 Npart        (I) : the number of particles 
-      !                 isymm        (I) : indicator for the use of symmetry 
+      !                 Npart        (I) : the number of particles
+      !                 isymm        (I) : indicator for the use of symmetry
       !                                    isymm > 0 use symmetry
       !                                    isymm = 0 do not use symmetry
       !                 ghostsize    (F) : the size of the ghost layer
@@ -25,18 +25,18 @@
       !                                       ppm_param_map_ghost_put
       !                                       ppm_param_map_ghost_get
       !                                       ppm_param_map_send
-      !                                       ppm_param_map_push 
+      !                                       ppm_param_map_push
       !                                       ppm_param_map_pop
       !                                       ppm_param_map_cancel
-      !                                    
+      !
       !                 pushpp       (L) : OPTIONAL argument passed to
       !                                    ppm_map_part_push when xp are pushed
-      !                                    
-      !  Input/output : Mpart        (I) : the total number of particles 
+      !
+      !  Input/output : Mpart        (I) : the total number of particles
       !                                    including the ghosts
       !                 info         (I) : return status, 0 on success
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   :
       !
@@ -54,7 +54,7 @@
       !  release-1-0
       !
       !  Revision 1.12  2006/04/06 14:55:19  walther
-      !  The arguments to ppm_map_part_ghost_put() changed; 
+      !  The arguments to ppm_map_part_ghost_put() changed;
       !  so updated the call to the routine.
       !
       !  Revision 1.11  2006/02/03 09:41:26  ivos
@@ -104,69 +104,69 @@
 
 #if    __DIM == 1
 #if    __KIND == __SINGLE_PRECISION
-      SUBROUTINE ppm_map_part_ghost_1ds(pdata,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_1ds(pdata,Npart,Mpart,isymm,ghostsize, &
      &                                  maptype,info,pushpp)
 #elif  __KIND == __DOUBLE_PRECISION
-      SUBROUTINE ppm_map_part_ghost_1dd(pdata,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_1dd(pdata,Npart,Mpart,isymm,ghostsize, &
      &                                  maptype,info,pushpp)
 #elif  __KIND == __SINGLE_PRECISION_COMPLEX
-      SUBROUTINE ppm_map_part_ghost_1dsc(pdata,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_1dsc(pdata,Npart,Mpart,isymm,ghostsize, &
      &                                   maptype,info,pushpp)
 #elif  __KIND == __DOUBLE_PRECISION_COMPLEX
-      SUBROUTINE ppm_map_part_ghost_1ddc(pdata,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_1ddc(pdata,Npart,Mpart,isymm,ghostsize, &
      &                                   maptype,info,pushpp)
 #elif  __KIND == __INTEGER
 #if    __KIND_AUX == __SINGLE_PRECISION
-      SUBROUTINE ppm_map_part_ghost_1dis(pdata,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_1dis(pdata,Npart,Mpart,isymm,ghostsize, &
      &                                   maptype,info,pushpp)
 #else
-      SUBROUTINE ppm_map_part_ghost_1did(pdata,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_1did(pdata,Npart,Mpart,isymm,ghostsize, &
      &                                   maptype,info,pushpp)
 #endif
 #elif  __KIND == __LOGICAL
 #if    __KIND_AUX == __SINGLE_PRECISION
-      SUBROUTINE ppm_map_part_ghost_1dls(pdata,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_1dls(pdata,Npart,Mpart,isymm,ghostsize, &
      &                                  maptype,info,pushpp)
 #else
-      SUBROUTINE ppm_map_part_ghost_1dld(pdata,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_1dld(pdata,Npart,Mpart,isymm,ghostsize, &
      &                                  maptype,info,pushpp)
-#endif 
-#endif 
+#endif
+#endif
 
 #elif  __DIM == 2
 #if    __KIND == __SINGLE_PRECISION
-      SUBROUTINE ppm_map_part_ghost_2ds(pdata,lda,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_2ds(pdata,lda,Npart,Mpart,isymm,ghostsize, &
      &                                  maptype,info,pushpp)
 #elif  __KIND == __DOUBLE_PRECISION
-      SUBROUTINE ppm_map_part_ghost_2dd(pdata,lda,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_2dd(pdata,lda,Npart,Mpart,isymm,ghostsize, &
      &                                  maptype,info,pushpp)
 #elif  __KIND == __SINGLE_PRECISION_COMPLEX
-      SUBROUTINE ppm_map_part_ghost_2dsc(pdata,lda,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_2dsc(pdata,lda,Npart,Mpart,isymm,ghostsize, &
      &                                   maptype,info,pushpp)
 #elif  __KIND == __DOUBLE_PRECISION_COMPLEX
-      SUBROUTINE ppm_map_part_ghost_2ddc(pdata,lda,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_2ddc(pdata,lda,Npart,Mpart,isymm,ghostsize, &
      &                                   maptype,info,pushpp)
 #elif  __KIND == __INTEGER
 #if    __KIND_AUX == __SINGLE_PRECISION
-      SUBROUTINE ppm_map_part_ghost_2dis(pdata,lda,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_2dis(pdata,lda,Npart,Mpart,isymm,ghostsize, &
      &                                   maptype,info,pushpp)
 #else
-      SUBROUTINE ppm_map_part_ghost_2did(pdata,lda,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_2did(pdata,lda,Npart,Mpart,isymm,ghostsize, &
      &                                   maptype,info,pushpp)
-#endif 
+#endif
 #elif  __KIND == __LOGICAL
 #if    __KIND_AUX == __SINGLE_PRECISION
-      SUBROUTINE ppm_map_part_ghost_2dls(pdata,lda,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_2dls(pdata,lda,Npart,Mpart,isymm,ghostsize, &
      &                                  maptype,info,pushpp)
 #else
-      SUBROUTINE ppm_map_part_ghost_2dld(pdata,lda,Npart,Mpart,isymm,ghostsize, & 
+      SUBROUTINE ppm_map_part_ghost_2dld(pdata,lda,Npart,Mpart,isymm,ghostsize, &
      &                                  maptype,info,pushpp)
 #endif
-#endif 
-#endif 
+#endif
+#endif
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_part, ONLY: ppm_target_topoid
@@ -190,7 +190,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
 #if    __DIM == 1
 #if    __KIND == __INTEGER
@@ -225,7 +225,7 @@
       INTEGER                   , INTENT(IN   ) :: isymm
       INTEGER                   , INTENT(  OUT) :: Mpart,info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
 #if    __DIM == 1
       INTEGER, PARAMETER    :: lda = 1
@@ -234,11 +234,11 @@
       CHARACTER(ppm_char)   :: mesg
       REAL(MK)              :: t0
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_map_part_ghost',t0,info)
 
@@ -285,7 +285,7 @@
       !-------------------------------------------------------------------------
       IF     (maptype.EQ.ppm_param_map_ghost_get) THEN
          !----------------------------------------------------------------------
-         !  Create the new ghosts 
+         !  Create the new ghosts
          !----------------------------------------------------------------------
 #if __KIND == __INTEGER | \
     __KIND == __LOGICAL | \
@@ -342,7 +342,7 @@
          ENDIF
 
          !----------------------------------------------------------------------
-         !  Map the ghost onto the subs and initialize the send buffers with 
+         !  Map the ghost onto the subs and initialize the send buffers with
          !  ghost particles
          !----------------------------------------------------------------------
          CALL ppm_map_part_ghost_get(pdata,lda,Npart,isymm,ghostsize,info)
@@ -351,7 +351,7 @@
 #endif
       ELSEIF (maptype.EQ.ppm_param_map_ghost_put) THEN
          !----------------------------------------------------------------------
-         !  send the contribution computed on the ghosts back to their host 
+         !  send the contribution computed on the ghosts back to their host
          !  processor
          !----------------------------------------------------------------------
 #if __KIND == __INTEGER | \
@@ -409,7 +409,7 @@
          ENDIF
 
          !----------------------------------------------------------------------
-         !  now, call the ghost_put to shift the send/recv lists to enable 
+         !  now, call the ghost_put to shift the send/recv lists to enable
          !  subseq. push/send/pop of the ghost data
          !----------------------------------------------------------------------
          CALL ppm_map_part_ghost_put(info)
@@ -435,7 +435,7 @@
             CALL ppm_map_part_push(pdata,lda,Npart,info,pushpp)
          ELSE
             CALL ppm_map_part_push(pdata,lda,Npart,info)
-         ENDIF  
+         ENDIF
          IF (info.NE.0) GOTO 9999
 
       ELSEIF (maptype.EQ.ppm_param_map_pop) THEN
@@ -515,10 +515,10 @@
          CALL ppm_error(ppm_err_argument,'ppm_map_part',    &
      &       'Unknown mapping action specified',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_map_part_ghost',t0,info)

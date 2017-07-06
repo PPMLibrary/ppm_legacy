@@ -6,8 +6,8 @@
       !                 definitions that are PRIVATE to the IO routines.
       !                 It also included those routines and provides
       !                 INTERFACEs.
-      !                
-      !  Remarks      : 
+      !
+      !  Remarks      :
       !
       !  References   :
       !
@@ -58,28 +58,28 @@
          !----------------------------------------------------------------------
          !  Work arrays
          !----------------------------------------------------------------------
-         REAL(ppm_kind_single)   , DIMENSION(:)    , POINTER :: rbuf_s
-         REAL(ppm_kind_double)   , DIMENSION(:)    , POINTER :: rbuf_d
-         COMPLEX(ppm_kind_single), DIMENSION(:)    , POINTER :: rbuf_sc
-         COMPLEX(ppm_kind_double), DIMENSION(:)    , POINTER :: rbuf_dc
-         INTEGER                 , DIMENSION(:)    , POINTER :: rbuf_i
-         LOGICAL                 , DIMENSION(:)    , POINTER :: rbuf_l
+         REAL(ppm_kind_single)   , DIMENSION(:)    , POINTER :: rbuf_s  => NULL()
+         REAL(ppm_kind_double)   , DIMENSION(:)    , POINTER :: rbuf_d  => NULL()
+         COMPLEX(ppm_kind_single), DIMENSION(:)    , POINTER :: rbuf_sc => NULL()
+         COMPLEX(ppm_kind_double), DIMENSION(:)    , POINTER :: rbuf_dc => NULL()
+         INTEGER                 , DIMENSION(:)    , POINTER :: rbuf_i  => NULL()
+         LOGICAL                 , DIMENSION(:)    , POINTER :: rbuf_l  => NULL()
 
          PRIVATE :: rbuf_s,rbuf_d,rbuf_sc,rbuf_dc,rbuf_i,rbuf_l
 
 #ifdef __MPI
-         REAL(ppm_kind_single)   , DIMENSION(:), POINTER :: abuffer_s
-         REAL(ppm_kind_double)   , DIMENSION(:), POINTER :: abuffer_d
-         COMPLEX(ppm_kind_single), DIMENSION(:), POINTER :: abuffer_sc
-         COMPLEX(ppm_kind_double), DIMENSION(:), POINTER :: abuffer_dc
-         INTEGER                 , DIMENSION(:), POINTER :: abuffer_i
-         LOGICAL                 , DIMENSION(:), POINTER :: abuffer_l
-         REAL(ppm_kind_single)   , DIMENSION(:), POINTER :: bbuffer_s
-         REAL(ppm_kind_double)   , DIMENSION(:), POINTER :: bbuffer_d
-         COMPLEX(ppm_kind_single), DIMENSION(:), POINTER :: bbuffer_sc
-         COMPLEX(ppm_kind_double), DIMENSION(:), POINTER :: bbuffer_dc
-         INTEGER                 , DIMENSION(:), POINTER :: bbuffer_i
-         LOGICAL                 , DIMENSION(:), POINTER :: bbuffer_l
+         REAL(ppm_kind_single)   , DIMENSION(:), POINTER :: abuffer_s  => NULL()
+         REAL(ppm_kind_double)   , DIMENSION(:), POINTER :: abuffer_d  => NULL()
+         COMPLEX(ppm_kind_single), DIMENSION(:), POINTER :: abuffer_sc => NULL()
+         COMPLEX(ppm_kind_double), DIMENSION(:), POINTER :: abuffer_dc => NULL()
+         INTEGER                 , DIMENSION(:), POINTER :: abuffer_i  => NULL()
+         LOGICAL                 , DIMENSION(:), POINTER :: abuffer_l  => NULL()
+         REAL(ppm_kind_single)   , DIMENSION(:), POINTER :: bbuffer_s  => NULL()
+         REAL(ppm_kind_double)   , DIMENSION(:), POINTER :: bbuffer_d  => NULL()
+         COMPLEX(ppm_kind_single), DIMENSION(:), POINTER :: bbuffer_sc => NULL()
+         COMPLEX(ppm_kind_double), DIMENSION(:), POINTER :: bbuffer_dc => NULL()
+         INTEGER                 , DIMENSION(:), POINTER :: bbuffer_i  => NULL()
+         LOGICAL                 , DIMENSION(:), POINTER :: bbuffer_l  => NULL()
 
          PRIVATE :: abuffer_s,abuffer_d,abuffer_sc,abuffer_dc
          PRIVATE :: abuffer_i,abuffer_l

@@ -3,7 +3,7 @@
       !-------------------------------------------------------------------------
       !
       !  Purpose      : This module includes the source code for the mapping
-      !                 routines. 
+      !                 routines.
       !
       !  Remarks      :
       !
@@ -28,15 +28,20 @@
       !  ETH Zentrum, Hirschengraben 84
       !  CH-8092 Zurich, Switzerland
       !-------------------------------------------------------------------------
-     
+
       MODULE ppm_module_map_connect_send
 
          !----------------------------------------------------------------------
          !  Work lists
          !----------------------------------------------------------------------
-         INTEGER, DIMENSION(:),   POINTER :: id_send,id_inv,csend,crecv
-         INTEGER, DIMENSION(:),   POINTER :: sendbuffer,recvbuffer
-         INTEGER, DIMENSION(:,:), POINTER :: cd_local,psend
+         INTEGER, DIMENSION(:),   POINTER :: id_send    => NULL()
+         INTEGER, DIMENSION(:),   POINTER :: id_inv     => NULL()
+         INTEGER, DIMENSION(:),   POINTER :: csend      => NULL()
+         INTEGER, DIMENSION(:),   POINTER :: crecv      => NULL()
+         INTEGER, DIMENSION(:),   POINTER :: sendbuffer => NULL()
+         INTEGER, DIMENSION(:),   POINTER :: recvbuffer => NULL()
+         INTEGER, DIMENSION(:,:), POINTER :: cd_local   => NULL()
+         INTEGER, DIMENSION(:,:), POINTER :: psend      => NULL()
 
          PRIVATE :: id_send,id_inv,csend,crecv,sendbuffer,recvbuffer,cd_local
          PRIVATE :: psend
@@ -49,7 +54,7 @@
          END INTERFACE
 
          !----------------------------------------------------------------------
-         !  include the source 
+         !  include the source
          !----------------------------------------------------------------------
          CONTAINS
 

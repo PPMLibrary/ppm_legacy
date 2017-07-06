@@ -1,20 +1,20 @@
       !-------------------------------------------------------------------------
       !     Subroutine   :           ppm_hamjac_reinit_step_3d
       !-------------------------------------------------------------------------
-      !     
+      !
       !     Purpose      : Solve Hamilton-Jacobi for Gowas reinit
-      !      
-      !     Input        : 
-      !                    
-      !     Input/Output : 
-      !                    
-      !     Output       : 
-      !      
-      !     Remarks      : 
-      !                    
-      !     
+      !
+      !     Input        :
+      !
+      !     Input/Output :
+      !
+      !     Output       :
+      !
+      !     Remarks      :
+      !
+      !
       !     References   :
-      !     
+      !
       !     Revisions    :
       !-------------------------------------------------------------------------
       !     $Log: ppm_hamjac_reinit_step_3d.f,v $
@@ -57,12 +57,12 @@
         USE ppm_module_error
         USE ppm_module_substart
         USE ppm_module_substop
-        
+
         IMPLICIT NONE
-        
+
 #if    __KIND == __SINGLE_PRECISION
         INTEGER, PARAMETER :: MK = ppm_kind_single
-#elif  __KIND == __DOUBLE_PRECISION       
+#elif  __KIND == __DOUBLE_PRECISION
         INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
 
@@ -73,7 +73,7 @@
         REAL(MK), DIMENSION(:,:,:,:), POINTER :: phi
 #elif __MODE == __VEC
         REAL(MK), DIMENSION(:,:,:,:,:), POINTER :: phi
-#endif        
+#endif
         REAL(MK), DIMENSION(:,:,:,:), POINTER :: tphi
         INTEGER, INTENT(in)                   :: topo_id, mesh_id
         INTEGER, DIMENSION(3), INTENT(in)     :: ghostsize
@@ -81,7 +81,7 @@
         REAL(mk), INTENT(out)                 :: res
 #if __MODE == __VEC
         INTEGER, INTENT(in)                   :: idx
-#endif        
+#endif
         REAL(mk), INTENT(in)                  :: trgt
 
         !-----------------------------------------------------
@@ -92,7 +92,7 @@
         INTEGER, DIMENSION(:,:), POINTER      :: ndata
         INTEGER                               :: topoid, meshid
         REAL(mk), DIMENSION(:,:), POINTER     :: min_phys, max_phys
-        
+
         !-----------------------------------------------------
         !  standard stuff
         !-----------------------------------------------------
@@ -109,9 +109,9 @@
              & = RESHAPE((/2,1,0,1,0,-1,0,-1,-2/),(/3,3/))
         REAL(mk) :: t0
 
-        
+
         CALL substart('ppm_hamjac_reinit_step_3d',t0,info)
-        
+
         !-----------------------------------------------------
         !  Get the mesh data
         !-----------------------------------------------------
@@ -124,7 +124,7 @@
 #if    __KIND == __SINGLE_PRECISION
         min_phys => ppm_min_physs
         max_phys => ppm_max_physs
-#elif  __KIND == __DOUBLE_PRECISION       
+#elif  __KIND == __DOUBLE_PRECISION
         min_phys => ppm_min_physd
         max_phys => ppm_max_physd
 #endif
@@ -170,7 +170,7 @@
                        laps(2-ilap,3) = phi(idx,i,j,k+offs(1,ilap),isub)   &
                             & -2.0_mk * phi(idx,i,j,k+offs(2,ilap),isub) &
                             &       + phi(idx,i,j,k+offs(3,ilap),isub)
-#endif                       
+#endif
                     END DO
 
                     rpos(1) = (wenoeps + laps( 1,1)**2)/(wenoeps + laps(0,1)**2)
@@ -260,7 +260,7 @@
                          &         phi(idx,i,j,k-2,isub)))*dxi(3)
 #endif
 
-#if __MODE == __SCA                    
+#if __MODE == __SCA
                     !--- collect
                     IF(phi(i,j,k,isub).GT.0.0_mk) THEN
                        pbs = SQRT( &
@@ -278,9 +278,9 @@
                        pbs = 0.0_mk
                     END IF
                     dphi_dt =  pbs * phi(i,j,k,isub) / &
-                         & SQRT(phi(i,j,k,isub)**2+0.25_mk*SUM(phimid**2)) 
+                         & SQRT(phi(i,j,k,isub)**2+0.25_mk*SUM(phimid**2))
                     tphi(i,j,k,isub) = phi(i,j,k,isub) - wenotau * dphi_dt
-                    
+
 #else
                     !--- collect
                     IF(phi(idx,i,j,k,isub).GT.0.0_mk) THEN
@@ -299,10 +299,10 @@
                        pbs = 0.0_mk
                     END IF
                     dphi_dt =  pbs * phi(idx,i,j,k,isub) / &
-                         & SQRT(phi(idx,i,j,k,isub)**2+0.25_mk*SUM(phimid**2)) 
+                         & SQRT(phi(idx,i,j,k,isub)**2+0.25_mk*SUM(phimid**2))
                     tphi(i,j,k,isub) = phi(idx,i,j,k,isub) - wenotau * dphi_dt
-                    
-#endif                    
+
+#endif
 
                     rms = MAX(rms,ABS(dphi_dt))
 
@@ -319,29 +319,29 @@
         CALL substop('ppm_hamjac_reinit_step_3d',t0,info)
 #if   __MODE == __SCA
 #if   __KIND == __SINGLE_PRECISION
-      END SUBROUTINE ppm_hamjac_reinit_step_3ds 
+      END SUBROUTINE ppm_hamjac_reinit_step_3ds
 #elif __KIND == __DOUBLE_PRECISION
-      END SUBROUTINE ppm_hamjac_reinit_step_3dd 
+      END SUBROUTINE ppm_hamjac_reinit_step_3dd
 #endif
 #elif __MODE == __VEC
 #if   __KIND == __SINGLE_PRECISION
-      END SUBROUTINE ppm_hamjac_reinit_step_3dsV 
+      END SUBROUTINE ppm_hamjac_reinit_step_3dsV
 #elif __KIND == __DOUBLE_PRECISION
-      END SUBROUTINE ppm_hamjac_reinit_step_3ddV 
+      END SUBROUTINE ppm_hamjac_reinit_step_3ddV
 #endif
-#endif      
-
-      
-                    
-
-
-                    
-           
-           
+#endif
 
 
 
-        
-        
-        
-        
+
+
+
+
+
+
+
+
+
+
+
+

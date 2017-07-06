@@ -1,14 +1,14 @@
       !-----------------------------------------------------------------------
-      !  Subroutine   :            ppm_mg_prolong  
+      !  Subroutine   :            ppm_mg_prolong
       !-----------------------------------------------------------------------
       !  Purpose      : In this routine we prolong the corrections from
-      !                 coarser to finer levels 
-      !                  
-      !  
+      !                 coarser to finer levels
+      !
+      !
       !  Input        : mlev       (I) current level in V-cycle
-      ! 
+      !
       !  Input/output :
-      ! 
+      !
       !  Output       : info       (I) return status. 0 upon success
       !
       !  Remarks      :
@@ -30,12 +30,12 @@
       !  Revision 1.1  2004/09/22 18:36:05  kotsalie
       !  MG new version
       !
-      !------------------------------------------------------------------------ 
+      !------------------------------------------------------------------------
       !  Parallel Particle Mesh Library (PPM)
       !  Institute of Computational Science
       !  ETH Zentrum, Hirschengraben 84
       !  CH-8092 Zurich, Switzerland
-      !------------------------------------------------------------------------- 
+      !-------------------------------------------------------------------------
 
 
 #if __DIM == __SFIELD
@@ -68,22 +68,22 @@
 #endif
 #endif
 
-        !-------------------------------------------------------------------    
+        !-------------------------------------------------------------------
         !  Includes
         !---------------------------------------------------------------------
 #include "ppm_define.h"
 
         !----------------------------------------------------------------------
-        !  Modules 
+        !  Modules
         !----------------------------------------------------------------------
         USE ppm_module_data
         USE ppm_module_write
-        USE ppm_module_substart         
+        USE ppm_module_substart
         USE ppm_module_substop
         USE ppm_module_data_mg
         USE ppm_module_error
         USE ppm_module_alloc
-        USE ppm_module_map_field_ghost         
+        USE ppm_module_map_field_ghost
 
         IMPLICIT NONE
 #if    __KIND == __SINGLE_PRECISION
@@ -92,18 +92,18 @@
         INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
         !----------------------------------------------------------------------
-        !  Arguments     
+        !  Arguments
         !----------------------------------------------------------------------
         INTEGER,                   INTENT(IN)      ::  mlev
         INTEGER,                   INTENT(INOUT)   ::  info
-        !------------------------------------------------------------------     
-        !  Local variables 
+        !------------------------------------------------------------------
+        !  Local variables
         !---------------------------------------------------------------------
         CHARACTER(LEN=256)                         :: cbuf
         INTEGER                                    :: isub,j,j2,i,i2
-        INTEGER,DIMENSION(5)                       :: ldl5,ldu5 
-        INTEGER,DIMENSION(4)                       :: ldl4,ldu4 
-        INTEGER,DIMENSION(4)                       :: ldl3,ldu3 
+        INTEGER,DIMENSION(5)                       :: ldl5,ldu5
+        INTEGER,DIMENSION(4)                       :: ldl4,ldu4
+        INTEGER,DIMENSION(4)                       :: ldl3,ldu3
         INTEGER                                    :: iopt,topoid
 #if __MESH_DIM == __3D
         INTEGER                                    :: k,k2
@@ -117,13 +117,13 @@
         TYPE(mg_field_2d_sca_s),DIMENSION(:,:),POINTER :: mgfield
 #elif __KIND == __DOUBLE_PRECISION
         TYPE(mg_field_2d_sca_d),DIMENSION(:,:),POINTER :: mgfield
-#endif 
+#endif
 #elif __MESH_DIM == __3D
 #if __KIND == __SINGLE_PRECISION
         TYPE(mg_field_3d_sca_s),DIMENSION(:,:),POINTER :: mgfield
 #elif __KIND == __DOUBLE_PRECISION
         TYPE(mg_field_3d_sca_d),DIMENSION(:,:),POINTER :: mgfield
-#endif 
+#endif
 #endif
 #elif __DIM == __VFIELD
 #if __MESH_DIM == __2D
@@ -230,7 +230,7 @@
 
 
 #if __DIM == __SFIELD
-#if __MESH_DIM == __2D           
+#if __MESH_DIM == __2D
         !----------------------------------------------------------------
         !prolongation using a 9-point operator
         !----------------------------------------------------------------
@@ -238,9 +238,9 @@
 
          DO isub=1,nsubs
 
-         tuc=>mgfield(isub,mlevp1)%uc   
+         tuc=>mgfield(isub,mlevp1)%uc
 
-         puc=>mgfield(isub,mlev)%uc   
+         puc=>mgfield(isub,mlev)%uc
 
 
            DO j=1,max_node(2,mlevp1)
@@ -251,14 +251,14 @@
      &                              puc(i2-1,j2-1) + &
      &                              tuc(i,j)
 
-                    puc(i2,j2-1) = & 
+                    puc(i2,j2-1) = &
      &                              puc(i2,j2-1) + &
      &                    0.5_MK * (tuc(i,j)+&
      &                              tuc(i+1,j))
 
                     puc(i2-1,j2) = &
      &                              puc(i2-1,j2) + &
-     &                   0.5_MK * ( tuc(i,j) + & 
+     &                   0.5_MK * ( tuc(i,j) + &
      &                              tuc(i,j+1))
 
                     puc(i2,j2)  = &
@@ -281,8 +281,8 @@
 
 
          DO isub=1,nsubs
-           tuc=>mgfield(isub,mlevp1)%uc 
-           puc=>mgfield(isub,mlev)%uc 
+           tuc=>mgfield(isub,mlevp1)%uc
+           puc=>mgfield(isub,mlev)%uc
            DO k=1,max_node(3,mlevp1)
               k2=2*k
               DO j=1,max_node(2,mlevp1)
@@ -293,14 +293,14 @@
      &                          puc(i2-1,j2-1,k2-1) + &
      &                          tuc(i,j,k)
 
-                       puc(i2,j2-1,k2-1) = & 
+                       puc(i2,j2-1,k2-1) = &
      &                             puc(i2,j2-1,k2-1) + &
      &                   0.5_MK * (tuc(i,j,k)+&
      &                             tuc(i+1,j,k))
 
                        puc(i2-1,j2,k2-1) = &
      &                             puc(i2-1,j2,k2-1) + &
-     &                  0.5_MK * ( tuc(i,j,k) + & 
+     &                  0.5_MK * ( tuc(i,j,k) + &
      &                             tuc(i,j+1,k))
 
                        puc(i2,j2,k2-1)  = &
@@ -354,15 +354,15 @@
 
 #endif
 #elif __DIM == __VFIELD
-#if __MESH_DIM == __2D           
+#if __MESH_DIM == __2D
         !----------------------------------------------------------------
         !prolongation using a 9-point operator
         !----------------------------------------------------------------
 
 
          DO isub=1,nsubs
-            tuc=>mgfield(isub,mlevp1)%uc 
-            puc=>mgfield(isub,mlev)%uc 
+            tuc=>mgfield(isub,mlevp1)%uc
+            puc=>mgfield(isub,mlev)%uc
 
            DO j=1,max_node(2,mlevp1)
               j2=2*j
@@ -373,14 +373,14 @@
      &                              puc(ilda,i2-1,j2-1) + &
      &                              tuc(ilda,i,j)
 
-                    puc(ilda,i2,j2-1) = & 
+                    puc(ilda,i2,j2-1) = &
      &                              puc(ilda,i2,j2-1) + &
      &                    0.5_MK * (tuc(ilda,i,j)+&
      &                              tuc(ilda,i+1,j))
 
                     puc(ilda,i2-1,j2) = &
      &                              puc(ilda,i2-1,j2) + &
-     &                   0.5_MK * ( tuc(ilda,i,j) + & 
+     &                   0.5_MK * ( tuc(ilda,i,j) + &
      &                              tuc(ilda,i,j+1))
 
                     puc(ilda,i2,j2)  = &
@@ -389,8 +389,8 @@
      &                              tuc(ilda,i+1,j) + &
      &                              tuc(ilda,i+1,j+1)+&
      &                              tuc(ilda,i,j+1))
-               
-               ENDDO 
+
+               ENDDO
               ENDDO
            ENDDO
         ENDDO
@@ -403,8 +403,8 @@
         !----------------------------------------------------------------
 
          DO isub=1,nsubs
-            tuc=>mgfield(isub,mlevp1)%uc 
-            puc=>mgfield(isub,mlev)%uc 
+            tuc=>mgfield(isub,mlevp1)%uc
+            puc=>mgfield(isub,mlev)%uc
 
            DO k=1,max_node(3,mlevp1)
               k2=2*k
@@ -416,14 +416,14 @@
      &                          puc(1,i2-1,j2-1,k2-1) + &
      &                          tuc(1,i,j,k)
 
-                       puc(1,i2,j2-1,k2-1) = & 
+                       puc(1,i2,j2-1,k2-1) = &
      &                             puc(1,i2,j2-1,k2-1) + &
      &                   0.5_MK * (tuc(1,i,j,k)+&
      &                             tuc(1,i+1,j,k))
 
                        puc(1,i2-1,j2,k2-1) = &
      &                             puc(1,i2-1,j2,k2-1) + &
-     &                  0.5_MK * ( tuc(1,i,j,k) + & 
+     &                  0.5_MK * ( tuc(1,i,j,k) + &
      &                             tuc(1,i,j+1,k))
 
                        puc(1,i2,j2,k2-1)  = &
@@ -472,14 +472,14 @@
      &                          puc(2,i2-1,j2-1,k2-1) + &
      &                          tuc(2,i,j,k)
 
-                       puc(2,i2,j2-1,k2-1) = & 
+                       puc(2,i2,j2-1,k2-1) = &
      &                             puc(2,i2,j2-1,k2-1) + &
      &                   0.5_MK * (tuc(2,i,j,k)+&
      &                             tuc(2,i+1,j,k))
 
                        puc(2,i2-1,j2,k2-1) = &
      &                             puc(2,i2-1,j2,k2-1) + &
-     &                  0.5_MK * ( tuc(2,i,j,k) + & 
+     &                  0.5_MK * ( tuc(2,i,j,k) + &
      &                             tuc(2,i,j+1,k))
 
                        puc(2,i2,j2,k2-1)  = &
@@ -530,14 +530,14 @@
      &                          puc(3,i2-1,j2-1,k2-1) + &
      &                          tuc(3,i,j,k)
 
-                       puc(3,i2,j2-1,k2-1) = & 
+                       puc(3,i2,j2-1,k2-1) = &
      &                             puc(3,i2,j2-1,k2-1) + &
      &                   0.5_MK * (tuc(3,i,j,k)+&
      &                             tuc(3,i+1,j,k))
 
                        puc(3,i2-1,j2,k2-1) = &
      &                             puc(3,i2-1,j2,k2-1) + &
-     &                  0.5_MK * ( tuc(3,i,j,k) + & 
+     &                  0.5_MK * ( tuc(3,i,j,k) + &
      &                             tuc(3,i,j+1,k))
 
                        puc(3,i2,j2,k2-1)  = &

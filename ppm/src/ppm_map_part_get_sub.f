@@ -2,15 +2,15 @@
       !  Subroutine   :               ppm_map_part_get_sub
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : This routine maps (retrieves) the particles on the 
+      !  Purpose      : This routine maps (retrieves) the particles on the
       !                 sub domains and topology listed in the input list.
       !
       !  Input        : isublist(:)  (I) : list of sub domain in topo_id
       !                 nsublist     (I) : length of list(:)
       !                 topo_id      (I) : user topoid
-      !                 xp(:,:)      (F) : particles 
-      !                 Npart        (I) : the number of particles 
-      !                                    
+      !                 xp(:,:)      (F) : particles
+      !                 Npart        (I) : the number of particles
+      !
       !  Input/output : info         (I) : return status, 0 on success
       !
       !  Remarks      : this routine was NOT tested/compiled in serial !
@@ -36,7 +36,7 @@
       !
       !  Revision 1.3  2005/02/09 15:23:47  polasekb
       !
-      !  bugfix: inserted ifdef and pointer ppm_min/max_sub to decide if we 
+      !  bugfix: inserted ifdef and pointer ppm_min/max_sub to decide if we
       !  need ppm_min/max_subs oder ppm_min/max_subd (single or double precision)
       !
       !  Revision 1.2  2005/02/08 14:45:19  walther
@@ -56,10 +56,10 @@
       SUBROUTINE ppm_map_part_get_sub_s(isublist,nsublist,topo_id,xp,Npart,info)
 #elif  __KIND == __DOUBLE_PRECISION
       SUBROUTINE ppm_map_part_get_sub_d(isublist,nsublist,topo_id,xp,Npart,info)
-#endif 
+#endif
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -81,7 +81,7 @@
       INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
       INTEGER , DIMENSION(:)  , INTENT(IN   ) :: isublist
@@ -90,10 +90,10 @@
       INTEGER                 , INTENT(IN   ) :: topo_id
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER, DIMENSION(3)               :: ldu
-      INTEGER                             :: topoid ! internal topoid 
+      INTEGER                             :: topoid ! internal topoid
       INTEGER                             :: i,j,k,isub
       INTEGER                             :: nsublist1,nsublist2,nghost
       INTEGER                             :: nghostplus
@@ -108,11 +108,11 @@
       INTEGER, DIMENSION(MPI_STATUS_SIZE)  :: status
 #endif
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_map_part_get_sub',t0,info)
       bcdef => ppm_bcdef(:,topoid)
@@ -143,14 +143,14 @@
                   GOTO 9999
               ENDIF
           ENDIF
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Now if we have only one processor skip the rest
       !-------------------------------------------------------------------------
       IF (ppm_nproc.EQ.1) THEN
          GOTO 9999
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Moreover, if we are not using MPI we can skip the rest of the source
@@ -174,8 +174,8 @@
       topoid = ppm_internal_topoid(topo_id)
 
       !-------------------------------------------------------------------------
-      !  Save the map type for the subsequent calls 
-      !  this mapping is a ghost get mapping: the (real) particle on the 
+      !  Save the map type for the subsequent calls
+      !  this mapping is a ghost get mapping: the (real) particle on the
       !  processor is NOT touched by this mapping - the ghosts are just
       !  added to the end of the particle list
       !-------------------------------------------------------------------------
@@ -322,24 +322,24 @@
          !  compute the next processor
          !----------------------------------------------------------------------
          sendrank = sendrank + 1
-         IF (sendrank.GT.ppm_nproc-1) sendrank = sendrank - ppm_nproc 
+         IF (sendrank.GT.ppm_nproc-1) sendrank = sendrank - ppm_nproc
          recvrank = recvrank - 1
-         IF (recvrank.LT.          0) recvrank = recvrank + ppm_nproc 
+         IF (recvrank.LT.          0) recvrank = recvrank + ppm_nproc
 
          !----------------------------------------------------------------------
          !  Store the processor to which we will send to
          !----------------------------------------------------------------------
-         ppm_nsendlist                = ppm_nsendlist + 1 
+         ppm_nsendlist                = ppm_nsendlist + 1
          ppm_isendlist(ppm_nsendlist) = sendrank
 
          !----------------------------------------------------------------------
          !  Store the processor to which we will recv from
          !----------------------------------------------------------------------
-         ppm_nrecvlist                = ppm_nrecvlist + 1 
+         ppm_nrecvlist                = ppm_nrecvlist + 1
          ppm_irecvlist(ppm_nrecvlist) = recvrank
-  
+
          !----------------------------------------------------------------------
-         !  Loop over the entire list of subs that we need on topoid 
+         !  Loop over the entire list of subs that we need on topoid
          !----------------------------------------------------------------------
          nlist2 = 0
          nlist3 = 0
@@ -358,9 +358,9 @@
                !----------------------------------------------------------------
                !  otherwise store the sub in the second list to be swapped later
                !----------------------------------------------------------------
-               nlist2         = nlist2 + 1   
+               nlist2         = nlist2 + 1
                ilist2(nlist2) = ilist1(j)
-            ENDIF 
+            ENDIF
          ENDDO
 
          !----------------------------------------------------------------------
@@ -370,17 +370,17 @@
          nlist1 = nlist2
 
          !----------------------------------------------------------------------
-         !  Now send the list of data we need to the recvrank processor and 
-         !  receive the request from the sendrank processor for data we have 
+         !  Now send the list of data we need to the recvrank processor and
+         !  receive the request from the sendrank processor for data we have
          !  to provide. Notice: the first part of the envelope is the SEND part
-         !  so we send to the recvlist what we need 
+         !  so we send to the recvlist what we need
          !----------------------------------------------------------------------
-         CALL MPI_SendRecv(nlist3,1,MPI_INTEGER,recvrank,tag1, & 
+         CALL MPI_SendRecv(nlist3,1,MPI_INTEGER,recvrank,tag1, &
      &                     nlist4,1,MPI_INTEGER,sendrank,tag1, &
      &                     ppm_comm,status,info)
 
          !----------------------------------------------------------------------
-         !  Reallocate if needed the (partial) list (ilist4) of subs that we 
+         !  Reallocate if needed the (partial) list (ilist4) of subs that we
          !  have and should send to sendrank
          !----------------------------------------------------------------------
          iopt   = ppm_param_alloc_grow
@@ -393,7 +393,7 @@
          CALL MPI_SendRecv(ilist3,nlist3,MPI_INTEGER,recvrank,tag2, &
      &                     ilist4,nlist4,MPI_INTEGER,sendrank,tag2, &
      &                     ppm_comm,status,info)
-         
+
          !----------------------------------------------------------------------
          !  Reallocate to make sure we have enough memory in the
          !  ppm_buffer2part and ppm_sendbuffers/d; we can at most send all our
@@ -423,12 +423,12 @@
          ENDIF
 
          !----------------------------------------------------------------------
-         !  Now we know what to do, and loop over our subs in the ilist4 to 
+         !  Now we know what to do, and loop over our subs in the ilist4 to
          !  extract the particles
          !----------------------------------------------------------------------
          DO j=1,nlist4
             !-------------------------------------------------------------------
-            !  Get the sub id 
+            !  Get the sub id
             !-------------------------------------------------------------------
             isub = ilist4(j)
             IF (ppm_dim.EQ.2) THEN
@@ -439,9 +439,9 @@
                   !-------------------------------------------------------------
                   !  and check if they are inside the sub
                   !-------------------------------------------------------------
-                  IF (xp(1,k).GE.ppm_min_sub(1,isub,topoid).AND. &  
-     &                xp(1,k).LE.ppm_max_sub(1,isub,topoid).AND. &  
-     &                xp(2,k).GE.ppm_min_sub(2,isub,topoid).AND. &  
+                  IF (xp(1,k).GE.ppm_min_sub(1,isub,topoid).AND. &
+     &                xp(1,k).LE.ppm_max_sub(1,isub,topoid).AND. &
+     &                xp(2,k).GE.ppm_min_sub(2,isub,topoid).AND. &
      &                xp(2,k).LE.ppm_max_sub(2,isub,topoid)) THEN
                       !---------------------------------------------------------
                       !  In the non-periodic case, allow particles that are
@@ -494,7 +494,7 @@
                             ppm_sendbufferd(ibuffer) =      &
      &                          REAL(xp(2,k),ppm_kind_single)
 #endif
-                         ENDIF 
+                         ENDIF
 
                       ENDIF ! for inside/outside
                   ENDIF ! for inside/outside
@@ -507,11 +507,11 @@
                   !-------------------------------------------------------------
                   !  and check if they are inside the sub
                   !-------------------------------------------------------------
-                  IF (xp(1,k).GE.ppm_min_sub(1,isub,topoid).AND. &  
-     &                xp(1,k).LE.ppm_max_sub(1,isub,topoid).AND. &  
-     &                xp(2,k).GE.ppm_min_sub(2,isub,topoid).AND. &  
-     &                xp(2,k).LE.ppm_max_sub(2,isub,topoid).AND. &  
-     &                xp(3,k).GE.ppm_min_sub(3,isub,topoid).AND. &  
+                  IF (xp(1,k).GE.ppm_min_sub(1,isub,topoid).AND. &
+     &                xp(1,k).LE.ppm_max_sub(1,isub,topoid).AND. &
+     &                xp(2,k).GE.ppm_min_sub(2,isub,topoid).AND. &
+     &                xp(2,k).LE.ppm_max_sub(2,isub,topoid).AND. &
+     &                xp(3,k).GE.ppm_min_sub(3,isub,topoid).AND. &
      &                xp(3,k).LE.ppm_max_sub(3,isub,topoid)) THEN
                    !------------------------------------------------------------
                    !  In the non-periodic case, allow particles that are
@@ -571,13 +571,13 @@
                         ibuffer = ibuffer + 1
                         ppm_sendbufferd(ibuffer) = REAL(xp(3,k),ppm_kind_single)
 #endif
-                     ENDIF 
+                     ENDIF
 
                   ENDIF
                   ENDIF
                ENDDO ! end loop over particles
             ENDIF ! endif of 2d/3d
-         ENDDO ! end loop over ilist4: the list of subs to send 
+         ENDDO ! end loop over ilist4: the list of subs to send
          !----------------------------------------------------------------------
          !  Update the buffer pointer (ie the current iset ... or the number of
          !  particle we will send to the k-th entry in the icommseq list
@@ -628,7 +628,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_map_part_get_sub',t0,info)

@@ -6,7 +6,7 @@
       !                 definitions that are PRIVATE to the mesh routines.
       !                 It also included those routines and provides
       !                 INTERFACEs.
-      !                
+      !
       !  Remarks      : The terminology distinguishes between meshes and
       !                 fields (the data living on the meshes). Several
       !                 fields can use the same mesh. Meshes are defined as
@@ -40,10 +40,15 @@
          !----------------------------------------------------------------------
          !  Work memory
          !----------------------------------------------------------------------
-         INTEGER, DIMENSION(:  ), POINTER :: isendfromsub,isendtosub
-         INTEGER, DIMENSION(:,:), POINTER :: isendblkstart,isendblksize,ioffset
-         INTEGER, DIMENSION(:  ), POINTER :: irecvfromsub,irecvtosub
-         INTEGER, DIMENSION(:,:), POINTER :: irecvblkstart,irecvblksize
+         INTEGER, DIMENSION(:  ), POINTER :: isendfromsub => NULL()
+         INTEGER, DIMENSION(:  ), POINTER :: isendtosub => NULL()
+         INTEGER, DIMENSION(:,:), POINTER :: isendblkstart => NULL()
+         INTEGER, DIMENSION(:,:), POINTER :: isendblksize => NULL()
+         INTEGER, DIMENSION(:,:), POINTER :: ioffset => NULL()
+         INTEGER, DIMENSION(:  ), POINTER :: irecvfromsub => NULL()
+         INTEGER, DIMENSION(:  ), POINTER :: irecvtosub => NULL()
+         INTEGER, DIMENSION(:,:), POINTER :: irecvblkstart => NULL()
+         INTEGER, DIMENSION(:,:), POINTER :: irecvblksize => NULL()
 
          PRIVATE :: isendfromsub,isendtosub,isendblkstart,isendblksize
          PRIVATE :: ioffset,irecvfromsub,irecvtosub,irecvblkstart,irecvblksize

@@ -7,13 +7,13 @@
       !                 In the parallel case:
       !                 Calls ppm_fmm_pretraverse and ppm_fmm_expchange
       !                 Maps the target points onto the leaf topolgy
-      !                 
+      !
       !  Input        : xpunord(:,:) (F) the position of the field points
       !                 wpunord(:)   (F) the strength of the field points
       !                 tp(:,:)      (F) the target points
       !                 theta        (F) acceptance factor
       !
-      !  Input/output :     
+      !  Input/output :
       !                 Np           (I) the number of field points.
       !                 Ntp          (I) the number of target points
       !
@@ -22,7 +22,7 @@
       !                                  size 1:Np
       !                 info         (I) return status. 0 upon success.
       !
-      !  Remarks      :  
+      !  Remarks      :
       !
       !  References   :
       !
@@ -111,7 +111,7 @@
       !  bugfix in allocating an array
       !
       !  Revision 1.5  2005/07/21 08:26:09  polasekb
-      !  changed function call, now different target 
+      !  changed function call, now different target
       !  points and field points can be
       !  specified by the user
       !
@@ -154,9 +154,9 @@
 
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
-      
+
       USE ppm_module_data
       USE ppm_module_data_fmm
       USE ppm_module_alloc
@@ -167,14 +167,14 @@
       USE ppm_module_map_part_get_sub
       USE ppm_module_mktopo
       USE ppm_module_substart
-      USE ppm_module_substop 
+      USE ppm_module_substop
       USE ppm_module_topo
       USE ppm_module_topo_box2subs
       USE ppm_module_util_cart2sph
       USE ppm_module_write
       IMPLICIT NONE
 
-      
+
       !-------------------------------------------------------------------------
       !  Includes
       !-------------------------------------------------------------------------
@@ -187,7 +187,7 @@
 
       !-------------------------------------------------------------------------
       !  Precision
-      !-------------------------------------------------------------------------      
+      !-------------------------------------------------------------------------
 #if    __KIND == __SINGLE_PRECISION
       INTEGER, PARAMETER :: MK = ppm_kind_single
 #else
@@ -196,7 +196,7 @@
 
 
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), POINTER       :: xpunord
       INTEGER                 , INTENT(INOUT) :: Np
@@ -213,10 +213,10 @@
       INTEGER                                   :: lda
       REAL(MK), DIMENSION(:,:), POINTER         :: potential
 #endif
-     
-      
+
+
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       LOGICAL                              :: check,drct,OK
       INTEGER                              :: i,j,k,l,cnt,iopt,m,n
@@ -226,10 +226,10 @@
       INTEGER                              :: stackpointer,curbox
       INTEGER                              :: pexp,isymm
       INTEGER ,DIMENSION(1)                :: ldu1
-      INTEGER ,DIMENSION(2)                :: ldu2 
+      INTEGER ,DIMENSION(2)                :: ldu2
       INTEGER ,DIMENSION(:  ), POINTER     :: newlpdx,stack
-      REAL(MK)                             :: thetap,eps,angle,reci 
-      REAL(MK)                             :: sine,cosine,val,prod 
+      REAL(MK)                             :: thetap,eps,angle,reci
+      REAL(MK)                             :: sine,cosine,val,prod
       REAL(MK),DIMENSION(1)                :: curboxrho,curboxphi,curboxtheta
       REAL(MK),DIMENSION(:,:),     POINTER :: min_box,max_box
       REAL(MK),DIMENSION(:,:),     POINTER :: min_sub,max_sub
@@ -240,33 +240,33 @@
       REAL(MK)                             :: t0,ghostsize,cutoff
       INTEGER                              :: topoid
       INTEGER ,DIMENSION(:  ), POINTER     :: part_subtop
-            
-      ! fmm 
+
+      ! fmm
       REAL(MK),DIMENSION(:  ),     POINTER :: fracfac,boxcost
       REAL(MK),DIMENSION(:,:),     POINTER :: sqrtfac,xp,Anm
       REAL(MK),DIMENSION(:  ), POINTER     :: radius
-      REAL(MK),DIMENSION(:,:), POINTER     :: Pnm,centerofbox 
-      COMPLEX(MK),DIMENSION(:,:),  POINTER :: Ynm 
-      COMPLEX(MK),DIMENSION(:,:),  POINTER :: Outer             
+      REAL(MK),DIMENSION(:,:), POINTER     :: Pnm,centerofbox
+      COMPLEX(MK),DIMENSION(:,:),  POINTER :: Ynm
+      COMPLEX(MK),DIMENSION(:,:),  POINTER :: Outer
 
 #if   __DIM == __SFIELD
-      REAL ,DIMENSION(:  ), POINTER        :: wp      
+      REAL ,DIMENSION(:  ), POINTER        :: wp
       COMPLEX(MK),DIMENSION(:,:,:),POINTER :: expansion
-#else 
+#else
       REAL ,DIMENSION(:,:), POINTER          :: wp
-      COMPLEX(MK),DIMENSION(:,:,:,:),POINTER :: expansion           
-#endif     
-      
-      
+      COMPLEX(MK),DIMENSION(:,:,:,:),POINTER :: expansion
+#endif
+
+
       !-------------------------------------------------------------------------
-      !  Initialize 
+      !  Initialize
       !-------------------------------------------------------------------------
       CALL substart('ppm_fmm_potential',t0,info)
-      
+
       !-------------------------------------------------------------------------
       !  Check arguments
       !-------------------------------------------------------------------------
-      IF (ppm_debug.GT.0) THEN  
+      IF (ppm_debug.GT.0) THEN
             IF (Np .LT. 0) THEN
                info = ppm_error_error
                CALL ppm_error(ppm_err_argument,'ppm_fmm_potential',   &
@@ -282,7 +282,10 @@
 
       ENDIF
 
-      
+      NULLIFY(newlpdx,stack,min_sub,max_sub)
+      NULLIFY(part_subtop,xp)
+      NULLIFY(wp)
+
       !-------------------------------------------------------------------------
       ! Check precision and pointing tree data to correct variables
       !-------------------------------------------------------------------------
@@ -296,7 +299,7 @@
       expansion    => expansion_s_sf
 #else
       expansion    => expansion_s_vf
-#endif      
+#endif
       sqrtfac      => sqrtfac_s
       fracfac      => fracfac_s
       Anm          => Anm_s
@@ -327,14 +330,14 @@
       IF (ppm_nproc .GT. 1) THEN
       !choose lowest level of the tree as topology
       topoid = topoidlist(nlevel)
-      
+
 
       !-------------------------------------------------------------------------
       ! Call fmm_expchange to communicate all expansions
       !-------------------------------------------------------------------------
 #if   __DIM == __SFIELD
       CALL ppm_fmm_expchange(t0,info)
-#else      
+#else
       CALL ppm_fmm_expchange(lda,t0,info)
 #endif
       IF (info .NE. 0) THEN
@@ -354,7 +357,7 @@
           &    'Failed to start global mapping.',info)
           GOTO 9999
       ENDIF
-      
+
       mapt = ppm_param_map_send
       CALL ppm_map_part(tp,ppm_dim,Ntp,Mpart,topoid,mapt,info)   ! positions
       IF (info .NE. 0) THEN
@@ -362,7 +365,7 @@
           &    'Failed to start global mapping.',info)
           GOTO 9999
       ENDIF
-      
+
       mapt = ppm_param_map_pop
       CALL ppm_map_part(tp,ppm_dim,Ntp,Mpart,topoid,mapt,info)   ! positions
       IF (info .NE. 0) THEN
@@ -375,15 +378,15 @@
       !  Store new number of particles
       !-------------------------------------------------------------------------
       Ntp = Mpart
-      
+
       IF (ppm_debug .GT. 0) THEN
           CALL ppm_write(ppm_rank,'ppm_fmm_potential', &
           &          'Done mapping target points.',info)
-          WRITE(cbuf,'(A,I)') 'Local number of target points now:',Ntp
+          WRITE(cbuf,'(A,I0)') 'Local number of target points now:',Ntp
           CALL ppm_write(ppm_rank,'ppm_fmm_potential',cbuf,info)
       ENDIF
 
-      
+
       !-------------------------------------------------------------------------
       !  Check that particles have been mapped correctly
       !-------------------------------------------------------------------------
@@ -394,14 +397,14 @@
             CALL ppm_write(ppm_rank,'ppm_fmm_potential', &
          &    'Failed to check topology.',info)
          ENDIF
-      
+
          IF (.NOT.OK) THEN
             CALL ppm_write(ppm_rank,'ppm_fmm_potential', &
           &    'target points not mapped correctly!',info)
             GOTO 9999
          ENDIF
       ENDIF
-      
+
       !-------------------------------------------------------------------------
       ! Call pretraversal routine to build communication lists
       !-------------------------------------------------------------------------
@@ -424,62 +427,62 @@
           GOTO 9999
       ENDIF
 
-      
+
       !-------------------------------------------------------------------------
-      ! Push the weights and boxpart 
+      ! Push the weights and boxpart
       !-------------------------------------------------------------------------
       isymm  = 0
       cutoff = 1.0_MK ! can be any number > 0
 
       mapt = ppm_param_map_push
-      
+
 #if   __DIM == __SFIELD
       CALL ppm_map_part_ghost(wpunord,Np,Mpart,isymm,cutoff,mapt,info) !strengths
-#else      
+#else
       CALL ppm_map_part_ghost(wpunord,lda,Np,Mpart,isymm,cutoff,mapt,info) !strengths
-#endif      
+#endif
       IF (info .NE. 0) THEN
           CALL ppm_write(ppm_rank,'ppm_fmm_potential', &
           &    'Failed to push strengths.',info)
           GOTO 9999
       ENDIF
-      
+
       CALL ppm_map_part_ghost(boxpart,Np,Mpart,isymm,cutoff,mapt,info) !boxpart
       IF (info .NE. 0) THEN
           CALL ppm_write(ppm_rank,'ppm_fmm_potential', &
           &    'Failed to push strengths.',info)
           GOTO 9999
       ENDIF
-            
+
       mapt = ppm_param_map_send
-      
+
       CALL ppm_map_part_ghost(boxpart,Np,Mpart,isymm,cutoff,mapt,info)   ! send
       IF (info .NE. 0) THEN
           CALL ppm_write(ppm_rank,'ppm_fmm_potential', &
           &    'Failed to send particles.',info)
           GOTO 9999
       ENDIF
-      
+
       mapt = ppm_param_map_pop
-      
+
       CALL ppm_map_part_ghost(boxpart,Np,Mpart,isymm,cutoff,mapt,info)  !boxpart
       IF (info .NE. 0) THEN
           CALL ppm_write(ppm_rank,'ppm_fmm_potential', &
           &    'Failed to push strengths.',info)
           GOTO 9999
-      ENDIF      
-      
-#if   __DIM == __SFIELD      
+      ENDIF
+
+#if   __DIM == __SFIELD
       CALL ppm_map_part_ghost(wpunord,Np,Mpart,isymm,cutoff,mapt,info) !strengths
 #else
       CALL ppm_map_part_ghost(wpunord,lda,Np,Mpart,isymm,cutoff,mapt,info) !strengths
-#endif      
+#endif
       IF (info .NE. 0) THEN
           CALL ppm_write(ppm_rank,'ppm_fmm_potential', &
           &    'Failed to pop strengths.',info)
           GOTO 9999
       ENDIF !positions
-      
+
       CALL ppm_map_part_ghost(xpunord,ppm_dim,Np,Mpart,isymm,cutoff,mapt,info)
       IF (info .NE. 0) THEN
           CALL ppm_write(ppm_rank,'ppm_fmm_potential', &
@@ -490,13 +493,13 @@
       IF (ppm_debug .GT. 0) THEN
           CALL ppm_write(ppm_rank,'ppm_fmm_potential', &
           &          'Done mapping ghost particles.',info)
-          WRITE(cbuf,'(A,I)') 'Received ghost particles:',Mpart-Np
+          WRITE(cbuf,'(A,I0)') 'Received ghost particles:',Mpart-Np
           CALL ppm_write(ppm_rank,'ppm_fmm_potential',cbuf,info)
       ENDIF
 
-      
+
       !-------------------------------------------------------------------------
-      ! Sort new (ghost) particles 
+      ! Sort new (ghost) particles
       !-------------------------------------------------------------------------
       ldu1(1) = Mpart
       CALL ppm_alloc(newlpdx,ldu1,ppm_param_alloc_fit,info)
@@ -528,14 +531,14 @@
             ENDIF
          ENDDO
       ENDDO
-      
+
       !-------------------------------------------------------------------------
       ! ATTENTION: now tree lists lhbx and lpdx are not valid anymore
       !-------------------------------------------------------------------------
-      
+
       ENDIF !ppm_nproc .GT. 1
 
-      
+
       !-------------------------------------------------------------------------
       ! Allocate array for potentials of target points
       !-------------------------------------------------------------------------
@@ -570,7 +573,7 @@
       DO i=1,Ntp
          potential(i) = 0.0_MK
       ENDDO
-#else 
+#else
       DO i=1,Ntp
          DO j=1,lda
             potential(j,i) = 0.0_MK
@@ -583,11 +586,11 @@
       ! allocate and initialize further arrays
       !-------------------------------------------------------------------------
       istat = 0
-      
+
       ldu1(1) = nbox
       CALL ppm_alloc(stack,ldu1,iopt,info)
       istat = istat + info
- 
+
       ldu2(1) = 3
       IF (ppm_nproc .GT. 1) THEN
          ldu2(2) = Mpart
@@ -604,8 +607,8 @@
          ldu1(1) = Np
       ENDIF
       CALL ppm_alloc(wp,ldu1,iopt,info)
-#else 
-      ldu2(1) = lda     
+#else
+      ldu2(1) = lda
       IF (ppm_nproc .GT. 1) THEN
          ldu2(2) = Mpart
       ELSE
@@ -615,7 +618,7 @@
 #endif
 
       istat = istat + info
-      
+
       IF (istat .NE. 0) THEN
          info = ppm_error_fatal
          CALL ppm_error(ppm_err_alloc,'ppm_fmm_potential', &
@@ -637,14 +640,14 @@
          ENDDO
       ENDDO
 #endif
-      
+
 
       !-------------------------------------------------------------------------
       ! Find the root of the tree (serial) and find the
       ! top level of tree (parallel)
       !-------------------------------------------------------------------------
 #ifdef   __VECTOR
-      IF (ppm_nproc .GT. 1) THEN        
+      IF (ppm_nproc .GT. 1) THEN
          ! finding top level
          DO i=1,nlevel
            IF (nbpl(i) .GE. ppm_nproc) THEN
@@ -664,7 +667,7 @@
       ENDIF
 
 #else
-      IF (ppm_nproc .GT. 1) THEN        
+      IF (ppm_nproc .GT. 1) THEN
          ! finding top level
          DO i=1,nlevel
            IF (nbpl(i) .GE. ppm_nproc) THEN
@@ -739,7 +742,7 @@
             ENDDO
          ENDIF
       ENDIF
-#else 
+#else
       IF(ppm_dim.EQ.2)THEN
          IF (ppm_nproc .GT. 1) THEN
             DO i=1,nbox
@@ -806,8 +809,8 @@
       ! Ntp: number of target points
       !-------------------------------------------------------------------------
       DO i=1,Ntp
-         IF (ppm_nproc .GT. 1) THEN        
-           
+         IF (ppm_nproc .GT. 1) THEN
+
 	   ! init stack parallel
            stackpointer = 1
            cnt = 0
@@ -817,7 +820,7 @@
            !--------------------------------------------------------------------
 	   DO j=1,nbox
              IF (blevel(j) .EQ. level) THEN
-	       stack(stackpointer) = j 
+	       stack(stackpointer) = j
                stackpointer = stackpointer + 1
                cnt = cnt +1
 	       IF (cnt .EQ. nbpl(level)) THEN
@@ -826,35 +829,35 @@
              ENDIF
            ENDDO
          ELSE
-          
+
 	  ! init stack serial
             stackpointer = 1
             stack(stackpointer) = root
             stackpointer = stackpointer + 1
          ENDIF
-         
+
 	 DO WHILE (stackpointer .GT. 1)
 	   !pop top box
             stackpointer = stackpointer - 1
             curbox = stack(stackpointer)
-           
-           
+
+
             dx = tp(1,i) - centerofbox(1,curbox)
             dy = tp(2,i) - centerofbox(2,curbox)
             dz = tp(3,i) - centerofbox(3,curbox)
             dist = SQRT(dx*dx + dy*dy + dz*dz)
-           
-	   
+
+
 	   !--------------------------------------------------------------------
            ! Checking Barnes-Hut Criterium
            !--------------------------------------------------------------------
 	   drct = .FALSE.
-           
+
 	   IF (radius(curbox) .LE. 0.0_MK) THEN
               !only one particle in box, do direct computation
               drct = .TRUE.
            ENDIF
-           
+
 	   IF ((dist/(2*radius(curbox)) .GT. theta) .AND. (.NOT. drct)) THEN
 	     !-----------------------------------------------------------------
              !  far enough, compute part-box interaction
@@ -863,15 +866,15 @@
                   CALL ppm_write(ppm_rank,'ppm_fmm_potential', &
                   &    'far enough',info)
              ENDIF
-             
-	     
+
+
 	     !------------------------------------------------------------------
              ! TODO:
              ! Computing the expansion order pexp according to Wang
              !------------------------------------------------------------------
 	     !thetap = 0.75_MK+0.2_MK*(order-pexp)+0.05_MK*(order-pexp)**2
              pexp = order
-             
+
 	     !DO WHILE((thetap .LE. dist/radius(curbox)).AND.(pexp .GT. 3))
              !   pexp = pexp - 1
              !   thetap = 0.75_MK+0.2_MK*(order-pexp)+0.05_MK*(order-pexp)**2
@@ -885,29 +888,29 @@
                 CALL ppm_error(ppm_err_sub_failed,'ppm_fmm_potential', &
                      & 'Failed calling util_cart2sph',__LINE__,info)
              ENDIF
-             
+
 	     !------------------------------------------------------------------
 	     ! compute expansion
 	     !------------------------------------------------------------------
 	     !------------------------------------------------------------------
              ! Compute Legendre polynomial box-particle interaction
              !------------------------------------------------------------------
-             
+
              reci      = 1.0_MK/curboxrho(1)
              sine      = SIN(curboxtheta(1))
              cosine    = COS(curboxtheta(1))
              val       = -sine
              prod      = 1.0_MK
-             
+
 	     DO m=0,pexp
                Pnm(m,m) = fracfac(m)*prod
                prod     = prod * val
              ENDDO
-             
+
 	     DO m=0,pexp-1
                 Pnm(m+1,m) = cosine*REAL(2*m + 1,MK)*Pnm(m,m)
              ENDDO
-             
+
 	     DO n=2,pexp
                 val = cosine*REAL(2*n-1,MK)
                 DO m=0,n-1
@@ -915,8 +918,8 @@
                                       Pnm(n-2,m))/REAL(n-m,MK)
                 ENDDO
              ENDDO
-             
-	     
+
+
 	     !------------------------------------------------------------------
              ! Compute Ynm(n,m) and Ynm(n,-m)
              !------------------------------------------------------------------
@@ -948,7 +951,7 @@
              !------------------------------------------------------------------
 	     DO n=0,pexp
                 DO m=-n,n
-                   
+
 #if                __DIM == __SFIELD
 		   potential(i)=potential(i) + expansion(curbox,n,m) &
                     &           *Outer(n,-m)
@@ -963,7 +966,7 @@
              ENDDO
 
            ELSE
-	   
+
              !-----------------------------------------------------------------
              !  not far enough, push children if present
              !-----------------------------------------------------------------
@@ -971,7 +974,7 @@
                 CALL ppm_write(ppm_rank,'ppm_fmm_potential', &
                 &    'not far enough',info)
              ENDIF
-             
+
 	     IF (nchld(curbox) .GT. 0) THEN
                 !---------------------------------------------------------------
                 !  not far enough, push children if present
@@ -984,49 +987,49 @@
                   stack(stackpointer) = child(j,curbox)
                   stackpointer = stackpointer + 1
                ENDDO
-	       
+
              ELSE
-	     
+
              !------------------------------------------------------------------
              !  no children, direct computation
              !------------------------------------------------------------------
-              
+
 	      IF (ppm_debug .GT. 0) THEN
                  CALL ppm_write(ppm_rank,'ppm_fmm_potential', &
                  &    'no children',info)
               ENDIF
-              
+
 	      first = lhbx(1,curbox)
               last  = lhbx(2,curbox)
-              
+
 	      DO j=first,last !loop over particles in leaf
-                  
+
 		 !-------------------------------------------------------------
                  ! Evaluate potential, direct method
                  !-------------------------------------------------------------
                  dx = xp(1,j) - tp(1,i)
                  dy = xp(2,j) - tp(2,i)
                  dz = xp(3,j) - tp(3,i)
-                 
+
                  rad = dx*dx + dy*dy + dz*dz
                  IF(rad.GT.eps)THEN
-	            rad = 1.0_MK/SQRT(rad)                  
-                    
+	            rad = 1.0_MK/SQRT(rad)
+
 #if                 __DIM == __SFIELD
 		    potential(i) = potential(i) + wp(j)*rad
 #else
                     DO l=1,lda
-                       potential(l,i) = potential(l,i) + wp(l,j)*rad 
+                       potential(l,i) = potential(l,i) + wp(l,j)*rad
                     ENDDO
 #endif
                  ENDIF
               ENDDO
              ENDIF
-           ENDIF       
-	 ENDDO 
+           ENDIF
+	 ENDDO
       ENDDO
 
-      
+
       !-------------------------------------------------------------------------
       !  Nullify data pointers
       !-------------------------------------------------------------------------
@@ -1037,13 +1040,13 @@
       NULLIFY(centerofbox)
       NULLIFY(radius)
 
-      
+
       !-------------------------------------------------------------------------
       !  Deallocate local data
       !-------------------------------------------------------------------------
 
       istat     = 0
-      
+
       ldu1(1)   = 0
       ldu2(1:2) = 0
       CALL ppm_alloc(newlpdx,ldu1,ppm_param_dealloc,info)
@@ -1056,7 +1059,7 @@
       istat = istat + info
       CALL ppm_alloc(part_subtop,ldu2,ppm_param_dealloc,info)
       istat = istat + info
-      
+
       IF (istat .NE. 0) THEN
          info = ppm_error_error
          CALL ppm_error(ppm_err_dealloc,'ppm_fmm_expansion', &
@@ -1064,15 +1067,15 @@
       GOTO 9999
       ENDIF
 
-      
+
       !-------------------------------------------------------------------------
       !  Return
       !-------------------------------------------------------------------------
 
 9999  CONTINUE
-      
+
       CALL substop('ppm_fmm_potential',t0,info)
-      
+
       RETURN
 
 #if   (__KIND == __SINGLE_PRECISION && __DIM == __SFIELD)
@@ -1085,5 +1088,5 @@
       END SUBROUTINE ppm_fmm_potential_d_vf
 #endif
 
-     
-  
+
+

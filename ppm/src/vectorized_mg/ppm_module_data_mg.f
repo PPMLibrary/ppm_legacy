@@ -3,11 +3,11 @@
       !-------------------------------------------------------------------------
       !
       ! Purpose       : multigrid data module
-      !               
+      !
       !
       ! Remarks       :
       !
-      ! References    : 
+      ! References    :
       !
       ! Revisions     :
       !-------------------------------------------------------------------------
@@ -39,9 +39,9 @@
 #define __2D               7
 #define __3D               8
 #define __SFIELD           9
-#define __VFIELD          10 
+#define __VFIELD          10
 
-MODULE ppm_module_data_mg   
+MODULE ppm_module_data_mg
   !--------------------------------------------------------------------------
   !Modules
   !-----------------------------------------------------------------------------
@@ -56,13 +56,13 @@ MODULE ppm_module_data_mg
 #define __KIND __SINGLE_PRECISION
   TYPE bc_value_2d_sca_s
      ! 1st index mesh position locally
-     REAL(ppm_kind_single), DIMENSION(:),POINTER   ::  pbcvalue
+     REAL(ppm_kind_single), DIMENSION(:),POINTER   ::  pbcvalue => NULL()
   END TYPE bc_value_2d_sca_s
 #undef  __KIND
 #define __KIND == __DOUBLE_PRECISION
   TYPE bc_value_2d_sca_d
      !1st index mesh position locally
-     REAL(ppm_kind_single), DIMENSION(:),POINTER   ::   pbcvalue
+     REAL(ppm_kind_single), DIMENSION(:),POINTER   ::   pbcvalue => NULL()
   END TYPE bc_value_2d_sca_d
 #undef __KIND
 
@@ -70,58 +70,58 @@ MODULE ppm_module_data_mg
 
 #define __KIND == __SINGLE_PRECISION
   !-----------------------------------------------------------------------------
-  ! Our multigrid field with all its necessary components (Take a look at the 
+  ! Our multigrid field with all its necessary components (Take a look at the
   ! theory)
   !-----------------------------------------------------------------------------
   TYPE mg_field_2d_sca_s
      !function corrections, error restrictions, errors
      !1st and 2nd index: mesh position(local)
-     REAL(ppm_kind_single), DIMENSION(:,:),POINTER  ::  uc 
-     REAL(ppm_kind_single), DIMENSION(:,:),POINTER  ::  fc 
-     REAL(ppm_kind_single), DIMENSION(:,:),POINTER  ::  err  
+     REAL(ppm_kind_single), DIMENSION(:,:),POINTER  ::  uc  => NULL()
+     REAL(ppm_kind_single), DIMENSION(:,:),POINTER  ::  fc  => NULL()
+     REAL(ppm_kind_single), DIMENSION(:,:),POINTER  ::  err => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR RED (EVEN) MESH POINTS
      !-------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_red 
+     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_red => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR BLACK (ODD) MESH POINTS
      !--------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_black 
+     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_black => NULL()
 
      !lets save the boundary condition.index:face of the subdomain(1:4)
-     TYPE(bc_value_2d_sca_s), DIMENSION(:), POINTER   ::  bcvalue   
+     TYPE(bc_value_2d_sca_s), DIMENSION(:), POINTER   ::  bcvalue => NULL()
   END TYPE mg_field_2d_sca_s
 #undef  __KIND
 
-#define __KIND  == __DOUBLE_PRECISION  
+#define __KIND  == __DOUBLE_PRECISION
 
   TYPE mg_field_2d_sca_d
      !function corrections, error restrictions, errors,
      !1st:3rd index: mesh position(local)
-     REAL(ppm_kind_double), DIMENSION(:,:),POINTER  ::  uc  
-     REAL(ppm_kind_double), DIMENSION(:,:),POINTER  ::  fc  
-     REAL(ppm_kind_double), DIMENSION(:,:),POINTER  ::  err  
+     REAL(ppm_kind_double), DIMENSION(:,:),POINTER  ::  uc => NULL()
+     REAL(ppm_kind_double), DIMENSION(:,:),POINTER  ::  fc => NULL()
+     REAL(ppm_kind_double), DIMENSION(:,:),POINTER  ::  err => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR RED (EVEN) MESH POINTS
      !--------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_red 
+     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_red => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR BLACK (ODD) MESH POINTS
      !--------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_black 
+     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_black => NULL()
      !lets save the boundary condition.index:face of the subdomain(1:4)
-     TYPE(bc_value_2d_sca_d), DIMENSION(:), POINTER   ::  bcvalue   
+     TYPE(bc_value_2d_sca_d), DIMENSION(:), POINTER   ::  bcvalue => NULL()
   END TYPE mg_field_2d_sca_d
 #undef  __KIND
 
 
 #define __KIND == __SINGLE_PRECISION
   !1st index: subdomain,2nd index : multigrid level
-  TYPE(mg_field_2d_sca_s), DIMENSION(:,:),              POINTER  ::   mgfield_2d_sca_s 
+  TYPE(mg_field_2d_sca_s), DIMENSION(:,:), POINTER :: mgfield_2d_sca_s => NULL()
 #undef __KIND
 #define __KIND == __DOUBLE_PRECISION
   !1st index: subdomain,2nd index : multigrid level
-  TYPE(mg_field_2d_sca_d), DIMENSION(:,:),              POINTER  ::   mgfield_2d_sca_d 
+  TYPE(mg_field_2d_sca_d), DIMENSION(:,:), POINTER :: mgfield_2d_sca_d => NULL()
 #undef __KIND
 #undef __MESH_DIM
 
@@ -129,13 +129,13 @@ MODULE ppm_module_data_mg
 #define __KIND __SINGLE_PRECISION
   TYPE bc_value_3d_sca_s
      ! 1st-2nd index mesh position locally
-     REAL(ppm_kind_single), DIMENSION(:,:),POINTER   ::  pbcvalue
+     REAL(ppm_kind_single), DIMENSION(:,:), POINTER :: pbcvalue => NULL()
   END TYPE bc_value_3d_sca_s
 #undef  __KIND
 #define __KIND == __DOUBLE_PRECISION
   TYPE bc_value_3d_sca_d
      !1st-2nd index mesh position locally
-     REAL(ppm_kind_single), DIMENSION(:,:),POINTER   ::   pbcvalue
+     REAL(ppm_kind_single), DIMENSION(:,:), POINTER :: pbcvalue => NULL()
   END TYPE bc_value_3d_sca_d
 #undef __KIND
 
@@ -143,58 +143,58 @@ MODULE ppm_module_data_mg
 
 #define __KIND == __SINGLE_PRECISION
   !-----------------------------------------------------------------------------
-  ! Our multigrid field with all its necessary components (Take a look at the 
+  ! Our multigrid field with all its necessary components (Take a look at the
   ! theory)
   !-----------------------------------------------------------------------------
   TYPE mg_field_3d_sca_s
      !function corrections, error restrictions, errors
      !1st-3rd index: mesh position(local)
-     REAL(ppm_kind_single), DIMENSION(:,:,:),POINTER  ::  uc 
-     REAL(ppm_kind_single), DIMENSION(:,:,:),POINTER  ::  fc 
-     REAL(ppm_kind_single), DIMENSION(:,:,:),POINTER  ::  err  
+     REAL(ppm_kind_single), DIMENSION(:,:,:),POINTER  ::  uc => NULL()
+     REAL(ppm_kind_single), DIMENSION(:,:,:),POINTER  ::  fc => NULL()
+     REAL(ppm_kind_single), DIMENSION(:,:,:),POINTER  ::  err => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR RED (EVEN) MESH POINTS
      !-------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_red 
+     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_red => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR BLACK (ODD) MESH POINTS
      !--------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_black 
+     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_black => NULL()
 
      !lets save the boundary condition.index:face of the subdomain(1:6)
-     TYPE(bc_value_3d_sca_s), DIMENSION(:), POINTER   ::  bcvalue   
+     TYPE(bc_value_3d_sca_s), DIMENSION(:), POINTER   ::  bcvalue => NULL()
   END TYPE mg_field_3d_sca_s
 #undef  __KIND
 
-#define __KIND  == __DOUBLE_PRECISION  
+#define __KIND  == __DOUBLE_PRECISION
 
   TYPE mg_field_3d_sca_d
      !function corrections, error restrictions, errors,
      !1st:3rd index: mesh position(local)
-     REAL(ppm_kind_double), DIMENSION(:,:,:),POINTER  ::  uc  
-     REAL(ppm_kind_double), DIMENSION(:,:,:),POINTER  ::  fc  
-     REAL(ppm_kind_double), DIMENSION(:,:,:),POINTER  ::  err  
+     REAL(ppm_kind_double), DIMENSION(:,:,:),POINTER  ::  uc => NULL()
+     REAL(ppm_kind_double), DIMENSION(:,:,:),POINTER  ::  fc => NULL()
+     REAL(ppm_kind_double), DIMENSION(:,:,:),POINTER  ::  err => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR RED (EVEN) MESH POINTS
      !--------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_red 
+     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_red => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR BLACK (ODD) MESH POINTS
      !--------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_black 
+     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_black => NULL()
      !lets save the boundary condition.index:face of the subdomain(1:6)
-     TYPE(bc_value_3d_sca_d), DIMENSION(:), POINTER   ::  bcvalue   
+     TYPE(bc_value_3d_sca_d), DIMENSION(:), POINTER   ::  bcvalue => NULL()
   END TYPE mg_field_3d_sca_d
 #undef  __KIND
 
 
 #define __KIND == __SINGLE_PRECISION
   !1st index: subdomain,2nd index : multigrid level
-  TYPE(mg_field_3d_sca_s), DIMENSION(:,:),              POINTER  ::   mgfield_3d_sca_s 
+  TYPE(mg_field_3d_sca_s), DIMENSION(:,:),              POINTER  ::   mgfield_3d_sca_s => NULL()
 #undef __KIND
 #define __KIND == __DOUBLE_PRECISION
   !1st index: subdomain,2nd index : multigrid level
-  TYPE(mg_field_3d_sca_d), DIMENSION(:,:),              POINTER  ::   mgfield_3d_sca_d 
+  TYPE(mg_field_3d_sca_d), DIMENSION(:,:),              POINTER  ::   mgfield_3d_sca_d => NULL()
 #undef __KIND
 #undef __MESH_DIM
 
@@ -205,13 +205,13 @@ MODULE ppm_module_data_mg
 #define __KIND __SINGLE_PRECISION
   TYPE bc_value_2d_vec_s
      ! 1st index mesh position locally
-     REAL(ppm_kind_single), DIMENSION(:),POINTER   ::  pbcvalue
+     REAL(ppm_kind_single), DIMENSION(:),POINTER   ::  pbcvalue => NULL()
   END TYPE bc_value_2d_vec_s
 #undef  __KIND
 #define __KIND == __DOUBLE_PRECISION
   TYPE bc_value_2d_vec_d
      !1st index mesh position locally
-     REAL(ppm_kind_single), DIMENSION(:),POINTER   ::   pbcvalue
+     REAL(ppm_kind_single), DIMENSION(:),POINTER   ::   pbcvalue => NULL()
   END TYPE bc_value_2d_vec_d
 #undef __KIND
 
@@ -219,58 +219,58 @@ MODULE ppm_module_data_mg
 
 #define __KIND == __SINGLE_PRECISION
   !-----------------------------------------------------------------------------
-  ! Our multigrid field with all its necessary components (Take a look at the 
+  ! Our multigrid field with all its necessary components (Take a look at the
   ! theory)
   !-----------------------------------------------------------------------------
   TYPE mg_field_2d_vec_s
      !function corrections, error restrictions, errors
      !1st index component 2nd and 3rd index: mesh position(local)
-     REAL(ppm_kind_single), DIMENSION(:,:,:),POINTER  ::  uc 
-     REAL(ppm_kind_single), DIMENSION(:,:,:),POINTER  ::  fc 
-     REAL(ppm_kind_single), DIMENSION(:,:,:),POINTER  ::  err  
+     REAL(ppm_kind_single), DIMENSION(:,:,:),POINTER  ::  uc => NULL()
+     REAL(ppm_kind_single), DIMENSION(:,:,:),POINTER  ::  fc => NULL()
+     REAL(ppm_kind_single), DIMENSION(:,:,:),POINTER  ::  err => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR RED (EVEN) MESH POINTS
      !-------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_red 
+     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_red => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR BLACK (ODD) MESH POINTS
      !--------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_black 
+     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_black => NULL()
 
      !lets save the boundary condition.index:component,face of the subdomain(1:4)
-     TYPE(bc_value_2d_vec_s), DIMENSION(:,:), POINTER   ::  bcvalue   
+     TYPE(bc_value_2d_vec_s), DIMENSION(:,:), POINTER   ::  bcvalue => NULL()
   END TYPE mg_field_2d_vec_s
 #undef  __KIND
 
-#define __KIND  == __DOUBLE_PRECISION  
+#define __KIND  == __DOUBLE_PRECISION
 
   TYPE mg_field_2d_vec_d
      !function corrections, error restrictions, errors,
      !1st index: component 2nd:3rd index: mesh position(local)
-     REAL(ppm_kind_double), DIMENSION(:,:,:),POINTER  ::  uc  
-     REAL(ppm_kind_double), DIMENSION(:,:,:),POINTER  ::  fc  
-     REAL(ppm_kind_double), DIMENSION(:,:,:),POINTER  ::  err  
+     REAL(ppm_kind_double), DIMENSION(:,:,:),POINTER  ::  uc => NULL()
+     REAL(ppm_kind_double), DIMENSION(:,:,:),POINTER  ::  fc => NULL()
+     REAL(ppm_kind_double), DIMENSION(:,:,:),POINTER  ::  err => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR RED (EVEN) MESH POINTS
      !--------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_red 
+     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_red => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR BLACK (ODD) MESH POINTS
      !--------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_black 
+     LOGICAL,DIMENSION(:,:),POINTER                 :: mask_black => NULL()
      !lets save the boundary condition.index:component,face of the subdomain(1:4)
-     TYPE(bc_value_2d_vec_d), DIMENSION(:,:), POINTER   ::  bcvalue   
+     TYPE(bc_value_2d_vec_d), DIMENSION(:,:), POINTER   ::  bcvalue => NULL()
   END TYPE mg_field_2d_vec_d
 #undef  __KIND
 
 
 #define __KIND == __SINGLE_PRECISION
   !1st index: subdomain,2nd index : multigrid level
-  TYPE(mg_field_2d_vec_s), DIMENSION(:,:),              POINTER  ::   mgfield_2d_vec_s 
+  TYPE(mg_field_2d_vec_s), DIMENSION(:,:),              POINTER  ::   mgfield_2d_vec_s => NULL()
 #undef __KIND
 #define __KIND == __DOUBLE_PRECISION
   !1st index: subdomain,2nd index : multigrid level
-  TYPE(mg_field_2d_vec_d), DIMENSION(:,:),              POINTER  ::   mgfield_2d_vec_d 
+  TYPE(mg_field_2d_vec_d), DIMENSION(:,:),              POINTER  ::   mgfield_2d_vec_d => NULL()
 #undef __KIND
 #undef __MESH_DIM
 
@@ -278,13 +278,13 @@ MODULE ppm_module_data_mg
 #define __KIND __SINGLE_PRECISION
   TYPE bc_value_3d_vec_s
      ! 1st-2nd index mesh position locally
-     REAL(ppm_kind_single), DIMENSION(:,:),POINTER   ::  pbcvalue
+     REAL(ppm_kind_single), DIMENSION(:,:),POINTER   ::  pbcvalue => NULL()
   END TYPE bc_value_3d_vec_s
 #undef  __KIND
 #define __KIND == __DOUBLE_PRECISION
   TYPE bc_value_3d_vec_d
      !1st-2nd index mesh position locally
-     REAL(ppm_kind_single), DIMENSION(:,:),POINTER   ::   pbcvalue
+     REAL(ppm_kind_single), DIMENSION(:,:),POINTER   ::   pbcvalue => NULL()
   END TYPE bc_value_3d_vec_d
 #undef __KIND
 
@@ -292,101 +292,101 @@ MODULE ppm_module_data_mg
 
 #define __KIND == __SINGLE_PRECISION
   !-----------------------------------------------------------------------------
-  ! Our multigrid field with all its necessary components (Take a look at the 
+  ! Our multigrid field with all its necessary components (Take a look at the
   ! theory)
   !-----------------------------------------------------------------------------
   TYPE mg_field_3d_vec_s
      !function corrections, error restrictions, errors
      !1st index: component 2nd-4th index: mesh position(local)
-     REAL(ppm_kind_single), DIMENSION(:,:,:,:),POINTER  ::  uc 
-     REAL(ppm_kind_single), DIMENSION(:,:,:,:),POINTER  ::  fc 
-     REAL(ppm_kind_single), DIMENSION(:,:,:,:),POINTER  ::  err  
+     REAL(ppm_kind_single), DIMENSION(:,:,:,:),POINTER  ::  uc => NULL()
+     REAL(ppm_kind_single), DIMENSION(:,:,:,:),POINTER  ::  fc => NULL()
+     REAL(ppm_kind_single), DIMENSION(:,:,:,:),POINTER  ::  err => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR RED (EVEN) MESH POINTS
      !-------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_red 
+     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_red => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR BLACK (ODD) MESH POINTS
      !--------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_black 
+     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_black => NULL()
 
      !lets save the boundary condition.index:component,face of the subdomain(1:6)
-     TYPE(bc_value_3d_vec_s), DIMENSION(:,:), POINTER   ::  bcvalue   
+     TYPE(bc_value_3d_vec_s), DIMENSION(:,:), POINTER   ::  bcvalue => NULL()
   END TYPE mg_field_3d_vec_s
 #undef  __KIND
 
-#define __KIND  == __DOUBLE_PRECISION  
+#define __KIND  == __DOUBLE_PRECISION
 
   TYPE mg_field_3d_vec_d
      !function corrections, error restrictions, errors,
      !1st index component,2nd:4th index: mesh position(local)
-     REAL(ppm_kind_double), DIMENSION(:,:,:,:),POINTER  ::  uc  
-     REAL(ppm_kind_double), DIMENSION(:,:,:,:),POINTER  ::  fc  
-     REAL(ppm_kind_double), DIMENSION(:,:,:,:),POINTER  ::  err  
+     REAL(ppm_kind_double), DIMENSION(:,:,:,:),POINTER  ::  uc => NULL()
+     REAL(ppm_kind_double), DIMENSION(:,:,:,:),POINTER  ::  fc => NULL()
+     REAL(ppm_kind_double), DIMENSION(:,:,:,:),POINTER  ::  err => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR RED (EVEN) MESH POINTS
      !--------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_red 
+     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_red => NULL()
      !--------------------------------------------------------------------------
      !TRUE FOR BLACK (ODD) MESH POINTS
      !--------------------------------------------------------------------------
-     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_black 
+     LOGICAL,DIMENSION(:,:,:),POINTER                 :: mask_black => NULL()
      !lets save the boundary condition.index:face of the subdomain(1:6)
-     TYPE(bc_value_3d_vec_d), DIMENSION(:), POINTER   ::  bcvalue   
+     TYPE(bc_value_3d_vec_d), DIMENSION(:), POINTER   ::  bcvalue => NULL()
   END TYPE mg_field_3d_vec_d
 #undef  __KIND
 
 
 #define __KIND == __SINGLE_PRECISION
   !1st index: subdomain,2nd index : multigrid level
-  TYPE(mg_field_3d_vec_s), DIMENSION(:,:),              POINTER  ::   mgfield_3d_vec_s 
+  TYPE(mg_field_3d_vec_s), DIMENSION(:,:),              POINTER  ::   mgfield_3d_vec_s => NULL()
 #undef __KIND
 #define __KIND == __DOUBLE_PRECISION
   !1st index: subdomain,2nd index : multigrid level
-  TYPE(mg_field_3d_vec_d), DIMENSION(:,:),              POINTER  ::   mgfield_3d_vec_d 
+  TYPE(mg_field_3d_vec_d), DIMENSION(:,:),              POINTER  ::   mgfield_3d_vec_d => NULL()
 #undef __KIND
 #undef __MESH_DIM
 
 #undef __DIM
   !-----------------------------------------------------------------------------
-  !Starting  index for the iteration through the mesh points. 
+  !Starting  index for the iteration through the mesh points.
   !-----------------------------------------------------------------------------
-  INTEGER,  DIMENSION(:,:,:), POINTER  :: start
+  INTEGER,  DIMENSION(:,:,:), POINTER  :: start => NULL()
   !-----------------------------------------------------------------------------
   !Stopping index for the iteration through the mesh points.
   !-----------------------------------------------------------------------------
-  INTEGER,  DIMENSION(:,:,:), POINTER  :: stop 
+  INTEGER,  DIMENSION(:,:,:), POINTER  :: stop => NULL()
   !-----------------------------------------------------------------------------
   !Factor for coarsening the mesh
   !-----------------------------------------------------------------------------
-  INTEGER,  DIMENSION(:),POINTER          :: factor
+  INTEGER,  DIMENSION(:),POINTER          :: factor => NULL()
   !-----------------------------------------------------------------------------
   !Array with internal meshids
   !-----------------------------------------------------------------------------
-  INTEGER,  DIMENSION(:),POINTER          :: meshid_g
+  INTEGER,  DIMENSION(:),POINTER          :: meshid_g => NULL()
   !-----------------------------------------------------------------------------
   !Array with external mesh_ids
   !-----------------------------------------------------------------------------
-  INTEGER,  DIMENSION(:),POINTER          :: mesh_id_g
+  INTEGER,  DIMENSION(:),POINTER          :: mesh_id_g => NULL()
   !-----------------------------------------------------------------------------
   !Size of the ghostlayer. It is 1 for the multigrid since we do
   !for the time being second order finite differences
   !-----------------------------------------------------------------------------
-  INTEGER,  DIMENSION(:),POINTER       :: ghostsize
+  INTEGER,  DIMENSION(:),POINTER       :: ghostsize => NULL()
   !-----------------------------------------------------------------------------
   !BOUNDARY CONDITIONS of the computational domain.1st index:face
   !-----------------------------------------------------------------------------
 #define __DIM == __SFIELD
-  INTEGER,  DIMENSION(:),POINTER     :: bcdef_sca
+  INTEGER,  DIMENSION(:),POINTER     :: bcdef_sca => NULL()
 #undef __DIM
 #define __DIM == __VFIELD
-  INTEGER,  DIMENSION(:,:),POINTER     :: bcdef_vec
+  INTEGER,  DIMENSION(:,:),POINTER     :: bcdef_vec => NULL()
 #undef __DIM
 
   !-----------------------------------------------------------------------------
   !Is the face of the cell at the boundary? Yes or no?1st index face,2nd:isub
   !-----------------------------------------------------------------------------
-  LOGICAL,  DIMENSION(:,:), POINTER  :: lboundary
+  LOGICAL,  DIMENSION(:,:), POINTER  :: lboundary => NULL()
   !----------------------------------------------------------------------------
   !V_CYCLE OR W_CYCLE AND TO PRINT OR NOT TO PRINT
   !----------------------------------------------------------------------------
@@ -405,7 +405,7 @@ MODULE ppm_module_data_mg
   !-----------------------------------------------------------------------------
   INTEGER                              :: nsubs
   !----------------------------------------------------------------------------
-  !smoother              
+  !smoother
   !--------------------------------------------------------------------------
   INTEGER                              :: ismoother
   !-----------------------------------------------------------------------------
@@ -416,28 +416,28 @@ MODULE ppm_module_data_mg
   !MASK DUMMY FOR COMPATIBILITY OF TYPE THAT I USE WITH FIELDS OF PPM
   !-----------------------------------------------------------------------------
 #define __MESH_DIM == __2D
-  LOGICAL,DIMENSION(:,:,:),POINTER :: mask_dummy_2d   
-#undef __MESH_DIM                    
+  LOGICAL,DIMENSION(:,:,:),POINTER :: mask_dummy_2d => NULL()
+#undef __MESH_DIM
 #define __MESH_DIM == __3D
-  LOGICAL,DIMENSION(:,:,:,:),POINTER :: mask_dummy_3d                       
+  LOGICAL,DIMENSION(:,:,:,:),POINTER :: mask_dummy_3d => NULL()
 #undef __MESH_DIM
 
   !-----------------------------------------------------------------------------
   !Array with the maximum number of mesh points on each processor
-  !Due to the load ballancing the waste of memory (if existed) is 
+  !Due to the load ballancing the waste of memory (if existed) is
   !minimal !!
   !-----------------------------------------------------------------------------
-  INTEGER,DIMENSION(:,:),POINTER :: max_node
+  INTEGER,DIMENSION(:,:),POINTER :: max_node => NULL()
 
 
-#define __KIND __SINGLE_PRECISION 
+#define __KIND __SINGLE_PRECISION
   REAL(ppm_kind_single)                        :: rdx2_s,rdy2_s,rdz2_s
   REAL(ppm_kind_single)                        :: dx_s,dy_s,dz_s
   REAL(ppm_kind_single)                        :: EPSU_s
   REAL(ppm_kind_single)                        :: omega_s
 #undef __KIND
 
-#define __KIND __DOUBLE_PRECISION 
+#define __KIND __DOUBLE_PRECISION
   REAL(ppm_kind_double)                        :: rdx2_d,rdy2_d,rdz2_d
   REAL(ppm_kind_double)                        :: dx_d,dy_d,dz_d
   REAL(ppm_kind_double)                        :: EPSU_d

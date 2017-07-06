@@ -1,5 +1,5 @@
       !-----------------------------------------------------------------------
-      !  Subroutine   :            ppm_mg_core    
+      !  Subroutine   :            ppm_mg_core
       !-----------------------------------------------------------------------
       !
       !  References   :
@@ -20,12 +20,12 @@
       !  Revision 1.1  2004/09/22 18:31:37  kotsalie
       !  MG new version
       !
-      !-----------------------------------------------------------------------  
+      !-----------------------------------------------------------------------
       !  Parallel Particle Mesh Library (PPM)
       !  Institute of Computational Science
       !  ETH Zentrum, Hirschengraben 84
       !  CH-8092 Zurich, Switzerland
-      !------------------------------------------------------------------------ 
+      !------------------------------------------------------------------------
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
 #if __KIND == __SINGLE_PRECISION
@@ -64,19 +64,19 @@
 #include "ppm_define.h"
 
         !-----------------------------------------------------------------------
-        !  Modules 
+        !  Modules
         !-----------------------------------------------------------------------
         USE ppm_module_data
         USE ppm_module_write
         USE ppm_module_data_mg
-        USE ppm_module_substart 
-        USE ppm_module_substop 
-        USE ppm_module_mg_prolong 
-        USE ppm_module_mg_restrict 
-        USE ppm_module_error 
+        USE ppm_module_substart
+        USE ppm_module_substop
+        USE ppm_module_mg_prolong
+        USE ppm_module_mg_restrict
+        USE ppm_module_error
         USE ppm_module_mg_smooth
         USE ppm_module_mg_res
-       
+
 
         IMPLICIT NONE
 
@@ -85,8 +85,8 @@
 #else
         INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
-        !---------------------------------------------------------------------- 
-        !  Arguments     
+        !----------------------------------------------------------------------
+        !  Arguments
         !----------------------------------------------------------------------
 
         INTEGER,                   INTENT(IN   )   ::  mlev
@@ -98,16 +98,16 @@
         !Local variables
         !----------------------------------------------------------------------
         REAL(MK)                             :: t0
-        REAL(MK)                             :: scale1,scale2 
+        REAL(MK)                             :: scale1,scale2
         REAL(MK)                             :: E,res
         INTEGER                              :: isub,i,j
         INTEGER                              :: ilda
-        CHARACTER(LEN=256)                   :: cbuf 
-        REAL(MK)                             :: c1,c2,c3,c4 
+        CHARACTER(LEN=256)                   :: cbuf
+        REAL(MK)                             :: c1,c2,c3,c4
         INTEGER                              :: ncalls=0
-        REAL(MK)                             :: rdx2,rdy2 
-        REAL(MK)                             :: dxl,dyl 
-        REAL(MK)                             :: dx,dy 
+        REAL(MK)                             :: rdx2,rdy2
+        REAL(MK)                             :: dxl,dyl
+        REAL(MK)                             :: dx,dy
         REAL(MK)                             :: EPSU
 #if __MESH_DIM == __3D
         REAL(MK)                             :: c5,dzl,scale3
@@ -158,7 +158,7 @@
         CALL substart('ppm_mg_core',t0,info)
 
 
-        !---------------------------------------------------------------------  
+        !---------------------------------------------------------------------
         !  Check arguments
         !----------------------------------------------------------------------
         IF (ppm_debug .GT. 0) THEN
@@ -268,23 +268,23 @@
         !------------------------------------------------------------------
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
-        scale1=REAL((factor(1)*factor(1))**(mlev-1),MK) 
+        scale1=REAL((factor(1)*factor(1))**(mlev-1),MK)
         scale2=REAL((factor(2)*factor(2))**(mlev-1),MK)
         c2  =  rdx2/scale1
-        c3  =  rdy2/scale2  
-        c1  =  1.0_MK/(2.0_MK*(c2+c3)) 
+        c3  =  rdy2/scale2
+        c1  =  1.0_MK/(2.0_MK*(c2+c3))
         c4  =  1.0_MK/c1
         dxl =  dx*SQRT(scale1)
         dyl =  dy*SQRT(scale2)
-          
+
         !--------------------------------------------------------------------
         !Compute correction using gauss-seidel algorithm
         !--------------------------------------------------------------------
-        CALL ppm_mg_smooth_sca(iter1,mlev,c1,c2,c3,info) 
+        CALL ppm_mg_smooth_sca(iter1,mlev,c1,c2,c3,info)
         !-------------------------------------------------------------------
         !Compute residual
         !-------------------------------------------------------------------
-        CALL ppm_mg_res_sca(mlev,c1,c2,c3,c4,E,info) 
+        CALL ppm_mg_res_sca(mlev,c1,c2,c3,c4,E,info)
 
         !--------------------------------------------------------------------
         !Go to the next (coarser) multigrid level if the solution is
@@ -293,29 +293,29 @@
        IF (l_print) THEN
         WRITE(cbuf,*) 'EPS:',EPSU,'E:',E
         CALL PPM_WRITE(ppm_rank,'mg_core',cbuf,info)
-       ENDIF 
+       ENDIF
 
 
-        IF (mlev.LT.maxlev) THEN 
+        IF (mlev.LT.maxlev) THEN
 #if __KIND == __SINGLE_PRECISION
 
-           CALL ppm_mg_core_2d_sca_s(mlev+1,iter1,iter2,info)   
+           CALL ppm_mg_core_2d_sca_s(mlev+1,iter1,iter2,info)
 
         IF (w_cycle) THEN
           CALL ppm_mg_prolong_2d_sca_s(mlev,info)
           CALL ppm_mg_smooth_sca(iter2,mlev,c1,c2,c3,info)
-          CALL ppm_mg_res_sca(mlev,c1,c2,c3,c4,E,info) 
-          CALL ppm_mg_core_2d_sca_s(mlev+1,iter1,iter2,info)   
+          CALL ppm_mg_res_sca(mlev,c1,c2,c3,c4,E,info)
+          CALL ppm_mg_core_2d_sca_s(mlev+1,iter1,iter2,info)
          ENDIF
 
 #elif __KIND == __DOUBLE_PRECISION
-           CALL ppm_mg_core_2d_sca_d(mlev+1,iter1,iter2,info)   
+           CALL ppm_mg_core_2d_sca_d(mlev+1,iter1,iter2,info)
 
          IF (w_cycle) THEN
            CALL ppm_mg_prolong_2d_sca_d(mlev,info)
            CALL ppm_mg_smooth_sca(iter2,mlev,c1,c2,c3,info)
-           CALL ppm_mg_res_sca(mlev,c1,c2,c3,c4,E,info) 
-           CALL ppm_mg_core_2d_sca_d(mlev+1,iter1,iter2,info)   
+           CALL ppm_mg_res_sca(mlev,c1,c2,c3,c4,E,info)
+           CALL ppm_mg_core_2d_sca_d(mlev+1,iter1,iter2,info)
         ENDIF
 
 #endif
@@ -324,10 +324,10 @@
         ENDIF
 
         !---------------------------------------------------------------------
-        !else GO BACK TO A FINER LEVEL AND CONTINUE RECUSRSIVELY TO 
+        !else GO BACK TO A FINER LEVEL AND CONTINUE RECUSRSIVELY TO
         !THE NEXT FINER LEVELS
         !---------------------------------------------------------------------
- 
+
 
 #if __KIND == __SINGLE_PRECISION
         CALL ppm_mg_prolong_2d_sca_s(mlev,info)
@@ -357,13 +357,13 @@
 
 #elif __MESH_DIM == __3D
 
-        scale1=REAL((factor(1)*factor(1))**(mlev-1),MK) 
+        scale1=REAL((factor(1)*factor(1))**(mlev-1),MK)
         scale2=REAL((factor(2)*factor(2))**(mlev-1),MK)
         scale3=REAL((factor(3)*factor(3))**(mlev-1),MK)
         c2  =  rdx2/scale1
-        c3  =  rdy2/scale2  
-        c4  =  rdz2/scale3  
-        c1  =  1.0_MK/(2.0_MK*(c2+c3+c4)) 
+        c3  =  rdy2/scale2
+        c4  =  rdz2/scale3
+        c1  =  1.0_MK/(2.0_MK*(c2+c3+c4))
         c5  =  1.0_MK/c1
         dxl =  dx*SQRT(scale1)
         dyl =  dy*SQRT(scale2)
@@ -373,13 +373,13 @@
         !--------------------------------------------------------------------
         !Compute correction using gauss-seidel algorithm
        !--------------------------------------------------------------------
-   
-        CALL ppm_mg_smooth_sca(iter1,mlev,c1,c2,c3,c4,info) 
+
+        CALL ppm_mg_smooth_sca(iter1,mlev,c1,c2,c3,c4,info)
 
         !-------------------------------------------------------------------
         !Compute residual
         !-------------------------------------------------------------------
-        CALL ppm_mg_res_sca(mlev,c1,c2,c3,c4,c5,E,info) 
+        CALL ppm_mg_res_sca(mlev,c1,c2,c3,c4,c5,E,info)
         !--------------------------------------------------------------------
         !Go to the next (coarser) multigrid level if the solution is
         !not converged
@@ -387,33 +387,33 @@
        IF (l_print) THEN
         WRITE(cbuf,*) 'EPS:',EPSU,'E:',E
         CALL PPM_WRITE(ppm_rank,'mg_core',cbuf,info)
-       ENDIF 
+       ENDIF
 
-        IF (mlev.LT.maxlev) THEN 
-           
+        IF (mlev.LT.maxlev) THEN
+
 #if __KIND == __SINGLE_PRECISION
-           CALL ppm_mg_core_3d_sca_s(mlev+1,iter1,iter2,info)   
+           CALL ppm_mg_core_3d_sca_s(mlev+1,iter1,iter2,info)
          IF (w_cycle) THEN
            CALL ppm_mg_prolong_3d_sca_s(mlev,info)
            CALL ppm_mg_smooth_sca(iter2,mlev,c1,c2,c3,c4,info)
-           CALL ppm_mg_res_sca(mlev,c1,c2,c3,c4,c5,E,info) 
-           CALL ppm_mg_core_3d_sca_s(mlev+1,iter1,iter2,info) 
-         ENDIF  
+           CALL ppm_mg_res_sca(mlev,c1,c2,c3,c4,c5,E,info)
+           CALL ppm_mg_core_3d_sca_s(mlev+1,iter1,iter2,info)
+         ENDIF
 #elif __KIND == __DOUBLE_PRECISION
-           CALL ppm_mg_core_3d_sca_d(mlev+1,iter1,iter2,info)   
+           CALL ppm_mg_core_3d_sca_d(mlev+1,iter1,iter2,info)
          IF (w_cycle) THEN
            CALL ppm_mg_prolong_3d_sca_d(mlev,info)
            CALL ppm_mg_smooth_sca(iter2,mlev,c1,c2,c3,c4,info)
-           CALL ppm_mg_res_sca(mlev,c1,c2,c3,c4,c5,E,info) 
-           CALL ppm_mg_core_3d_sca_d(mlev+1,iter1,iter2,info)   
-         ENDIF  
+           CALL ppm_mg_res_sca(mlev,c1,c2,c3,c4,c5,E,info)
+           CALL ppm_mg_core_3d_sca_d(mlev+1,iter1,iter2,info)
+         ENDIF
 #endif
         ELSE
            GOTO 9999
         ENDIF
 
         !---------------------------------------------------------------------
-        !ELSE GO BACK TO A FINER LEVEL AND CONTINUE RECUSRSIVELY TO 
+        !ELSE GO BACK TO A FINER LEVEL AND CONTINUE RECUSRSIVELY TO
         !THE NEXT FINER LEVELS
         !---------------------------------------------------------------------
 
@@ -447,24 +447,24 @@
 #endif
 #elif __DIM == __VFIELD
 #if __MESH_DIM == __2D
-        scale1=REAL((factor(1)*factor(1))**(mlev-1),MK) 
+        scale1=REAL((factor(1)*factor(1))**(mlev-1),MK)
         scale2=REAL((factor(2)*factor(2))**(mlev-1),MK)
         c2  =  rdx2/scale1
-        c3  =  rdy2/scale2  
-        c1  =  1.0_MK/(2.0_MK*(c2+c3)) 
+        c3  =  rdy2/scale2
+        c1  =  1.0_MK/(2.0_MK*(c2+c3))
         c4  =  1.0_MK/c1
         dxl =  dx*SQRT(scale1)
         dyl =  dy*SQRT(scale2)
-          
+
         !--------------------------------------------------------------------
         !Compute correction using gauss-seidel algorithm
         !--------------------------------------------------------------------
-        CALL ppm_mg_smooth_vec(iter1,mlev,c1,c2,c3,info) 
+        CALL ppm_mg_smooth_vec(iter1,mlev,c1,c2,c3,info)
         !-------------------------------------------------------------------
         !Compute residual
         !-------------------------------------------------------------------
 
-        CALL ppm_mg_res_vec(mlev,c1,c2,c3,c4,E,info) 
+        CALL ppm_mg_res_vec(mlev,c1,c2,c3,c4,E,info)
         !--------------------------------------------------------------------
         !Go to the next (coarser) multigrid level if the solution is
         !not converged
@@ -472,32 +472,32 @@
        IF (l_print) THEN
         WRITE(cbuf,*) 'EPS:',EPSU,'E:',E
         CALL PPM_WRITE(ppm_rank,'mg_core',cbuf,info)
-       ENDIF 
+       ENDIF
 
-        IF (mlev.LT.maxlev) THEN 
+        IF (mlev.LT.maxlev) THEN
 #if __KIND == __SINGLE_PRECISION
-           CALL ppm_mg_core_2d_vec_s(mlev+1,iter1,iter2,info)   
+           CALL ppm_mg_core_2d_vec_s(mlev+1,iter1,iter2,info)
           IF (w_cycle) THEN
            CALL ppm_mg_prolong_2d_vec_s(mlev,info)
            CALL ppm_mg_smooth_vec(iter2,mlev,c1,c2,c3,info)
-           CALL ppm_mg_res_vec(mlev,c1,c2,c3,c4,E,info) 
-           CALL ppm_mg_core_2d_vec_s(mlev+1,iter1,iter2,info)   
-          ENDIF 
+           CALL ppm_mg_res_vec(mlev,c1,c2,c3,c4,E,info)
+           CALL ppm_mg_core_2d_vec_s(mlev+1,iter1,iter2,info)
+          ENDIF
 #elif __KIND == __DOUBLE_PRECISION
-           CALL ppm_mg_core_2d_vec_d(mlev+1,iter1,iter2,info)  
-          IF (w_cycle) THEN  
+           CALL ppm_mg_core_2d_vec_d(mlev+1,iter1,iter2,info)
+          IF (w_cycle) THEN
            CALL ppm_mg_prolong_2d_vec_d(mlev,info)
            CALL ppm_mg_smooth_vec(iter2,mlev,c1,c2,c3,info)
            CALL ppm_mg_res_vec(mlev,c1,c2,c3,c4,E,info)
-           CALL ppm_mg_core_2d_vec_d(mlev+1,iter1,iter2,info)  
-          ENDIF 
+           CALL ppm_mg_core_2d_vec_d(mlev+1,iter1,iter2,info)
+          ENDIF
 #endif
         ELSE
            GOTO 9999
         ENDIF
 
         !---------------------------------------------------------------------
-        !else GO BACK TO A FINER LEVEL AND CONTINUE RECUSRSIVELY TO 
+        !else GO BACK TO A FINER LEVEL AND CONTINUE RECUSRSIVELY TO
         !THE NEXT FINER LEVELS
         !---------------------------------------------------------------------
 #if __KIND == __SINGLE_PRECISION
@@ -526,13 +526,13 @@
 
 #elif __MESH_DIM == __3D
 
-        scale1=REAL((factor(1)*factor(1))**(mlev-1),MK) 
+        scale1=REAL((factor(1)*factor(1))**(mlev-1),MK)
         scale2=REAL((factor(2)*factor(2))**(mlev-1),MK)
         scale3=REAL((factor(3)*factor(3))**(mlev-1),MK)
         c2  =  rdx2/scale1
-        c3  =  rdy2/scale2  
-        c4  =  rdz2/scale3  
-        c1  =  1.0_MK/(2.0_MK*(c2+c3+c4)) 
+        c3  =  rdy2/scale2
+        c4  =  rdz2/scale3
+        c1  =  1.0_MK/(2.0_MK*(c2+c3+c4))
         c5  =  1.0_MK/c1
         dxl =  dx*SQRT(scale1)
         dyl =  dy*SQRT(scale2)
@@ -542,13 +542,13 @@
         !--------------------------------------------------------------------
         !Compute correction using gauss-seidel algorithm
        !--------------------------------------------------------------------
-   
-        CALL ppm_mg_smooth_vec(iter1,mlev,c1,c2,c3,c4,info) 
+
+        CALL ppm_mg_smooth_vec(iter1,mlev,c1,c2,c3,c4,info)
 
         !-------------------------------------------------------------------
         !Compute residual
         !-------------------------------------------------------------------
-        CALL ppm_mg_res_vec(mlev,c1,c2,c3,c4,c5,E,info) 
+        CALL ppm_mg_res_vec(mlev,c1,c2,c3,c4,c5,E,info)
 
         !--------------------------------------------------------------------
         !Go to the next (coarser) multigrid level if the solution is
@@ -557,32 +557,32 @@
        IF (l_print) THEN
         WRITE(cbuf,*) 'EPS:',EPSU,'E:',E
         CALL PPM_WRITE(ppm_rank,'mg_core',cbuf,info)
-       ENDIF 
-        IF (mlev.LT.maxlev) THEN 
-           
+       ENDIF
+        IF (mlev.LT.maxlev) THEN
+
 #if __KIND == __SINGLE_PRECISION
-           CALL ppm_mg_core_3d_vec_s(mlev+1,iter1,iter2,info)   
+           CALL ppm_mg_core_3d_vec_s(mlev+1,iter1,iter2,info)
           IF (w_cycle) THEN
            CALL ppm_mg_prolong_3d_vec_s(mlev,info)
            CALL ppm_mg_smooth_vec(iter2,mlev,c1,c2,c3,c4,info)
-           CALL ppm_mg_res_vec(mlev,c1,c2,c3,c4,c5,E,info) 
+           CALL ppm_mg_res_vec(mlev,c1,c2,c3,c4,c5,E,info)
            CALL ppm_mg_core_3d_vec_s(mlev+1,iter1,iter2,info)
-          ENDIF   
+          ENDIF
 #elif __KIND == __DOUBLE_PRECISION
-           CALL ppm_mg_core_3d_vec_d(mlev+1,iter1,iter2,info)   
+           CALL ppm_mg_core_3d_vec_d(mlev+1,iter1,iter2,info)
            IF (w_cycle) THEN
            CALL ppm_mg_prolong_3d_vec_d(mlev,info)
            CALL ppm_mg_smooth_vec(iter2,mlev,c1,c2,c3,c4,info)
-           CALL ppm_mg_res_vec(mlev,c1,c2,c3,c4,c5,E,info) 
-           CALL ppm_mg_core_3d_vec_d(mlev+1,iter1,iter2,info) 
-           ENDIF  
+           CALL ppm_mg_res_vec(mlev,c1,c2,c3,c4,c5,E,info)
+           CALL ppm_mg_core_3d_vec_d(mlev+1,iter1,iter2,info)
+           ENDIF
 #endif
         ELSE
            GOTO 9999
         ENDIF
 
         !---------------------------------------------------------------------
-        !ELSE GO BACK TO A FINER LEVEL AND CONTINUE RECUSRSIVELY TO 
+        !ELSE GO BACK TO A FINER LEVEL AND CONTINUE RECUSRSIVELY TO
         !THE NEXT FINER LEVELS
         !---------------------------------------------------------------------
 

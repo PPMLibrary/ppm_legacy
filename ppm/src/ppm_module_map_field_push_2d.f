@@ -6,7 +6,7 @@
       !                 definitions that are PRIVATE to the mesh routines.
       !                 It also included those routines and provides
       !                 INTERFACEs.
-      !                
+      !
       !  Remarks      : The terminology distinguishes between meshes and
       !                 fields (the data living on the meshes). Several
       !                 fields can use the same mesh. Meshes are defined as
@@ -52,15 +52,15 @@
          !----------------------------------------------------------------------
          !  Work lists
          !----------------------------------------------------------------------
-         INTEGER, DIMENSION(:), POINTER ::invsublist,sublist
-    
+         INTEGER, DIMENSION(:), POINTER :: invsublist => NULL()
+         INTEGER, DIMENSION(:), POINTER :: sublist => NULL()
          PRIVATE :: invsublist,sublist
 
          !----------------------------------------------------------------------
          !  Define interface to ppm_map_field_push_2d
          !----------------------------------------------------------------------
          INTERFACE ppm_map_field_push_2d
-             ! 2d meshes with scalar fields 
+             ! 2d meshes with scalar fields
              MODULE PROCEDURE ppm_map_field_push_2d_sca_d
              MODULE PROCEDURE ppm_map_field_push_2d_sca_s
              MODULE PROCEDURE ppm_map_field_push_2d_sca_i
@@ -68,7 +68,7 @@
              MODULE PROCEDURE ppm_map_field_push_2d_sca_sc
              MODULE PROCEDURE ppm_map_field_push_2d_sca_dc
 
-             ! 2d meshes with vector fields 
+             ! 2d meshes with vector fields
              MODULE PROCEDURE ppm_map_field_push_2d_vec_d
              MODULE PROCEDURE ppm_map_field_push_2d_vec_s
              MODULE PROCEDURE ppm_map_field_push_2d_vec_i
@@ -90,11 +90,11 @@
 #define __KIND __DOUBLE_PRECISION
 #include "ppm_map_field_push_2d.f"
 #undef __KIND
-         
+
 #define __KIND __SINGLE_PRECISION_COMPLEX
 #include "ppm_map_field_push_2d.f"
 #undef __KIND
-         
+
 #define __KIND __DOUBLE_PRECISION_COMPLEX
 #include "ppm_map_field_push_2d.f"
 #undef __KIND

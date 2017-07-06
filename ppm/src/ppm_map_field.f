@@ -8,7 +8,7 @@
       !                                 (only important for push and pop)
       !                                 in the case of vector fields. For
       !                                 scalar fields, omit this argument.
-      !                 to_topo     (I) user topology ID of destination. If 
+      !                 to_topo     (I) user topology ID of destination. If
       !                                 is <=0, the current topology is used.
       !                 from_mesh   (I) user mesh ID of source. If <=0,
       !                                 the first mesh of the current
@@ -56,7 +56,7 @@
       !
       !                 The argument ghostsize is only used by
       !                 map_field_pop to (re)allocate the fields to the
-      !                 proper size. 
+      !                 proper size.
       !
       !  References   :
       !
@@ -113,11 +113,11 @@
       !  fields on the same mesh. Not tested yet.
       !
       !  Revision 1.10  2004/04/07 09:21:23  ivos
-      !  Added ghostsize to the argument list since map_field_pop now needs 
+      !  Added ghostsize to the argument list since map_field_pop now needs
       !  this.
       !
       !  Revision 1.9  2004/04/05 12:00:47  ivos
-      !  Added security checks on ppm_map_type and changed CALL to 
+      !  Added security checks on ppm_map_type and changed CALL to
       !  ppm_map_field_pop to new argument list.
       !
       !  Revision 1.8  2004/04/01 14:11:28  ivos
@@ -140,7 +140,7 @@
       !  Added check if current (source) topology is defined at all.
       !
       !  Revision 1.3  2004/02/19 15:45:19  walther
-      !  bug fix: added ppm_target_topoid, ppm_source_meshid, and 
+      !  bug fix: added ppm_target_topoid, ppm_source_meshid, and
       !  ppm_target_meshid.
       !
       !  Revision 1.2  2004/02/18 15:04:18  walther
@@ -178,7 +178,7 @@
 #elif __KIND == __LOGICAL
       SUBROUTINE ppm_map_field_2d_sca_l(fv,to_topo,from_mesh,to_mesh,  &
      &                                  ghostsize,maptype,info,mask)
-#endif 
+#endif
 #elif __MESH_DIM  == __3D
 #if   __KIND == __SINGLE_PRECISION
       SUBROUTINE ppm_map_field_3d_sca_s(fv,to_topo,from_mesh,to_mesh,  &
@@ -198,7 +198,7 @@
 #elif __KIND == __LOGICAL
       SUBROUTINE ppm_map_field_3d_sca_l(fv,to_topo,from_mesh,to_mesh,  &
      &                                  ghostsize,maptype,info,mask)
-#endif 
+#endif
 #endif
 
 #elif __DIM == __VFIELD
@@ -221,7 +221,7 @@
 #elif __KIND == __LOGICAL
       SUBROUTINE ppm_map_field_2d_vec_l(fv,lda,to_topo,from_mesh,to_mesh,  &
      &                                  ghostsize,maptype,info,mask)
-#endif 
+#endif
 #elif __MESH_DIM  == __3D
 #if   __KIND == __SINGLE_PRECISION
       SUBROUTINE ppm_map_field_3d_vec_s(fv,lda,to_topo,from_mesh,to_mesh,  &
@@ -241,7 +241,7 @@
 #elif __KIND == __LOGICAL
       SUBROUTINE ppm_map_field_3d_vec_l(fv,lda,to_topo,from_mesh,to_mesh,  &
      &                                  ghostsize,maptype,info,mask)
-#endif 
+#endif
 #endif
 #endif
 
@@ -251,7 +251,7 @@
 #include "ppm_define.h"
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_mesh
@@ -274,7 +274,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
 #if   __DIM == __SFIELD
 #if   __MESH_DIM  == __2D
@@ -339,7 +339,7 @@
       INTEGER, DIMENSION(:)         , INTENT(IN   ) :: ghostsize
       INTEGER                       , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK)              :: t0
       INTEGER               :: i
@@ -349,11 +349,11 @@
       INTEGER, PARAMETER    :: lda = 1
 #endif
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialize 
+      !  Initialize
       !-------------------------------------------------------------------------
       CALL substart('ppm_map_field',t0,info)
 
@@ -555,7 +555,7 @@
 
       ELSEIF (maptype.EQ.ppm_param_map_send) THEN
          !----------------------------------------------------------------------
-         !  Add the last data and send/recv the packages 
+         !  Add the last data and send/recv the packages
          !----------------------------------------------------------------------
          ! send can only be called for global
          IF (ppm_map_type .NE. ppm_param_map_global) THEN
@@ -609,7 +609,7 @@
 #endif
              IF (info .NE. 0) GOTO 9999
          ENDIF
-         
+
       ELSEIF (maptype.EQ.ppm_param_map_cancel) THEN
          !----------------------------------------------------------------------
          !  Cancel the mapping in progress and reset everything. No need to
@@ -640,7 +640,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_map_field',t0,info)

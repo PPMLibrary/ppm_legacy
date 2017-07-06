@@ -6,17 +6,17 @@
       !                 the given cut directions.
       !
       !  Input        : xp(:,:)      (F) the positions of the particles
-      !                 Npart        (I) the number of particles 
+      !                 Npart        (I) the number of particles
       !                 weights(3)   (F) weights for the three cost
       !                                  contributions: particles, mesh,
       !                                  geometry for finding the cut
       !                                  positions.
-      !                 min_box(:,:) (F) the minimum coordinate of the 
+      !                 min_box(:,:) (F) the minimum coordinate of the
       !                                  boxes
-      !                 max_box(:,:) (F) the maximum coordinate of the 
+      !                 max_box(:,:) (F) the maximum coordinate of the
       !                                  boxes
       !                 cutbox       (I) ID of box to be cut
-      !                 ncut         (I) number of cut directions 
+      !                 ncut         (I) number of cut directions
       !                 minboxsize(:)(F) minimum box size required in all
       !                                  spatial directions
       !                 icut(:)      (I) cut directions
@@ -25,10 +25,10 @@
       !                                  computational cost of each
       !                                  particle.
       !
-      !  Input/output :                                            
+      !  Input/output :
       !
       !  Output       : cpos(:)      (F) positions of best cuts. index:
-      !                                  1..ncut. 
+      !                                  1..ncut.
       !                 info         (I) return status
       !
       !  Remarks      : The cost of a particle is counted as pcost (if
@@ -95,7 +95,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_tree
@@ -117,7 +117,7 @@
       INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: min_box,max_box
@@ -128,7 +128,7 @@
       REAL(MK), DIMENSION(:  ), POINTER       :: cpos
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(ppm_dim)            :: len_box
       REAL(MK), DIMENSION(ncut+1)             :: pc,pcsum
@@ -141,11 +141,11 @@
       INTEGER                                 :: MPTYPE
 #endif
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_tree_cutpos',t0,info)
 
@@ -158,28 +158,28 @@
             CALL ppm_error(ppm_err_argument,'ppm_tree_cutpos',     &
      &          'cutbox must be > 0 !',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
          IF (SIZE(min_box,2) .LT. cutbox) THEN
             info = ppm_error_error
             CALL ppm_error(ppm_err_argument,'ppm_tree_cutpos',     &
      &          'size of min_box must be at least cutbox !',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
          IF (SIZE(max_box,2) .LT. cutbox) THEN
             info = ppm_error_error
             CALL ppm_error(ppm_err_argument,'ppm_tree_cutpos',     &
      &          'size of max_box must be at least cutbox !',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
          DO i=1,ppm_dim
             IF (min_box(i,cutbox) .GT. max_box(i,cutbox)) THEN
                info = ppm_error_error
                CALL ppm_error(ppm_err_argument,'ppm_tree_cutpos',     &
      &             'min_box must be <= max_box !',__LINE__,info)
                GOTO 9999
-            ENDIF 
+            ENDIF
          ENDDO
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  If we have less than 1 direction to cut, we are done
@@ -210,7 +210,7 @@
       !-------------------------------------------------------------------------
 #if   __KIND == __SINGLE_PRECISION
       MPTYPE = MPI_REAL
-#elif __KIND == __DOUBLE_PRECISION 
+#elif __KIND == __DOUBLE_PRECISION
       MPTYPE = MPI_DOUBLE_PRECISION
 #endif
 #endif
@@ -258,13 +258,13 @@
               CALL ppm_error(ppm_err_mpi_fail,'ppm_tree_cutpos',   &
      &            'MPI_Allreduce of projected particles',__LINE__,info)
               GOTO 9999
-          ENDIF 
+          ENDIF
           pc = pcsum
 #endif
       ENDIF   ! have_particles
 
       !-------------------------------------------------------------------------
-      !  Total weight of mesh and geometry. 
+      !  Total weight of mesh and geometry.
       !  Convert to REAL first to avoid integer overflow.
       !-------------------------------------------------------------------------
       meshtotal = 0.0_MK
@@ -322,7 +322,7 @@
       ENDDO
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_tree_cutpos',t0,info)

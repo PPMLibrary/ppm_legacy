@@ -1,13 +1,13 @@
 !-----------------------------------------------------------------------
-!  Subroutine   :            ppm_mg_smooth_coarse    
+!  Subroutine   :            ppm_mg_smooth_coarse
 !-----------------------------------------------------------------------
 !  Purpose      : In this routine we compute the corrections for
 !                 the function based on the Gauss-Seidel iteration
-!                  
-!  
+!
+!
 !  Input        : nsweep      (I) number of iterations(sweeps)
 !  Input/output :
-! 
+!
 !  Output       : info        (I) return status. 0 upon success
 !
 !  Remarks      :
@@ -39,12 +39,12 @@
 !  MG new version
 !
 !
-!------------------------------------------------------------------------  
+!------------------------------------------------------------------------
 !  Parallel Particle Mesh Library (PPM)
 !  Institute of Computational Science
 !  ETH Zentrum, Hirschengraben 84
 !  CH-8092 Zurich, Switzerland
-!------------------------------------------------------------------------- 
+!-------------------------------------------------------------------------
 
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
@@ -76,13 +76,13 @@
 #endif
 #endif
 
-        !---------------------------------------------------------------------- 
+        !----------------------------------------------------------------------
         !  Includes
         !----------------------------------------------------------------------
 #include "ppm_define.h"
 
-        !-------------------------------------------------------------------    
-        !  Modules 
+        !-------------------------------------------------------------------
+        !  Modules
         !--------------------------------------------------------------------
         USE ppm_module_data
         USE ppm_module_data_mg
@@ -102,23 +102,23 @@
 #else
         INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
-        !-------------------------------------------------------------------    
-        !  Arguments     
+        !-------------------------------------------------------------------
+        !  Arguments
         !-------------------------------------------------------------------
         INTEGER,                   INTENT(IN)      ::  nsweep
         INTEGER,                   INTENT(IN)      ::  mlev
 #if  __MESH_DIM == __2D
-        REAL(MK),                  INTENT(IN)      ::  c1,c2,c3 
+        REAL(MK),                  INTENT(IN)      ::  c1,c2,c3
 #elif __MESH_DIM == __3D
-        REAL(MK),                  INTENT(IN)      ::  c1,c2,c3,c4 
+        REAL(MK),                  INTENT(IN)      ::  c1,c2,c3,c4
 #endif
         INTEGER,                   INTENT(INOUT)   ::  info
-        !---------------------------------------------------------------------  
-        !  Local variables 
+        !---------------------------------------------------------------------
+        !  Local variables
         !---------------------------------------------------------------------
         CHARACTER(LEN=256) :: cbuf
         INTEGER                                    ::  i,j,isub,color
-        REAL(MK)                                   ::  c11,c22,c33,c44 
+        REAL(MK)                                   ::  c11,c22,c33,c44
         INTEGER                                    ::  ilda,isweep,count
         INTEGER                                    ::  k,idom
         REAL(MK)                                   ::  x,y
@@ -166,30 +166,18 @@
 
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
-        REAL(MK),DIMENSION(:,:,:),POINTER :: uc_dummy  
+        REAL(MK),DIMENSION(:,:,:),POINTER :: uc_dummy
 #elif __MESH_DIM == __3D
-        REAL(MK),DIMENSION(:,:,:,:),POINTER :: uc_dummy  
+        REAL(MK),DIMENSION(:,:,:,:),POINTER :: uc_dummy
 #endif
 #elif __DIM == __VFIELD
 #if __MESH_DIM == __2D
-        REAL(MK),DIMENSION(:,:,:,:),POINTER :: uc_dummy  
+        REAL(MK),DIMENSION(:,:,:,:),POINTER :: uc_dummy
 #elif __MESH_DIM == __3D
-        REAL(MK),DIMENSION(:,:,:,:,:),POINTER :: uc_dummy  
+        REAL(MK),DIMENSION(:,:,:,:,:),POINTER :: uc_dummy
 #endif
 #endif
-#if __DIM == __SFIELD
-#if __MESH_DIM == __2D
-        REAL(MK),DIMENSION(:,:,:),POINTER :: oldu
-#elif __MESH_DIM == __3D
-        REAL(MK),DIMENSION(:,:,:,:),POINTER :: oldu
-#endif
-#elif __DIM == __VFIELD
-#if __MESH_DIM == __2D
-        REAL(MK),DIMENSION(:,:,:,:),POINTER :: oldu  
-#elif __MESH_DIM == __3D
-        REAL(MK),DIMENSION(:,:,:,:,:),POINTER :: oldu
-#endif
-#endif
+
 
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
@@ -244,7 +232,7 @@
         !-----------------------------------------------------------------------
 
         CALL substart('ppm_mg_smooth_coarse',t0,info)
-        IF (l_print) THEN 
+        IF (l_print) THEN
          WRITE (cbuf,*) 'SMOOTHER entering ','mlev:',mlev
          CALL PPM_WRITE(ppm_rank,'mg_smooth',cbuf,info)
         ENDIF
@@ -292,6 +280,12 @@
          ENDIF
 #endif
         ENDIF
+
+#if __DIM ==__VFIELD
+        NULLIFY(moldu)
+#endif
+        NULLIFY(uc_dummy)
+
         !-----------------------------------------------------------------------
         !Definition of necessary variables and allocation of arrays
         !-----------------------------------------------------------------------
@@ -334,7 +328,7 @@
 
         !-----------------------------------------------------------------------
         !Implementation
-        !----------------------------------------------------------------------- 
+        !-----------------------------------------------------------------------
 
             iopt = ppm_param_alloc_fit
             ldl3(1) = 1-ghostsize(1)
@@ -351,7 +345,7 @@
             GOTO 9999
             ENDIF
 
-       
+
         count = 0
             iopt = ppm_param_alloc_fit
             ldl3(1) = 1-ghostsize(1)
@@ -373,34 +367,34 @@
               DO isub=1,nsubs
 
                  IF (color.EQ.0) THEN
-                    mask_red=>mgfield(isub,mlev)%mask_red 
+                    mask_red=>mgfield(isub,mlev)%mask_red
                     mask_dummy_2d(:,:,&
      &                            isub)=mask_red(:,:)
                  ELSE
                     mask_black=>mgfield(isub,mlev)%mask_black
                     mask_dummy_2d(:,:,&
-     &                             isub)=mask_black(:,:) 
+     &                             isub)=mask_black(:,:)
                  ENDIF
                  tuc=>mgfield(isub,mlev)%uc
                  uc_dummy(:,:,isub)=tuc(:,:)
 
 
-              ENDDO!DO isub 
-                
+              ENDDO!DO isub
+
               !-----------------------------------------------------------------
-              !Communicate red(even) if color==0 or communicate black(odd) 
-              !if color==1 
+              !Communicate red(even) if color==0 or communicate black(odd)
+              !if color==1
               !-----------------------------------------------------------------
 
 
               CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlev),&
-     &                    ghostsize,ppm_param_map_ghost_get,info,mask_dummy_2d) 
+     &                    ghostsize,ppm_param_map_ghost_get,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_push,info,mask_dummy_2d) 
+     &                         ghostsize,ppm_param_map_push,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_send,info,mask_dummy_2d) 
+     &                         ghostsize,ppm_param_map_send,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlev),&
-     &                          ghostsize,ppm_param_map_pop,info,mask_dummy_2d) 
+     &                          ghostsize,ppm_param_map_pop,info,mask_dummy_2d)
 
 
 
@@ -416,11 +410,11 @@
      &                                 (mgfield(isub,mlev)%uc(i,j-1)+&
      &                                  mgfield(isub,mlev)%uc(i,j+1))*c3-&
      &                                         mgfield(isub,mlev)%fc(i,j))
-                      
+
                     ENDDO
                  ENDDO
               ENDDO
-              IF (isweep.EQ.nsweep) THEN   
+              IF (isweep.EQ.nsweep) THEN
                IF (color.EQ.1) THEN
 
                  DO isub=1,nsubs
@@ -429,13 +423,13 @@
      &                            isub)=mask_red(:,:)
 
                  tuc=>mgfield(isub,mlev)%uc
-                 uc_dummy(:,:,isub)=tuc(:,:) 
-                ENDDO   
+                 uc_dummy(:,:,isub)=tuc(:,:)
+                ENDDO
                ENDIF
               ENDIF
-             
-             ENDDO!DO color   
-            
+
+             ENDDO!DO color
+
              IF (isweep.EQ.nsweep) THEN
 
               CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlev),&
@@ -447,18 +441,18 @@
               CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlev),&
      &                          ghostsize,ppm_param_map_pop,info,mask_dummy_2d)
 
-                 
+
               DO isub=1,nsubs
                  tuc=>mgfield(isub,mlev)%uc
                           tuc(:,:)=uc_dummy(&
      &                         :,:,isub)
-              ENDDO  
+              ENDDO
             ENDIF
 
 
            ENDDO!DO nsweep
 
-                    
+
 
             iopt = ppm_param_dealloc
             ldl3(1) = 1-ghostsize(1)
@@ -479,7 +473,7 @@
 
         !-----------------------------------------------------------------------
         !Implementation
-        !----------------------------------------------------------------------- 
+        !-----------------------------------------------------------------------
 
             iopt = ppm_param_alloc_fit
             ldl4(1) = 1-ghostsize(1)
@@ -499,16 +493,16 @@
             ENDIF
 
 
-       
 
 
-        DO isweep=1,nsweep 
+
+        DO isweep=1,nsweep
            DO color=0,1
 
 
               DO isub=1,nsubs
 
-                 tuc=>mgfield(isub,mlev)%uc  
+                 tuc=>mgfield(isub,mlev)%uc
                    DO k=1-ghostsize(3),max_node(3,mlev)+ghostsize(3)
                     DO j=1-ghostsize(2),max_node(2,mlev)+ghostsize(2)
                      DO i=1-ghostsize(1),max_node(1,mlev)+ghostsize(1)
@@ -517,28 +511,28 @@
                     ENDDO
                    ENDDO
 
-              ENDDO!DO isub 
+              ENDDO!DO isub
 
 
               !-----------------------------------------------------------------
-              !Communicate red(even) if color==0 or communicate black(odd) 
-              !if color==1 
+              !Communicate red(even) if color==0 or communicate black(odd)
+              !if color==1
               !-----------------------------------------------------------------
 
- 
+
               CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlev),&
-     &                    ghostsize,ppm_param_map_ghost_get,info) 
+     &                    ghostsize,ppm_param_map_ghost_get,info)
               CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_push,info) 
+     &                         ghostsize,ppm_param_map_push,info)
               CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_send,info) 
+     &                         ghostsize,ppm_param_map_send,info)
               CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlev),&
-     &                          ghostsize,ppm_param_map_pop,info) 
+     &                          ghostsize,ppm_param_map_pop,info)
 
 
 
               DO isub=1,nsubs
-                 tuc=>mgfield(isub,mlev)%uc  
+                 tuc=>mgfield(isub,mlev)%uc
                    DO k=1-ghostsize(3),max_node(3,mlev)+ghostsize(3)
                     DO j=1-ghostsize(2),max_node(2,mlev)+ghostsize(2)
                      DO i=1-ghostsize(1),max_node(1,mlev)+ghostsize(1)
@@ -548,10 +542,10 @@
                   ENDDO
 
 
-                 DO k=start(3,isub,mlev),stop(3,isub,mlev) 
+                 DO k=start(3,isub,mlev),stop(3,isub,mlev)
                     DO j=start(2,isub,mlev),stop(2,isub,mlev)
                        DO i=start(1,isub,mlev)+mod(j+k+color,2),stop(1,isub,mlev),2
- 
+
                             moldu=tuc(i,j,k)
 
                              mgfield(isub,mlev)%uc(i,j,k) = moldu+&
@@ -563,19 +557,19 @@
      &                           (mgfield(isub,mlev)%uc(i,j,k-1)+&
      &                            mgfield(isub,mlev)%uc(i,j,k+1))*c4 - &
      &                                    mgfield(isub,mlev)%fc(i,j,k))&
-     &                            -moldu) 
+     &                            -moldu)
                        ENDDO
                     ENDDO
                  ENDDO
-              ENDDO!subs   
+              ENDDO!subs
 
-                  IF (isweep.EQ.nsweep) THEN  
+                  IF (isweep.EQ.nsweep) THEN
 
                     IF (color.EQ.1) THEN
                      DO isub=1,nsubs
 
-                      tuc=>mgfield(isub,mlev)%uc  
-                    
+                      tuc=>mgfield(isub,mlev)%uc
+
                    DO k=1-ghostsize(3),max_node(3,mlev)+ghostsize(3)
                     DO j=1-ghostsize(2),max_node(2,mlev)+ghostsize(2)
                      DO i=1-ghostsize(1),max_node(1,mlev)+ghostsize(1)
@@ -594,21 +588,21 @@
 
 
               CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlev),&
-     &                    ghostsize,ppm_param_map_ghost_get,info) 
+     &                    ghostsize,ppm_param_map_ghost_get,info)
               CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_push,info) 
+     &                         ghostsize,ppm_param_map_push,info)
               CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_send,info) 
+     &                         ghostsize,ppm_param_map_send,info)
               CALL ppm_map_field_ghost(uc_dummy,topoid,mesh_id_g(mlev),&
-     &                          ghostsize,ppm_param_map_pop,info) 
+     &                          ghostsize,ppm_param_map_pop,info)
 
 
 
               ENDIF
 
               DO isub=1,nsubs
-                 tuc=>mgfield(isub,mlev)%uc  
-                 
+                 tuc=>mgfield(isub,mlev)%uc
+
                    DO k=1-ghostsize(3),max_node(3,mlev)+ghostsize(3)
                     DO j=1-ghostsize(2),max_node(2,mlev)+ghostsize(2)
                      DO i=1-ghostsize(1),max_node(1,mlev)+ghostsize(1)
@@ -616,7 +610,7 @@
                      ENDDO
                     ENDDO
                   ENDDO
- 
+
               ENDDO
         ENDDO!Do isweep
 
@@ -642,7 +636,7 @@
 
         !-----------------------------------------------------------------------
         !Implementation
-        !----------------------------------------------------------------------- 
+        !-----------------------------------------------------------------------
 
             iopt = ppm_param_alloc_fit
             ldl4(1) = 1
@@ -661,7 +655,7 @@
             GOTO 9999
             ENDIF
 
-       
+
             count = 0
 
             iopt = ppm_param_alloc_fit
@@ -690,26 +684,26 @@
                  ELSE
                     mask_black=>mgfield(isub,mlev)%mask_black
                     mask_dummy_2d(:,:,&
-     &                             isub)=mask_black(:,:) 
+     &                             isub)=mask_black(:,:)
                  ENDIF
                  tuc=>mgfield(isub,mlev)%uc
                  uc_dummy(:,:,:,isub)=tuc(:,:,:)
 
-              ENDDO!DO isub 
-                
+              ENDDO!DO isub
+
               !-----------------------------------------------------------------
-              !Communicate red(even) if color==0 or communicate black(odd) 
-              !if color==1 
+              !Communicate red(even) if color==0 or communicate black(odd)
+              !if color==1
               !-----------------------------------------------------------------
 
               CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-     &                    ghostsize,ppm_param_map_ghost_get,info,mask_dummy_2d) 
+     &                    ghostsize,ppm_param_map_ghost_get,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_push,info,mask_dummy_2d) 
+     &                         ghostsize,ppm_param_map_push,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_send,info,mask_dummy_2d) 
+     &                         ghostsize,ppm_param_map_send,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-     &                          ghostsize,ppm_param_map_pop,info,mask_dummy_2d) 
+     &                          ghostsize,ppm_param_map_pop,info,mask_dummy_2d)
 
 
 
@@ -726,8 +720,8 @@
      &                                 (mgfield(isub,mlev)%uc(ilda,i,j-1)+&
      &                                  mgfield(isub,mlev)%uc(ilda,i,j+1))*c3-&
      &                                         mgfield(isub,mlev)%fc(ilda,i,j))
-                    
-                     ENDDO  
+
+                     ENDDO
                     ENDDO
                  ENDDO
               ENDDO
@@ -746,31 +740,31 @@
                    ENDIF
 
 
- 
 
-           ENDDO!DO color   
+
+           ENDDO!DO color
 
              IF (isweep.EQ.nsweep) THEN
               CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-     &                    ghostsize,ppm_param_map_ghost_get,info,mask_dummy_2d) 
+     &                    ghostsize,ppm_param_map_ghost_get,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_push,info,mask_dummy_2d) 
+     &                         ghostsize,ppm_param_map_push,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_send,info,mask_dummy_2d) 
+     &                         ghostsize,ppm_param_map_send,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-     &                          ghostsize,ppm_param_map_pop,info,mask_dummy_2d) 
+     &                          ghostsize,ppm_param_map_pop,info,mask_dummy_2d)
 
-              
+
               DO isub=1,nsubs
                  tuc=>mgfield(isub,mlev)%uc
                  tuc(:,:,:)=uc_dummy(&
      &                         :,:,:,isub)
               ENDDO
-             ENDIF 
+             ENDIF
 
         ENDDO!DO nsweep
 
-                    
+
 
             iopt = ppm_param_dealloc
             ldl4(1) = 1
@@ -792,7 +786,7 @@
 
         !-----------------------------------------------------------------------
         !Implementation
-        !----------------------------------------------------------------------- 
+        !-----------------------------------------------------------------------
 
             iopt = ppm_param_alloc_fit
             ldl5(1) = 1
@@ -829,7 +823,7 @@
 
 
 
-        DO isweep=1,nsweep 
+        DO isweep=1,nsweep
 
            DO color=0,1
 
@@ -839,7 +833,7 @@
                  !--------------------------------------------------------------
 
                  tuc=>mgfield(isub,mlev)%uc
-                   
+
                    DO k=1-ghostsize(3),max_node(3,mlev)+ghostsize(3)
                     DO j=1-ghostsize(2),max_node(2,mlev)+ghostsize(2)
                      DO i=1-ghostsize(1),max_node(1,mlev)+ghostsize(1)
@@ -848,26 +842,26 @@
                        uc_dummy(3,i,j,k,isub)=tuc(3,i,j,k)
                      ENDDO
                     ENDDO
-                   ENDDO 
-              ENDDO!DO isub 
+                   ENDDO
+              ENDDO!DO isub
 
 
 
 
               !-----------------------------------------------------------------
-              !Communicate red(even) if color==0 or communicate black(odd) 
-              !if color==1 
+              !Communicate red(even) if color==0 or communicate black(odd)
+              !if color==1
               !-----------------------------------------------------------------
 
 
               CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-     &                    ghostsize,ppm_param_map_ghost_get,info) 
+     &                    ghostsize,ppm_param_map_ghost_get,info)
               CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_push,info) 
+     &                         ghostsize,ppm_param_map_push,info)
               CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_send,info) 
+     &                         ghostsize,ppm_param_map_send,info)
               CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-     &                          ghostsize,ppm_param_map_pop,info) 
+     &                          ghostsize,ppm_param_map_pop,info)
 
 
               DO isub=1,nsubs
@@ -885,7 +879,7 @@
 
 
 
-                 DO k=start(3,isub,mlev),stop(3,isub,mlev) 
+                 DO k=start(3,isub,mlev),stop(3,isub,mlev)
                     DO j=start(2,isub,mlev),stop(2,isub,mlev)
                        DO i=start(1,isub,mlev)+mod(j+k+color,2),stop(1,isub,mlev),2
 
@@ -894,9 +888,9 @@
                         moldu(3) = tuc(3,i,j,k)
 
 
-                        
+
                              mgfield(isub,mlev)%uc(1,i,j,k) = moldu(1)+&
-     &                             omega*(& 
+     &                             omega*(&
      &                             c1*((mgfield(isub,mlev)%uc(1,i-1,j,k)+ &
      &                            mgfield(isub,mlev)%uc(1,i+1,j,k))*c2 + &
      &                                 (mgfield(isub,mlev)%uc(1,i,j-1,k)+&
@@ -909,7 +903,7 @@
 
 
                              mgfield(isub,mlev)%uc(2,i,j,k) = moldu(2)+&
-     &                             omega*(& 
+     &                             omega*(&
      &                             c1*((mgfield(isub,mlev)%uc(2,i-1,j,k)+ &
      &                            mgfield(isub,mlev)%uc(2,i+1,j,k))*c2 + &
      &                                 (mgfield(isub,mlev)%uc(2,i,j-1,k)+&
@@ -920,7 +914,7 @@
      &                            -moldu(2))
 
                              mgfield(isub,mlev)%uc(3,i,j,k) = moldu(3)+&
-     &                             omega*(& 
+     &                             omega*(&
      &                             c1*((mgfield(isub,mlev)%uc(3,i-1,j,k)+ &
      &                            mgfield(isub,mlev)%uc(3,i+1,j,k))*c2 + &
      &                                 (mgfield(isub,mlev)%uc(3,i,j-1,k)+&
@@ -933,13 +927,13 @@
                        ENDDO
                     ENDDO
                  ENDDO
-              ENDDO!subs   
+              ENDDO!subs
 
 
                 IF (isweep.EQ.nsweep) THEN
                    IF (color.EQ.1) THEN
                     DO isub=1,nsubs
- 
+
 
                       tuc=>mgfield(isub,mlev)%uc
 
@@ -951,11 +945,11 @@
                        uc_dummy(3,i,j,k,isub)=tuc(3,i,j,k)
                      ENDDO
                     ENDDO
-                   ENDDO 
-                    ENDDO!subs   
+                   ENDDO
+                    ENDDO!subs
 
                    ENDIF
-                  ENDIF 
+                  ENDIF
 
 
           ENDDO!DO color
@@ -964,17 +958,17 @@
          IF (isweep.EQ.nsweep) THEN
 
           CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-       &             ghostsize,ppm_param_map_ghost_get,info) 
+       &             ghostsize,ppm_param_map_ghost_get,info)
           CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-       &                   ghostsize,ppm_param_map_push,info) 
+       &                   ghostsize,ppm_param_map_push,info)
           CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-       &                   ghostsize,ppm_param_map_send,info) 
+       &                   ghostsize,ppm_param_map_send,info)
           CALL ppm_map_field_ghost(uc_dummy,vecdim,topoid,mesh_id_g(mlev),&
-       &                ghostsize,ppm_param_map_pop,info) 
+       &                ghostsize,ppm_param_map_pop,info)
 
 
 
-                  DO isub=1,nsubs 
+                  DO isub=1,nsubs
                    tuc=>mgfield(isub,mlev)%uc
 
                    DO k=1-ghostsize(3),max_node(3,mlev)+ghostsize(3)
@@ -1024,8 +1018,8 @@
 #endif
 
 
-        !---------------------------------------------------------------------- 
-        !  Return 
+        !----------------------------------------------------------------------
+        !  Return
         !----------------------------------------------------------------------
 9999    CONTINUE
         CALL substop('ppm_mg_smooth_coarse',t0,info)

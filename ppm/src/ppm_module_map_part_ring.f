@@ -3,7 +3,7 @@
       !-------------------------------------------------------------------------
       !
       !  Purpose      : This module includes the source code for the mapping
-      !                 routines. 
+      !                 routines.
       !
       !  Remarks      :
       !
@@ -28,7 +28,7 @@
       !  ETH Zentrum, Hirschengraben 84
       !  CH-8092 Zurich, Switzerland
       !-------------------------------------------------------------------------
-     
+
       !-------------------------------------------------------------------------
       !  Define types
       !-------------------------------------------------------------------------
@@ -40,8 +40,11 @@
          !----------------------------------------------------------------------
          !  Work lists
          !----------------------------------------------------------------------
-         INTEGER, DIMENSION(:), POINTER :: plist_des,plist_act,plist_exc
-         INTEGER, DIMENSION(:), POINTER :: srlist1,srlist2
+         INTEGER, DIMENSION(:), POINTER :: plist_des => NULL()
+         INTEGER, DIMENSION(:), POINTER :: plist_act => NULL()
+         INTEGER, DIMENSION(:), POINTER :: plist_exc => NULL()
+         INTEGER, DIMENSION(:), POINTER :: srlist1 => NULL()
+         INTEGER, DIMENSION(:), POINTER :: srlist2 => NULL()
 
          PRIVATE :: plist_des,plist_act,plist_exc,srlist1,srlist2
 
@@ -54,7 +57,7 @@
          END INTERFACE
 
          !----------------------------------------------------------------------
-         !  include the source 
+         !  include the source
          !----------------------------------------------------------------------
          CONTAINS
 

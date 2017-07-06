@@ -8,14 +8,14 @@
       !
       !  Input        : data_in(:,:)   (F) 2d data array to be transformed
       !
-      !  Input/output : lda(:)         (I) size of data              
-      !                                
+      !  Input/output : lda(:)         (I) size of data
+      !
       !
       !  Output       : data_out(:,:)  (F) transformed data
       !                 info           (I) return status. =0 if no error.
       !
-      !  Remarks      : 
-      !                                                  
+      !  Remarks      :
+      !
       !  References   :
       !
       !  Revisions    :
@@ -71,8 +71,8 @@
       !  Bugfix: arguments are now checked BEFORE they are assigned to Nx_in...
       !
       !  Revision 1.2  2004/02/11 10:13:23  hiebers
-      !  changed arguments, included test on info , included ppm_define.h, 
-      !  shortened lines to 80 characters, excluded module_mesh, 
+      !  changed arguments, included test on info , included ppm_define.h,
+      !  shortened lines to 80 characters, excluded module_mesh,
       !  included fftw3.f
       !
       !-------------------------------------------------------------------------
@@ -105,9 +105,9 @@
       USE ppm_module_error
       USE ppm_module_alloc
       IMPLICIT NONE
-#if   __KIND == __SINGLE_PRECISION | __KIND ==__SINGLE_PRECISION_COMPLEX 
+#if   __KIND == __SINGLE_PRECISION | __KIND ==__SINGLE_PRECISION_COMPLEX
       INTEGER, PARAMETER :: MK = ppm_kind_single
-#elif __KIND == __DOUBLE_PRECISION | __KIND ==__DOUBLE_PRECISION_COMPLEX 
+#elif __KIND == __DOUBLE_PRECISION | __KIND ==__DOUBLE_PRECISION_COMPLEX
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
@@ -117,7 +117,7 @@
       INCLUDE "fftw3.f"
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       ! input data
 #if   __KIND == __SINGLE_PRECISION | __KIND == __DOUBLE_PRECISION
@@ -132,15 +132,15 @@
       INTEGER                       , INTENT(  OUT) :: info
 
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       ! timer
       REAL(MK)                                :: t0
       ! counters
       INTEGER                                 :: i,j,iopt
-      ! size of the data_in 
+      ! size of the data_in
       INTEGER                                 :: Nx_in, Ny_in
-      ! size of the data_out 
+      ! size of the data_out
       INTEGER                                 :: Nx_out, Ny_out
 
 #ifdef __FFTW
@@ -166,13 +166,18 @@
 
 
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
 
       !-------------------------------------------------------------------------
       !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_fdsolver_fft_fd_2d',t0,info)
+
+#ifdef __MATHKEISAN
+      ! MATHKEISAN variables for MathKeisan FFTs
+      NULLIFY(table,work)
+#endif
 
 #if  !(defined(__FFTW) | defined(__MATHKEISAN))
 
@@ -191,7 +196,7 @@
      &    'PPM was compiled without MATHKEISAN support',__LINE__,info)
 #endif
 
-      GOTO 9999   
+      GOTO 9999
 
 
 #else
@@ -220,7 +225,7 @@
           ENDIF
       ENDIF
       ! subtract 1 to fit ppm-convention
-      Nx_in = lda(1)-1      
+      Nx_in = lda(1)-1
       Ny_in = lda(2)
 
       !-------------------------------------------------------------------------
@@ -231,7 +236,7 @@
 #elif __KIND == __SINGLE_PRECISION_COMPLEX| __KIND == __DOUBLE_PRECISION_COMPLEX
       Nx_out = Nx_in
 #endif
- 
+
       Ny_out=Ny_in
 
 #if   __KIND == __SINGLE_PRECISION         | __KIND == __DOUBLE_PRECISION
@@ -316,7 +321,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Forward FFT 
+      !  Forward FFT
       !-------------------------------------------------------------------------
 
       isign_fft = -1
@@ -348,7 +353,7 @@
       iopt = ppm_param_dealloc
       CALL ppm_alloc(table, lda, iopt,info)
       CALL ppm_alloc(work,lda,iopt,info)
- 
+
 
 
 
@@ -359,7 +364,7 @@
       !  FFTW version for LINUX,...
       !-------------------------------------------------------------------------
 
- 
+
       MBRank    = 1
       MBHowmany = Ny_in
       MBiEmbed  = -1
@@ -401,7 +406,7 @@
 
 
 #endif
-#endif 
+#endif
 
 #if __KIND == __SINGLE_PRECISION_COMPLEX | __KIND == __DOUBLE_PRECISION_COMPLEX
       !-------------------------------------------------------------------------
@@ -409,7 +414,7 @@
       !-------------------------------------------------------------------------
       DO j=1,Ny_out
             data_out(lda(1),j) = data_out(1,j)
-      ENDDO     
+      ENDDO
 #endif
 
 

@@ -29,7 +29,7 @@
       !                                  particle.
       !
       !  Input/output : boxcost(:)   (F) costs of the boxes 1..nbox.
-      !                                  boxcost(i) is the cost of box 
+      !                                  boxcost(i) is the cost of box
       !                                  boxes(i).
       !
       !  Output       : info         (I) return status
@@ -98,7 +98,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_tree
@@ -120,7 +120,7 @@
       INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: min_box,max_box
       REAL(MK), DIMENSION(3  ), INTENT(IN   ) :: weights
@@ -131,7 +131,7 @@
       REAL(MK), DIMENSION(:  ), POINTER       :: boxcost
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(ppm_dim)            :: len_box
       INTEGER , DIMENSION(2)                  :: ldc
@@ -143,11 +143,11 @@
       INTEGER                                 :: MPTYPE
 #endif
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_tree_boxcost',t0,info)
 
@@ -162,20 +162,24 @@
                   CALL ppm_error(ppm_err_argument,'ppm_tree_boxcost',     &
      &                'min_box must be <= max_box !',__LINE__,info)
                   GOTO 9999
-               ENDIF 
+               ENDIF
             ENDDO
          ENDDO
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Set pointer to work memory
       !-------------------------------------------------------------------------
 #if   __KIND == __SINGLE_PRECISION
       pcst => pcst_s
+#ifdef __MPI
       pcsum => pcsum_s
+#endif
 #else
       pcst => pcst_d
+#ifdef __MPI
       pcsum => pcsum_d
+#endif
 #endif
 
       !-------------------------------------------------------------------------
@@ -195,7 +199,7 @@
       !-------------------------------------------------------------------------
 #if   __KIND == __SINGLE_PRECISION
       MPTYPE = MPI_REAL
-#elif __KIND == __DOUBLE_PRECISION 
+#elif __KIND == __DOUBLE_PRECISION
       MPTYPE = MPI_DOUBLE_PRECISION
 #endif
 #endif
@@ -227,7 +231,7 @@
               CALL ppm_error(ppm_err_mpi_fail,'ppm_tree_boxcost',   &
      &            'MPI_Allreduce of particle costs',__LINE__,info)
               GOTO 9999
-          ENDIF 
+          ENDIF
           DO i=1,nbox
               pcst(i) = pcsum(i)
           ENDDO
@@ -292,7 +296,7 @@
       NULLIFY(pcsum)
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
       CALL substop('ppm_tree_boxcost',t0,info)
       RETURN

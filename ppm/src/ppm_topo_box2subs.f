@@ -10,7 +10,7 @@
       !                 specific level are taken. If a certain branch of
       !                 the tree does not extend to that level, the next
       !                 higher existing box can be taken to fill the gap
-      !                 in order to return a decomposition with no holes 
+      !                 in order to return a decomposition with no holes
       !                 in space.
       !
       !  Input        : min_box(:,:) (F) lower coordinates of the boxes.
@@ -18,12 +18,12 @@
       !                 max_box(:,:) (F) upper coordinates of the boxes.
       !                                  1st index: x,y[,z], 2nd: box ID
       !                 nchld(:)     (I) number of children of each box.
-      !                 nbox         (I) total number of boxes 
+      !                 nbox         (I) total number of boxes
       !                 blevel(:)    (I) tree level of each box as
       !                                  returned by ppm_tree. OPTIONAL.
       !                                  Needs to be present if level is
       !                                  present.
-      !                 child(:,:)   (I) children (1st index) of all 
+      !                 child(:,:)   (I) children (1st index) of all
       !                                  boxes (2nd index). OPTIONAL.
       !                                  Needs to be present if level is
       !                                  present.
@@ -37,9 +37,9 @@
       !                                  holes are filled with the next
       !                                  higher-level existing box.
       !
-      !  Input/output :                                            
+      !  Input/output :
       !
-      !  Output       : min_sub(:,:) (F) lower coordinates of the subs.   
+      !  Output       : min_sub(:,:) (F) lower coordinates of the subs.
       !                 max_sub(:,:) (F) upper coordinates of the subs.
       !                 nsubs        (I) number of subs.
       !                 info         (I) return status.
@@ -48,7 +48,7 @@
       !                                  OPTIONAL only allocated and
       !                                  returned of present.
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   :
       !
@@ -87,7 +87,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -105,7 +105,7 @@
       !-------------------------------------------------------------------------
 #include "ppm_define.h"
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: min_box,max_box
       INTEGER                 , INTENT(IN   ) :: nbox
@@ -117,18 +117,18 @@
       REAL(MK), DIMENSION(:,:), POINTER       :: min_sub,max_sub
       INTEGER                 , INTENT(  OUT) :: nsubs,info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK)                                :: t0
       INTEGER                                 :: iopt,i,j,istack
       INTEGER, DIMENSION(2)                   :: ldc
       INTEGER, DIMENSION(:), POINTER          :: subbox,boxstack
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_topo_box2subs',t0,info)
 
@@ -141,7 +141,7 @@
             CALL ppm_error(ppm_err_argument,'ppm_topo_box2subs',     &
      &          'Number of boxes must be >= 0',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
          DO i=1,ppm_dim
             DO j=1,nbox
                IF (min_box(i,j) .GT. max_box(i,j)) THEN
@@ -149,7 +149,7 @@
                   CALL ppm_error(ppm_err_argument,'ppm_topo_box2subs',   &
      &                'min_box must be <= max_box !',__LINE__,info)
                   GOTO 9999
-               ENDIF 
+               ENDIF
             ENDDO
          ENDDO
          IF (PRESENT(level)) THEN
@@ -166,7 +166,9 @@
                 GOTO 9999
              ENDIF
          ENDIF
-      ENDIF 
+      ENDIF
+
+      NULLIFY(subbox,boxstack)
 
       !-------------------------------------------------------------------------
       !  Allocate memory for list
@@ -179,7 +181,7 @@
           CALL ppm_error(ppm_err_alloc,'ppm_topo_box2subs',          &
      &        'list of box IDs SUBBOX',__LINE__,info)
           GOTO 9999
-      ENDIF 
+      ENDIF
       subbox   = ppm_param_undefined
 
       !-------------------------------------------------------------------------
@@ -209,14 +211,14 @@
                   CALL ppm_error(ppm_err_alloc,'ppm_topo_box2subs',          &
      &                'stack of boxes to traverse BOXSTACK',__LINE__,info)
                   GOTO 9999
-              ENDIF 
+              ENDIF
 
               ! push root box
               istack = 1
               boxstack(istack) = 1
 
               ! traverse the tree to find boxes
-              DO WHILE (istack .GT. 0) 
+              DO WHILE (istack .GT. 0)
                   i = boxstack(istack)
                   istack = istack - 1
                   ! add box if it is on desired level or above and has
@@ -236,8 +238,8 @@
      &                            'stack of boxes to traverse BOXSTACK',   &
      &                            __LINE__,info)
                               GOTO 9999
-                          ENDIF 
-                      ENDIF 
+                          ENDIF
+                      ENDIF
                       ! push all its children to the stack
                       DO j=1,nchld(i)
                           istack = istack + 1
@@ -245,7 +247,7 @@
                       ENDDO
                   ENDIF
               ENDDO
-              
+
               ! deallocate stack
               iopt     = ppm_param_dealloc
               CALL ppm_alloc(boxstack,ldc,iopt,info)
@@ -253,7 +255,7 @@
                   info = ppm_error_error
                   CALL ppm_error(ppm_err_dealloc,'ppm_topo_box2subs',        &
      &                'stack of boxes to traverse BOXSTACK',__LINE__,info)
-              ENDIF 
+              ENDIF
           ENDIF
       ELSE
           !---------------------------------------------------------------------
@@ -279,14 +281,14 @@
           CALL ppm_error(ppm_err_alloc,'ppm_topo_box2subs',          &
      &        'minimum extent of subs MIN_SUB',__LINE__,info)
           GOTO 9999
-      ENDIF 
+      ENDIF
       CALL ppm_alloc(max_sub,ldc,iopt,info)
       IF (info.NE.0) THEN
           info = ppm_error_fatal
           CALL ppm_error(ppm_err_alloc,'ppm_topo_box2subs',          &
      &        'maximum extent of subs MAX_SUB',__LINE__,info)
           GOTO 9999
-      ENDIF 
+      ENDIF
       IF (PRESENT(boxid)) THEN
           ldc(1) = nsubs
           CALL ppm_alloc(boxid,ldc,iopt,info)
@@ -295,8 +297,8 @@
               CALL ppm_error(ppm_err_alloc,'ppm_topo_box2subs',          &
      &            'box ID of subs BOXID',__LINE__,info)
               GOTO 9999
-          ENDIF 
-      ENDIF 
+          ENDIF
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Store subs
@@ -339,10 +341,10 @@
           info = ppm_error_error
           CALL ppm_error(ppm_err_alloc,'ppm_topo_box2subs',          &
      &        'list of box IDs SUBBOX',__LINE__,info)
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_topo_box2subs',t0,info)

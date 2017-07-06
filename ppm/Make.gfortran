@@ -1,0 +1,75 @@
+#-------------------------------------------------------------------------
+#  File         :  Sample Make.include
+#-------------------------------------------------------------------------
+#
+#  Purpose      :  Set build environment variables
+#
+#  Remarks      :
+#
+#  References   :
+#
+#  Revisions    :
+#-------------------------------------------------------------------------
+#-------------------------------------------------------------------------
+#  Parallel Particle Mesh Library (PPM)
+#  Institute of Computational Science
+#  ETH Zentrum, Hirschengraben 84
+#  CH-8092 Zurich, Switzerland
+#-------------------------------------------------------------------------
+
+
+# Have to define a VERSION: DEBUG or OPTIMIZED
+# (can also be defined in SHELL and passed by using 
+#  make -e )
+VERSION := OPTIMIZED
+
+MPILIBDIR   := /opt/mpi/openmpi/gnu/2.1.1/lib 
+MPIINCLDIR  := /opt/mpi/openmpi/gnu/2.1.1/include
+FFTWLIBDIR  := /usr/lib/x86_64-linux-gnu 
+FFTWINCLDIR := /usr/include 
+CPPINCLDIR  := 
+# Pre-compiler
+# One for dependency generation
+DEPCPP  := cpp
+# and one for F90 code generation
+CPP     := cpp
+# Compiler
+FC      := mpifort
+# Linker/Archiver
+AR      := ar
+# Linker Flags
+ARFLAGS := crus
+
+# Module redirection stuff !NOT USED, SEE MAIN MAKEFILE
+ifeq ($(strip $(FC)), xlf)
+MODREDIR := -qmoddir=
+endif
+ifeq ($(strip $(FC)), sxf90)
+MODREDIR := -qmoddir=
+endif
+
+
+# Various compiler options depending on version
+DEFINE =
+DEBUG_FFLAGS = $(DEFINE) -C -g3 -O0 -ffree-form -ffree-line-length-none 
+OPTIMIZED_FFLAGS = $(DEFINE) -O2 -ffree-form -ffree-line-length-none
+NOOPT_FFLAGS = $(DEFINE) -O0 -ffree-form -ffree-line-length-none
+
+# We can now set the INCL FLAGS
+INCL   := -I$(MPIINCLDIR) -I$(FFTWINCLDIR) -I$(CPPINCLDIR)
+# and the LIBS
+LIBS   := -L../lib -lmetis -lvizing -lstdc++ -L$(FFTWLIBDIR) -lfftw3f 
+
+ifeq "$(VERSION)" "DEBUG"
+FFLAGS := $(DEBUG_FFLAGS)
+BUILDDIR:= .
+endif
+ifeq "$(VERSION)" "OPTIMIZED"
+FFLAGS := $(OPTIMIZED_FFLAGS)
+BUILDDIR:= .
+endif
+ifeq "$(VERSION)" "NOOPT"
+FFLAGS := $(NOOPT_FFLAGS)
+BUILDDIR:= .
+endif
+

@@ -8,7 +8,7 @@
       !
       !  Input        : xp(:,:)    (F) particle co-ordinates
       !                 Np         (I) number of particles on this proc.
-      !                 pdata(:,:) (O) particle strengths used for interaction. 
+      !                 pdata(:,:) (O) particle strengths used for interaction.
       !                                Overloaded types:
       !                                single,double,single complex and
       !                                double complex.
@@ -43,21 +43,21 @@
       !                 nsublist   (I) number of subdomains on the local
       !                                processor
       !                 clist(:)       Cell list as a list of ptr_to_clist.
-      !                                particle index list of isub: 
+      !                                particle index list of isub:
       !                                        clist(isub)%lpdx(:)
       !                                pointer to first particle in ibox of
-      !                                isub: 
+      !                                isub:
       !                                        clist(isub)%lhbx(ibox)
       !                 Nm(:,:)    (I) number of cells in x,y,(z)
-      !                                direction (including the ghosts cells) 
+      !                                direction (including the ghosts cells)
       !                                in each subdomain. 1st index:
       !                                direction. second index: subid.
       !                 cutoff2    (F) Squared PP interaction cutoff.
       !                                Should be .LE. cell size.
       !
-      !  Input/output : 
+      !  Input/output :
       !
-      !  Output       : dpd(:,:)   (O) Change of particle data (pdata) due to 
+      !  Output       : dpd(:,:)   (O) Change of particle data (pdata) due to
       !                                interaction. This is not initialized
       !                                by this routine! Overloaded types:
       !                                single,double,single complex,double
@@ -81,7 +81,7 @@
       !                 resetting dpd to zero before doing the PP
       !                 interactions. This allows contributions from
       !                 different kernels to be accumulated. If needed,
-      !                 set it to zero before calling this routine the 
+      !                 set it to zero before calling this routine the
       !                 first time.
       !
       !  References   :
@@ -185,7 +185,7 @@
       !-------------------------------------------------------------------------
 #include "ppm_define.h"
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK)   , DIMENSION(:,:), INTENT(IN   ) :: xp
 #if   __KIND == __SINGLE_PRECISION | __KIND == __DOUBLE_PRECISION
@@ -217,7 +217,7 @@
       REAL(MK)                   , INTENT(IN   ) :: cutoff2
       INTEGER                    , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       ! counters
       INTEGER                                    :: i,idom,ibox,jbox,idx
@@ -245,7 +245,7 @@
       INTEGER                                    :: n1,n2,nz
       REAL(MK)                                   :: t0
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
 #if   __KERNEL == __USER_FUNCTION
 #if   __KIND == __SINGLE_PRECISION | __KIND == __DOUBLE_PRECISION
@@ -280,7 +280,7 @@
       END INTERFACE
 #endif
 #endif
-      
+
       !-------------------------------------------------------------------------
       !  Initialise
       !-------------------------------------------------------------------------
@@ -333,6 +333,7 @@
       !-------------------------------------------------------------------------
       !  Build interaction index lists
       !-------------------------------------------------------------------------
+      NULLIFY(inp,jnp)
       CALL ppm_neighlist_MkNeighIdx(lsymm,inp,jnp,nnp,info)
 
       !-------------------------------------------------------------------------
@@ -346,7 +347,7 @@
               IF (ppm_dim .EQ. 2) THEN
                   n2 = 0
                   nz = 2
-              ENDIF 
+              ENDIF
               ! loop over all REAL cells (the -2 in the end does this)
               DO k=0,nz-2
                   DO j=0,Nm(2,idom)-2
@@ -367,7 +368,7 @@
                               iend   = clist(idom)%lhbx(ibox+1)-1
                               IF (iend .LT. istart) CYCLE
                               !-------------------------------------------------
-                              !  Within the box itself use symmetry and avoid 
+                              !  Within the box itself use symmetry and avoid
                               !  adding the particle itself to its own list
                               !-------------------------------------------------
                               IF (ibox .EQ. jbox) THEN
@@ -469,7 +470,7 @@
                               !  For the other boxes check all particles
                               !-------------------------------------------------
                               ELSE
-                                  ! get pointers to first and last particle 
+                                  ! get pointers to first and last particle
                                   jstart = clist(idom)%lhbx(jbox)
                                   jend   = clist(idom)%lhbx(jbox+1)-1
                                   ! skip this iinter if other box is empty
@@ -479,7 +480,7 @@
                                       ip = clist(idom)%lpdx(ipart)
                                       IF (lda .EQ. 1) THEN
                                           summ = 0.0_MK
-                                          ! check against all particles 
+                                          ! check against all particles
                                           ! in the other cell
 #ifdef __SXF90
 !CDIR NODEP
@@ -511,7 +512,7 @@
                                       ELSEIF (lda .EQ. 2) THEN
                                           summ = 0.0_MK
                                           summ2 = 0.0_MK
-                                          ! check against all particles 
+                                          ! check against all particles
                                           ! in the other cell
 #ifdef __SXF90
 !CDIR NODEP
@@ -546,7 +547,7 @@
                                           dpd(1,ip) = dpd(1,ip) + summ
                                           dpd(2,ip) = dpd(2,ip) + summ2
                                       ELSE
-                                          ! check against all particles 
+                                          ! check against all particles
                                           ! in the other cell
                                           DO jpart=jstart,jend
                                               jp = clist(idom)%lpdx(jpart)
@@ -593,7 +594,7 @@
               IF (ppm_dim .EQ. 2) THEN
                   n2 = 0
                   nz = 2
-              ENDIF 
+              ENDIF
               ! loop over all REAL cells (the -2 in the end does this)
               DO k=1,nz-2
                   DO j=1,Nm(2,idom)-2
@@ -705,7 +706,7 @@
                               !  Do interactions with all neighboring boxes
                               !-------------------------------------------------
                               ELSE
-                                  ! get pointers to first and last particle 
+                                  ! get pointers to first and last particle
                                   jstart = clist(idom)%lhbx(jbox)
                                   jend   = clist(idom)%lhbx(jbox+1)-1
                                   ! skip if empty
@@ -714,7 +715,7 @@
                                   DO ipart=istart,iend
                                       ip = clist(idom)%lpdx(ipart)
                                       IF (lda .EQ. 1) THEN
-                                          ! check against all particles 
+                                          ! check against all particles
                                           ! in the other cell
                                           DO jpart=jstart,jend
                                               jp = clist(idom)%lpdx(jpart)
@@ -738,7 +739,7 @@
                                               dpd(1,ip) = dpd(1,ip) + dm
                                           ENDDO
                                       ELSEIF (lda .EQ. 2) THEN
-                                          ! check against all particles 
+                                          ! check against all particles
                                           ! in the other cell
                                           DO jpart=jstart,jend
                                               jp = clist(idom)%lpdx(jpart)
@@ -765,7 +766,7 @@
                                               dpd(2,ip) = dpd(2,ip) + dm
                                           ENDDO
                                       ELSE
-                                          ! check against all particles 
+                                          ! check against all particles
                                           ! in the other cell
                                           DO jpart=jstart,jend
                                               jp = clist(idom)%lpdx(jpart)
@@ -816,7 +817,7 @@
 #elif __KIND == __DOUBLE_PRECISION_COMPLEX
       END SUBROUTINE ppm_comp_pp_cell_dci
 #endif
-      
+
 #elif __KERNEL == __USER_FUNCTION
 #if   __KIND == __SINGLE_PRECISION
       END SUBROUTINE ppm_comp_pp_cell_su

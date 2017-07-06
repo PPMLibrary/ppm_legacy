@@ -6,7 +6,7 @@
       !                 definitions that are PRIVATE to the mesh routines.
       !                 It also included those routines and provides
       !                 INTERFACEs.
-      !                
+      !
       !  Remarks      : The terminology distinguishes between meshes and
       !                 fields (the data living on the meshes). Several
       !                 fields can use the same mesh. Meshes are defined as
@@ -43,20 +43,20 @@
              INTEGER                           :: topoid
              ! The number of mesh NODES (not cells) in each direction in
              ! each sub
-             INTEGER, DIMENSION(:,:), POINTER  :: nnodes
+             INTEGER, DIMENSION(:,:), POINTER  :: nnodes => NULL()
              ! Starting indices of the mesh of this sub in the global mesh
-             INTEGER, DIMENSION(:,:), POINTER  :: istart
+             INTEGER, DIMENSION(:,:), POINTER  :: istart => NULL()
              ! global number of mesh points in computational domain
-             INTEGER, DIMENSION(:  ), POINTER  :: Nm
+             INTEGER, DIMENSION(:  ), POINTER  :: Nm => NULL()
          END TYPE
 
          ! mesh lists with translation between user numbering and internal
          ! numbering of mesh IDs
          TYPE ppm_type_mesh_list
              ! translation from internal to user numbers
-             INTEGER, DIMENSION(:  ), POINTER  :: user
+             INTEGER, DIMENSION(:  ), POINTER  :: user => NULL()
              ! translation from user numbers to internal ones
-             INTEGER, DIMENSION(:  ), POINTER  :: internal
+             INTEGER, DIMENSION(:  ), POINTER  :: internal => NULL()
          END TYPE
 
          !----------------------------------------------------------------------
@@ -65,38 +65,38 @@
          ! first index: meshid (idea: several meshes can be defined on the same
          ! topology at once, e.g. for multigrid solvers.), second: topoid
          ! (internal numbering)
-         TYPE(ppm_type_equi_mesh), DIMENSION(:,:), POINTER :: ppm_cart_mesh
+         TYPE(ppm_type_equi_mesh), DIMENSION(:,:), POINTER :: ppm_cart_mesh => NULL()
          ! highest internal mesh ID available on each topology (internal
          ! numbering)
-         INTEGER, DIMENSION(:  ), POINTER                  :: ppm_max_meshid
+         INTEGER, DIMENSION(:  ), POINTER                  :: ppm_max_meshid => NULL()
          ! number translation lists (user<-->internal) for each topology
-         TYPE(ppm_type_mesh_list), DIMENSION(:  ), POINTER :: ppm_meshid
+         TYPE(ppm_type_mesh_list), DIMENSION(:  ), POINTER :: ppm_meshid => NULL()
 
          !----------------------------------------------------------------------
          !  Mesh mapping, send and receive lists
          !----------------------------------------------------------------------
          ! list of source subs to send from local processor (local sub number
          ! on source processor)
-         INTEGER, DIMENSION(:  ), POINTER          :: ppm_mesh_isendfromsub
+         INTEGER, DIMENSION(:  ), POINTER          :: ppm_mesh_isendfromsub => NULL()
          ! start (lower-left corner) of mesh block to be sent in GLOBAL
          ! mesh coordinates. First index: x,y[,z], 2nd: isendlist
-         INTEGER, DIMENSION(:,:), POINTER          :: ppm_mesh_isendblkstart
+         INTEGER, DIMENSION(:,:), POINTER          :: ppm_mesh_isendblkstart => NULL()
          ! size (in grid points) of blocks to be sent
-         INTEGER, DIMENSION(:,:), POINTER          :: ppm_mesh_isendblksize
+         INTEGER, DIMENSION(:,:), POINTER          :: ppm_mesh_isendblksize => NULL()
          ! list of destination subs to recv to on local processors (local sub
          ! number on destination processor)
-         INTEGER, DIMENSION(:  ), POINTER          :: ppm_mesh_irecvtosub
+         INTEGER, DIMENSION(:  ), POINTER          :: ppm_mesh_irecvtosub => NULL()
          ! start (lower-left corner) of mesh block to be recvd in GLOBAL
          ! mesh coordinates. First index: x,y[,z], 2nd: isendlist
-         INTEGER, DIMENSION(:,:), POINTER          :: ppm_mesh_irecvblkstart
+         INTEGER, DIMENSION(:,:), POINTER          :: ppm_mesh_irecvblkstart => NULL()
          ! size (in grid points) of blocks to be recvd
-         INTEGER, DIMENSION(:,:), POINTER          :: ppm_mesh_irecvblksize
+         INTEGER, DIMENSION(:,:), POINTER          :: ppm_mesh_irecvblksize => NULL()
 
          ! define the target mesh id for mapping
          INTEGER          :: ppm_target_meshid = -1
          ! define the source mesh id for mapping
          INTEGER          :: ppm_source_meshid = -1
-         ! define the target mesh id for the mapping 
+         ! define the target mesh id for the mapping
          ! NOTICE: NOT the same variable as the ppm_target_topoid in the
          ! module ppm_module_map
          INTEGER          :: ppm_target_topoid = -1
@@ -108,49 +108,45 @@
          ! These are the owner subs of the actual real mesh points
          ! 1st index: meshblock ID, 2nd: meshid (internal numbering), 3rd:
          ! topoid (internal numbering)
-         INTEGER, DIMENSION(:,:,:), POINTER            :: ppm_mesh_ghost_fromsub
+         INTEGER, DIMENSION(:,:,:), POINTER            :: ppm_mesh_ghost_fromsub => NULL()
          ! list of target subs of ghost mesh blocks (globel sub number).
          ! These are the subs a block will serve as a ghost on.
          ! 1st index: meshblock ID, 2nd: meshid (internal numbering), 3rd:
          ! topoid (internal numbering)
-         INTEGER, DIMENSION(:,:,:), POINTER            :: ppm_mesh_ghost_tosub
+         INTEGER, DIMENSION(:,:,:), POINTER            :: ppm_mesh_ghost_tosub => NULL()
          ! start (lower-left corner) of ghost mesh block in GLOBAL
          ! mesh coordinates. First index: x,y[,z], 2nd: meshblock ID, 3rd:
          ! meshid (internal numbering), 4th: topoid (internal numbering)
-         INTEGER, DIMENSION(:,:,:,:), POINTER          ::    &
-     &       ppm_mesh_ghost_blkstart
+         INTEGER, DIMENSION(:,:,:,:), POINTER          :: ppm_mesh_ghost_blkstart => NULL()
          ! size (in grid points) of ghost blocks. 1st index: x,y[,z], 2nd:
          ! meshblock ID, 3rd: meshid (internal numbering), 4th: topoid
          ! (internal numbering)
-         INTEGER, DIMENSION(:,:,:,:), POINTER          :: ppm_mesh_ghost_blksize
+         INTEGER, DIMENSION(:,:,:,:), POINTER          :: ppm_mesh_ghost_blksize => NULL()
          ! mesh ghost block list. 1st index: target processor, 2nd: meshid
          ! (internal numbering), 3rd: topoid (internal numbering)
-         INTEGER, DIMENSION(:,:,:)  , POINTER          :: ppm_mesh_ghost_blk
+         INTEGER, DIMENSION(:,:,:)  , POINTER          :: ppm_mesh_ghost_blk => NULL()
          ! number of mesh blocks to be sent as ghosts. 1st: meshid, 2nd:
          ! topoid (both internal numbering)
-         INTEGER, DIMENSION(:,:)    , POINTER          :: ppm_mesh_ghost_nsend
+         INTEGER, DIMENSION(:,:)    , POINTER          :: ppm_mesh_ghost_nsend => NULL()
          ! number of mesh blocks to be recvd as ghosts. 1st: meshid, 2nd:
          ! topoid (both internal numbering)
-         INTEGER, DIMENSION(:,:)    , POINTER          :: ppm_mesh_ghost_nrecv
+         INTEGER, DIMENSION(:,:)    , POINTER          :: ppm_mesh_ghost_nrecv => NULL()
          ! list of target subs for ghost mesh blocks to be received,
          ! i.e. being ghost on the local processor (globel sub number).
          ! These are the subs where the blocks will serve as ghosts
          ! 1st index: meshblock ID, 2nd: meshid (internal numbering), 3rd:
          ! topoid (internal numbering)
-         INTEGER, DIMENSION(:,:,:), POINTER            ::    &
-     &       ppm_mesh_ghost_recvtosub
+         INTEGER, DIMENSION(:,:,:), POINTER            :: ppm_mesh_ghost_recvtosub => NULL()
          ! start (lower-left corner) of received ghost mesh block in GLOBAL
          ! mesh coordinates. First index: x,y[,z], 2nd: meshblock ID, 3rd:
          ! meshid (internal numbering), 4th: topoid (internal numbering)
-         INTEGER, DIMENSION(:,:,:,:), POINTER          ::    &
-     &       ppm_mesh_ghost_recvblkstart
+         INTEGER, DIMENSION(:,:,:,:), POINTER          :: ppm_mesh_ghost_recvblkstart => NULL()
          ! size (in grid points) of recvd ghost blocks. 1st index: x,y[,z], 2nd:
          ! meshblock ID, 3rd: meshid (internal numbering), 4th: topoid
          ! (internal numbering)
-         INTEGER, DIMENSION(:,:,:,:), POINTER          ::    &
-     &       ppm_mesh_ghost_recvblksize
-         ! mesh ghost block receive list. 1st index: target processor, 2nd: 
+         INTEGER, DIMENSION(:,:,:,:), POINTER          :: ppm_mesh_ghost_recvblksize => NULL()
+         ! mesh ghost block receive list. 1st index: target processor, 2nd:
          ! meshid (internal numbering), 3rd: topoid (internal numbering)
-         INTEGER, DIMENSION(:,:,:)  , POINTER          :: ppm_mesh_ghost_recvblk
+         INTEGER, DIMENSION(:,:,:)  , POINTER          :: ppm_mesh_ghost_recvblk => NULL()
 
       END MODULE ppm_module_data_mesh

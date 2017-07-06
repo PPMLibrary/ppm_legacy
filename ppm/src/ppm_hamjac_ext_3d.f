@@ -1,20 +1,20 @@
       !-------------------------------------------------------------------------
       !     Subroutine   :                ppm_hamjac_ext_3d
       !-------------------------------------------------------------------------
-      !     
+      !
       !     Purpose      : Solve Hamilton-Jacobi for Gowas extension
-      !      
-      !     Input        : 
-      !                    
-      !     Input/Output : 
-      !                    
-      !     Output       : 
-      !      
-      !     Remarks      : 
-      !                    
-      !     
+      !
+      !     Input        :
+      !
+      !     Input/Output :
+      !
+      !     Output       :
+      !
+      !     Remarks      :
+      !
+      !
       !     References   :
-      !     
+      !
       !     Revisions    :
       !-------------------------------------------------------------------------
       !     $Log: ppm_hamjac_ext_3d.f,v $
@@ -65,13 +65,13 @@
         USE ppm_module_substop
         USE ppm_module_map
         IMPLICIT NONE
-        
+
         INCLUDE 'mpif.h'
 
 #if    __KIND == __SINGLE_PRECISION
         INTEGER, PARAMETER :: MK = ppm_kind_single
         INTEGER, PARAMETER :: MPTYPE = MPI_REAL
-#elif  __KIND == __DOUBLE_PRECISION       
+#elif  __KIND == __DOUBLE_PRECISION
         INTEGER, PARAMETER :: MK = ppm_kind_double
         INTEGER, PARAMETER :: MPTYPE = MPI_DOUBLE_PRECISION
 #endif
@@ -85,7 +85,7 @@
 #elif __MODE == __VEC
         REAL(mk), DIMENSION(:,:,:,:,:), POINTER :: psi
         INTEGER, INTENT(in)                   :: lda
-#endif        
+#endif
         INTEGER, INTENT(in)                   :: topo_id, mesh_id
         INTEGER, DIMENSION(3), INTENT(in)     :: ghostsize
         INTEGER, INTENT(out)                  :: info
@@ -100,12 +100,12 @@
         REAL(mk), DIMENSION(:,:,:,:), POINTER :: tpsi
 #elif __MODE == __VEC
         REAL(mk), DIMENSION(:,:,:,:,:), POINTER :: tpsi
-#endif        
+#endif
         INTEGER                               :: nsublist
         INTEGER, DIMENSION(:,:), POINTER      :: ndata
         INTEGER                               :: topoid,meshid
         REAL(mk), DIMENSION(:,:), POINTER     :: min_phys, max_phys
-        
+
         !-----------------------------------------------------
         !  Local variables
         !-----------------------------------------------------
@@ -113,7 +113,7 @@
         INTEGER                               :: istep,iopt
 #if   __MODE == __SCA
         INTEGER                               :: ldl(4), ldu(4)
-#elif __MODE == __VEC        
+#elif __MODE == __VEC
         INTEGER                               :: ldl(5), ldu(5)
 #endif
         INTEGER                               :: ndata_max(3)
@@ -124,7 +124,7 @@
         !  Initialisation
         !-----------------------------------------------------
         CALL substart('ppm_hamjac_ext_3d',t0,info)
-        
+
         !-----------------------------------------------------
         !  Get the mesh data
         !-----------------------------------------------------
@@ -137,11 +137,12 @@
 #if    __KIND == __SINGLE_PRECISION
         min_phys => ppm_min_physs
         max_phys => ppm_max_physs
-#elif  __KIND == __DOUBLE_PRECISION       
+#elif  __KIND == __DOUBLE_PRECISION
         min_phys => ppm_min_physd
         max_phys => ppm_max_physd
 #endif
 
+        NULLIFY(tpsi)
 
         !-----------------------------------------------------
         !  RATIONALE Thu May 26 20:51:19 PDT 2005:
@@ -157,8 +158,8 @@
 #elif __MODE == __VEC
         ldl(1) = 1
         ldl(2:4) = 1- ghostsize(1:3); ldl(5) = 1
-#endif        
-        
+#endif
+
         ndata_max(1) = MAXVAL(ndata(1,1:nsublist))
         ndata_max(2) = MAXVAL(ndata(2,1:nsublist))
         ndata_max(3) = MAXVAL(ndata(3,1:nsublist))
@@ -174,7 +175,7 @@
         ldu(4)   = ndata_max(3) + ghostsize(3)
         ldu(5)   = nsublist
 #endif
-        
+
         iopt     = ppm_param_alloc_fit
         CALL ppm_alloc(tpsi,ldl,ldu,iopt,info)
         IF(info.NE.0) THEN
@@ -190,8 +191,8 @@
         dx(1)       = len_phys(1)/REAL(ppm_cart_mesh(meshid,topoid)%nm(1)-1,mk)
         dx(2)       = len_phys(2)/REAL(ppm_cart_mesh(meshid,topoid)%nm(2)-1,mk)
         dx(3)       = len_phys(3)/REAL(ppm_cart_mesh(meshid,topoid)%nm(3)-1,mk)
-        
-        
+
+
         !--- ready to blast
         maptype = ppm_param_map_init
         CALL ppm_map_field_ghost(phi,topo_id,mesh_id,ghostsize,maptype,info)
@@ -226,7 +227,7 @@
            CALL ppm_map_field_ghost(psi,lda,topo_id,mesh_id,ghostsize,maptype,info)
            maptype = ppm_param_map_pop
            CALL ppm_map_field_ghost(psi,lda,topo_id,mesh_id,ghostsize,maptype,info)
-#endif           
+#endif
            !     IF (ppm_debug .GT. 0) THEN
            !     ENDIF
 #if __MODE == __SCA
@@ -236,7 +237,7 @@
            CALL ppm_hamjac_ext_step (phi,psi,lda,tpsi,lres,topo_id,mesh_id&
                 &,                  ghostsize,info)
 #endif
-           
+
            DO isub=1,nsublist
               isubl = isublist(isub)
               DO k=1,ndata(3,isubl);DO j=1,ndata(2,isubl);DO i=1,ndata(1,isubl)
@@ -245,7 +246,7 @@
                  psi(i,j,k,isub) = tpsi(i,j,k,isub)
 #elif __MODE == __VEC
                  psi(1:lda,i,j,k,isub) = tpsi(1:lda,i,j,k,isub)
-#endif                 
+#endif
               END DO; END DO; END DO
            END DO
             CALL MPI_Allreduce(lres,gres,1,MPTYPE,MPI_MAX,ppm_comm,info)
@@ -277,9 +278,9 @@
 
 #if   __MODE == __SCA
 #if   __KIND == __SINGLE_PRECISION
-      END SUBROUTINE ppm_hamjac_ext_3ds 
+      END SUBROUTINE ppm_hamjac_ext_3ds
 #elif __KIND == __DOUBLE_PRECISION
-      END SUBROUTINE ppm_hamjac_ext_3dd 
+      END SUBROUTINE ppm_hamjac_ext_3dd
 #endif
 #elif __MODE == __VEC
 #if   __KIND == __SINGLE_PRECISION
@@ -290,9 +291,9 @@
 #endif
 
 
-        
-           
 
-        
-        
+
+
+
+
 

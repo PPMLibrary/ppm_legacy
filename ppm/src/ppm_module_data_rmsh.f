@@ -4,9 +4,9 @@
       !
       !  Purpose      : rmsh module
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
-      !  References   : 
+      !  References   :
       !
       !  Revisions    :
       !-------------------------------------------------------------------------
@@ -46,26 +46,26 @@
         INTEGER, PARAMETER :: max_defkernels = 4
 
         !  kernel sizes
-        INTEGER, DIMENSION(4) :: ppm_rmsh_kernelsize 
+        INTEGER, DIMENSION(4) :: ppm_rmsh_kernelsize
         DATA ppm_rmsh_kernelsize /1,2,2,3/
 
         !  internal weights
-        REAL(ppm_kind_single),   DIMENSION(:,:,:)      , POINTER :: wx1_s
-        REAL(ppm_kind_double),   DIMENSION(:,:,:)      , POINTER :: wx1_d
-        REAL(ppm_kind_single),   DIMENSION(:,:,:)      , POINTER :: wx2_s
-        REAL(ppm_kind_double),   DIMENSION(:,:,:)      , POINTER :: wx2_d
-        REAL(ppm_kind_single),   DIMENSION(:,:,:)      , POINTER :: wx3_s
-        REAL(ppm_kind_double),   DIMENSION(:,:,:)      , POINTER :: wx3_d    
+        REAL(ppm_kind_single),   DIMENSION(:,:,:)      , POINTER :: wx1_s => NULL()
+        REAL(ppm_kind_double),   DIMENSION(:,:,:)      , POINTER :: wx1_d => NULL()
+        REAL(ppm_kind_single),   DIMENSION(:,:,:)      , POINTER :: wx2_s => NULL()
+        REAL(ppm_kind_double),   DIMENSION(:,:,:)      , POINTER :: wx2_d => NULL()
+        REAL(ppm_kind_single),   DIMENSION(:,:,:)      , POINTER :: wx3_s => NULL()
+        REAL(ppm_kind_double),   DIMENSION(:,:,:)      , POINTER :: wx3_d => NULL()
 
         !  internal fields
-        REAL(ppm_kind_single),   DIMENSION(:,:,:,:)    , POINTER :: tuc_2ds
-        REAL(ppm_kind_double),   DIMENSION(:,:,:,:)    , POINTER :: tuc_2dd
-        REAL(ppm_kind_single),   DIMENSION(:,:,:,:,:)  , POINTER :: tuc_3ds
-        REAL(ppm_kind_double),   DIMENSION(:,:,:,:,:)  , POINTER :: tuc_3dd
+        REAL(ppm_kind_single),   DIMENSION(:,:,:,:)    , POINTER :: tuc_2ds => NULL()
+        REAL(ppm_kind_double),   DIMENSION(:,:,:,:)    , POINTER :: tuc_2dd => NULL()
+        REAL(ppm_kind_single),   DIMENSION(:,:,:,:,:)  , POINTER :: tuc_3ds => NULL()
+        REAL(ppm_kind_double),   DIMENSION(:,:,:,:,:)  , POINTER :: tuc_3dd => NULL()
 
         !  internal particle lists
-        INTEGER          ,       DIMENSION(:,:)        , POINTER :: list_sub
-        INTEGER          ,       DIMENSION(:  )        , POINTER :: store_info
+        INTEGER          ,       DIMENSION(:,:)        , POINTER :: list_sub => NULL()
+        INTEGER          ,       DIMENSION(:  )        , POINTER :: store_info => NULL()
 
 
         !  fill data
@@ -76,4 +76,4 @@
       END MODULE ppm_module_data_rmsh
 
 
-      
+

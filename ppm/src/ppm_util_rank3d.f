@@ -2,8 +2,8 @@
       !  Subroutine   :                 ppm_util_rank3d
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : Sort particles in cells. Create index table to 
-      !                 particles and pointer to first particle in 
+      !  Purpose      : Sort particles in cells. Create index table to
+      !                 particles and pointer to first particle in
       !                 each cell.
       !
       !  Input        : xp(:,:)    (F) particle co-ordinates
@@ -34,15 +34,15 @@
       !                 lhbx(nbx+1)(I) pointer to first particle (in lpdx)
       !                                in each cell
       !
-      !  Remarks      : Two do loops do not vectorize. 
+      !  Remarks      : Two do loops do not vectorize.
       !
       !                 The routine uses no (0) automatic arrays.
       !
-      !                 The particles in cell ibox are: 
+      !                 The particles in cell ibox are:
       !                     lpdx(lhbx(ibox):lhbx(ibox+1)-1)
       !                 We are not using linked lists! as they do not
       !                 vectorize !
-      !       
+      !
       !                 We are not using automatic arrays as they do not
       !                 tell you if the resources are exhausted!
       !
@@ -69,9 +69,9 @@
       !  Cosmetics in Log header.
       !
       !  Revision 1.16  2004/10/28 12:38:18  davidch
-      !  Fixed numerical bug in cell lists that resulted in real particles 
-      !  being treated as ghosts and vice versa. The new ranking and cell 
-      !  list routines are supposed to be exact. All epsilons that were added 
+      !  Fixed numerical bug in cell lists that resulted in real particles
+      !  being treated as ghosts and vice versa. The new ranking and cell
+      !  list routines are supposed to be exact. All epsilons that were added
       !  to the domains in order to prevent the mentioned problems were
       !  removed since they are no longer needed.
       !  Modified Files:
@@ -169,18 +169,18 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
       INTEGER                 , INTENT(IN   ) :: Np
       REAL(MK), DIMENSION(:)  , INTENT(IN   ) :: xmin,xmax
-      INTEGER , DIMENSION(:)  , INTENT(IN   ) :: Nm     
-      INTEGER , DIMENSION(:)  , INTENT(IN   ) :: Ngl     
+      INTEGER , DIMENSION(:)  , INTENT(IN   ) :: Nm
+      INTEGER , DIMENSION(:)  , INTENT(IN   ) :: Ngl
       INTEGER , DIMENSION(:)  , POINTER       :: lpdx
       INTEGER , DIMENSION(:)  , POINTER       :: lhbx
       INTEGER                 , INTENT(INOUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       ! cell mesh spacing
       REAL(MK)                                :: rdx,rdy,rdz
@@ -197,7 +197,7 @@
       INTEGER                                 :: n2,nbox,ibox
       ! work arrays: box idx of each particle, write pointer, number of
       ! particles per box
-      INTEGER, DIMENSION(:), POINTER          :: pbox 
+      INTEGER, DIMENSION(:), POINTER          :: pbox
       INTEGER, DIMENSION(:), POINTER          :: cbox
       INTEGER, DIMENSION(:)   , POINTER       :: npbx
       ! total number of cells in each direction (including ghost layers)
@@ -207,9 +207,9 @@
       INTEGER, DIMENSION(1)                   :: ldc
       INTEGER                                 :: iopt
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
       !  Initialise
       !-------------------------------------------------------------------------
@@ -301,6 +301,8 @@
          ENDIF
       ENDIF
 
+      NULLIFY(cbox,pbox,npbx)
+
       !-------------------------------------------------------------------------
       !  Compute total number of mesh cells (global and in each direction)
       !-------------------------------------------------------------------------
@@ -308,7 +310,7 @@
       Nmtot(2) = Nm(2) + Ngl(2) + Ngl(5)
       Nmtot(3) = Nm(3) + Ngl(3) + Ngl(6)
       nbox  = Nmtot(1) * Nmtot(2) * Nmtot(3)
-      
+
       !-------------------------------------------------------------------------
       !  Allocate memory
       !-------------------------------------------------------------------------
@@ -401,7 +403,7 @@
      &          __LINE__,info)
          ENDIF
       ENDIF
-     
+
       !-------------------------------------------------------------------------
       !  Find the location of the particles in the boxes. This vectorizes.
       !-------------------------------------------------------------------------
@@ -415,20 +417,20 @@
          !  wrong results with negative box indices!
          !----------------------------------------------------------------------
          !----------------------------------------------------------------------
-         !  The subtraction has to come before the multiplication due to 
+         !  The subtraction has to come before the multiplication due to
          !  Nummerical errors. (dach)
          !----------------------------------------------------------------------
          i = FLOOR((xp(1,ipart) - x0) * rdx) + Ngl(1)
          j = FLOOR((xp(2,ipart) - y0) * rdy) + Ngl(2)
          k = FLOOR((xp(3,ipart) - z0) * rdz) + Ngl(3)
-         
+
          ! The calculated indices are only correct on the lower boundary.
-         ! On the upper boundary it may happen that particles inside the 
+         ! On the upper boundary it may happen that particles inside the
          ! physical subdomain get an index of a "ghost" cell
          ! We therefore have to test for that and correct this error...
-         
+
          ! if particle is outside the physical domain but index belongs to a
-         ! real cell -> move particle to ghost cell 
+         ! real cell -> move particle to ghost cell
          if (xp(1,ipart) .GE. xmax(1) .AND. i .LT. Nm(1)+Ngl(1)) THEN
             i = Nm(1) + Ngl(1)
             icorr = icorr + 1
@@ -441,7 +443,7 @@
             k = Nm(3) + Ngl(3)
             icorr = icorr + 1
          ENDIF
-         
+
          ! if particle is inside the physical domain but index belongs to a
          ! ghost cell -> move particle in real cell
          if (xp(1,ipart) .LT. xmax(1) .AND. i .GE. Nm(1)+Ngl(1)) THEN
@@ -463,7 +465,7 @@
      &       (j .GE. 0 .AND. j .LT. Nmtot(2)) .AND.  &
      &       (k .GE. 0 .AND. k .LT. Nmtot(3))) THEN
             icount      = icount + 1
-            ibox        = i + 1 + j*Nmtot(1) + k*n2 
+            ibox        = i + 1 + j*Nmtot(1) + k*n2
             pbox(ipart) = ibox
          ELSE
             ! particle is in no box
@@ -482,7 +484,7 @@
       !-------------------------------------------------------------------------
       !  Allocate the index array of proper size which is number of
       !  particles in the mesh region (does not need to be the full
-      !  processor 
+      !  processor
       !  domain!)
       !-------------------------------------------------------------------------
       i = 0
@@ -506,7 +508,7 @@
       ENDDO
 
       !-------------------------------------------------------------------------
-      !  Initialize the particle box pointer and the local counter (this 
+      !  Initialize the particle box pointer and the local counter (this
       !  vectorizes)
       !-------------------------------------------------------------------------
       cbox(1) = 1
@@ -558,7 +560,7 @@
             info = ppm_error_error
             CALL ppm_error(ppm_err_part_unass,'ppm_util_rank3d',msg,__LINE__,j)
             GOTO 9999
-         ENDIF 
+         ENDIF
       ENDIF
 
       !-------------------------------------------------------------------------

@@ -2,73 +2,73 @@
       !  Subroutine   :               ppm_map_part_ghost_get
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : This routine maps/adds the ghost particles on the 
-      !                 current topology. This routine is similar to the 
-      !                 partial mapping routine (ppm_map_part_partial) in the 
-      !                 sense that the ghost particles are assumed to be 
+      !  Purpose      : This routine maps/adds the ghost particles on the
+      !                 current topology. This routine is similar to the
+      !                 partial mapping routine (ppm_map_part_partial) in the
+      !                 sense that the ghost particles are assumed to be
       !                 located on neighbouring processors only, and thus only
-      !                 require a nearest neighbour communication. 
-      ! 
+      !                 require a nearest neighbour communication.
+      !
       !  Input        : xp(:,:)      (F) : the position of the particles
       !                 lda          (I) : leading dimension of xp
       !                 Npart        (I) : the number of particles (on the
       !                                    local processor)
-      !                 isymm        (I) : indicator for the use of symmetry 
+      !                 isymm        (I) : indicator for the use of symmetry
       !                                    isymm > 0 use symmetry
       !                                    isymm = 0 do not use symmetry
       !                 ghostsize    (F) : the size of the ghost layer
-      !                                    
+      !
       !  Input/output : info         (I) : return status, 0 on success
       !
-      !  Remarks      : This routine SHOULD be efficient - since it will be 
+      !  Remarks      : This routine SHOULD be efficient - since it will be
       !                 called frequently. One way of improving (?) the
-      !                 performance is to use the cell lists to find the 
+      !                 performance is to use the cell lists to find the
       !                 potential ghosts.
       !
       !                 This routine should be split in several routines !
       !
-      !                 The ghosts are found in three steps: 
+      !                 The ghosts are found in three steps:
       !
       !                    1) consider ghosts within the local processor
       !                    2) consider ghosts on neighbouring processors
       !                    1) consider ghosts on periodic images of neighbouring
       !                       processors
-      !                  
+      !
       !                 Comments:
-      !                  
+      !
       !                 1) local ghosts comes in two types: ghost that exists
-      !                    because two sub domains touch, and ghosts across a 
+      !                    because two sub domains touch, and ghosts across a
       !                    periodic boundary. The first is automatically handled
-      !                    by the particles - and no copy or/and send is 
-      !                    required. The second ghosts could be handled during 
-      !                    the calculation of the interactions, but this would 
-      !                    require a check for periodicity and no explicit 
+      !                    by the particles - and no copy or/and send is
+      !                    required. The second ghosts could be handled during
+      !                    the calculation of the interactions, but this would
+      !                    require a check for periodicity and no explicit
       !                    ghosts from the processor itself. However, it seems
       !                    more natural to have ghosts - irrespectively of their
-      !                    origin, so ghosts from periodicity (on the same 
+      !                    origin, so ghosts from periodicity (on the same
       !                    processor) are copied here.
       !
       !                 2) is standard procedure
-      ! 
+      !
       !                 3) is handled by copying particles that are adjacent to
       !                    faces on a physical boundary to their image position.
       !
       !                 Now, item 2) and 3) can be treated within the same logic
       !                 whereas 1) require a bit of thought: to keep the source
       !                 compact, we could loop over all processors including
-      !                 the local one and check for ghosts - the problem with 
+      !                 the local one and check for ghosts - the problem with
       !                 this procedure is, that we check for ghosts by comparing
-      !                 the location of particles within the extended subs 
-      !                 boundaries (and not their true ghost layer - which 
-      !                 would result in more IFs than necessary). However, 
-      !                 because of this, looping over the processor itself 
-      !                 would find ghosts that are not really ghost - the only 
-      !                 ghosts that should be found in this step are those due 
+      !                 the location of particles within the extended subs
+      !                 boundaries (and not their true ghost layer - which
+      !                 would result in more IFs than necessary). However,
+      !                 because of this, looping over the processor itself
+      !                 would find ghosts that are not really ghost - the only
+      !                 ghosts that should be found in this step are those due
       !                 to periodicity.  The solution is to store the ghosts as
-      !                 ighost() with nghost denoting the total number of 
-      !                 ghosts (excluding those due to periodicity) and 
-      !                 nghostplus the total number of ghosts. During the loop 
-      !                 over the processor itself we therefore only need to 
+      !                 ighost() with nghost denoting the total number of
+      !                 ghosts (excluding those due to periodicity) and
+      !                 nghostplus the total number of ghosts. During the loop
+      !                 over the processor itself we therefore only need to
       !                 loop from nghost+1,nghostplus.
       !
       !  References   :
@@ -116,7 +116,7 @@
       !  Changed to single-interface modules and adapted all USE statements.
       !
       !  Revision 1.7  2004/07/15 14:16:57  walther
-      !  Bug fix: a ghost could incorrectly be send more than once to a 
+      !  Bug fix: a ghost could incorrectly be send more than once to a
       !  processor; introducing the lghost(:) array fixed this problem.
       !
       !  Revision 1.6  2004/07/07 13:09:35  walther
@@ -149,10 +149,10 @@
       SUBROUTINE ppm_map_part_ghost_get_s(xp,lda,Npart,isymm,ghostsize,info)
 #elif  __KIND == __DOUBLE_PRECISION
       SUBROUTINE ppm_map_part_ghost_get_d(xp,lda,Npart,isymm,ghostsize,info)
-#endif 
+#endif
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -166,7 +166,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
       REAL(MK)                , INTENT(IN   ) :: ghostsize
@@ -174,7 +174,7 @@
       INTEGER                 , INTENT(IN   ) :: isymm
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER, DIMENSION(3) :: ldu
       INTEGER               :: i,j,k,topoid,isub
@@ -192,13 +192,16 @@
       ! number of periodic directions: between 0 and ppm_dim
       INTEGER               :: iperiodic
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_map_part_ghost_get',t0,info)
+
+      NULLIFY(xt,xt_offset)
+
       topoid = ppm_topoid
 
       !-------------------------------------------------------------------------
@@ -211,7 +214,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Save the map type for the subsequent calls 
+      !  Save the map type for the subsequent calls
       !-------------------------------------------------------------------------
       ppm_map_type = ppm_param_map_ghost_get
 
@@ -258,8 +261,8 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  List ilist1() holds the particles we are currently considering 
-      !  List ilist2() holds the particles that have not yet been associated 
+      !  List ilist1() holds the particles we are currently considering
+      !  List ilist2() holds the particles that have not yet been associated
       !  with a sub, and ghost() holds the ghosts
       !-------------------------------------------------------------------------
       DO i=1,Npart
@@ -273,7 +276,7 @@
       !  Fill the list with particles that are within the reach of the ghost
       !  regions of other subs. We do that by looping over the subs belonging
       !  to this processor and checking if the particles are well within the
-      !  sub. If this is the case, the particle will never be a ghost 
+      !  sub. If this is the case, the particle will never be a ghost
       !-------------------------------------------------------------------------
       DO k=1,ppm_nsublist(topoid)
          !----------------------------------------------------------------------
@@ -299,7 +302,7 @@
          IF (ppm_dim.EQ.3) THEN
             zminf = ppm_min_subd(3,isub,topoid)
             zmaxf = ppm_max_subd(3,isub,topoid)
-         ENDIF 
+         ENDIF
 #else
          xminf = ppm_min_subs(1,isub,topoid)
          xmaxf = ppm_max_subs(1,isub,topoid)
@@ -317,9 +320,9 @@
          !----------------------------------------------------------------------
          IF (isymm.GT.0) THEN
             !-------------------------------------------------------------------
-            !  if we use symmetry the upper/right part of our sub will have 
-            !  ghosts and therefore the particle at the upper/right part of the 
-            !  sub cannot be ghosts on other processors. Thus the ghosts must 
+            !  if we use symmetry the upper/right part of our sub will have
+            !  ghosts and therefore the particle at the upper/right part of the
+            !  sub cannot be ghosts on other processors. Thus the ghosts must
             !  be found at the lower/left of the sub
             !-------------------------------------------------------------------
             xmini = xminf + ghostsize
@@ -327,14 +330,14 @@
 
             ymini = yminf + ghostsize
             ymaxi = ymaxf
- 
+
             IF (ppm_dim.EQ.3) THEN
                zmini = zminf + ghostsize
                zmaxi = zmaxf
-            ENDIF 
+            ENDIF
          ELSE
             !-------------------------------------------------------------------
-            !  if we do not use symmetry, the particles along the entire 
+            !  if we do not use symmetry, the particles along the entire
             !  boundary of the sub will be ghosts on other processors
             !-------------------------------------------------------------------
             xmini = xminf + ghostsize
@@ -346,8 +349,8 @@
             IF (ppm_dim.EQ.3) THEN
                zmini = zminf + ghostsize
                zmaxi = zmaxf - ghostsize
-            ENDIF 
-         ENDIF 
+            ENDIF
+         ENDIF
 
          !----------------------------------------------------------------------
          !  loop over the remaining particles
@@ -358,28 +361,28 @@
                !  get the particle index
                !----------------------------------------------------------------
                ipart = ilist1(j)
-   
+
                !----------------------------------------------------------------
                !  check if the particles belongs to this sub
                !----------------------------------------------------------------
                IF (xp(1,ipart).GE.xminf.AND.xp(1,ipart).LT.xmaxf.AND. &
      &             xp(2,ipart).GE.yminf.AND.xp(2,ipart).LT.ymaxf) THEN
                   !-------------------------------------------------------------
-                  !  if yes, check if the particles are in the ghost layer 
+                  !  if yes, check if the particles are in the ghost layer
                   !-------------------------------------------------------------
                   IF (xp(1,ipart).LT.xmini.OR.xp(1,ipart).GT.xmaxi.OR. &
      &                xp(2,ipart).LT.ymini.OR.xp(2,ipart).GT.ymaxi) THEN
                      !----------------------------------------------------------
                      !  if yes the particle will be a ghost somewhere
                      !----------------------------------------------------------
-                     nghost         = nghost + 1   
+                     nghost         = nghost + 1
                      ighost(nghost) = ipart
                      xt(1,nghost)   = xp(1,ipart)
                      xt(2,nghost)   = xp(2,ipart)
                      xt_offset(1,nghost) = 0.0_MK
                      xt_offset(2,nghost) = 0.0_MK
                   ENDIF
-               ELSE    
+               ELSE
                   !-------------------------------------------------------------
                   !  If not on this sub we need to consider it further
                   !-------------------------------------------------------------
@@ -393,7 +396,7 @@
                !  get the particle index
                !----------------------------------------------------------------
                ipart = ilist1(j)
-   
+
                !----------------------------------------------------------------
                !  check if the particles belongs to this sub
                !----------------------------------------------------------------
@@ -401,7 +404,7 @@
      &             xp(2,ipart).GE.yminf.AND.xp(2,ipart).LT.ymaxf.AND. &
      &             xp(3,ipart).GE.zminf.AND.xp(3,ipart).LT.zmaxf) THEN
                   !-------------------------------------------------------------
-                  !  if yes, check if the particles is in the ghost layer 
+                  !  if yes, check if the particles is in the ghost layer
                   !-------------------------------------------------------------
                   IF (xp(1,ipart).LT.xmini.OR.xp(1,ipart).GT.xmaxi.OR. &
      &                xp(2,ipart).LT.ymini.OR.xp(2,ipart).GT.ymaxi.OR. &
@@ -409,7 +412,7 @@
                      !----------------------------------------------------------
                      !  if yes the particle will be a ghost somewhere
                      !----------------------------------------------------------
-                     nghost         = nghost + 1   
+                     nghost         = nghost + 1
                      ighost(nghost) = ipart
                      xt(1,nghost)   = xp(1,ipart)
                      xt(2,nghost)   = xp(2,ipart)
@@ -418,7 +421,7 @@
                      xt_offset(2,nghost) = 0.0_MK
                      xt_offset(3,nghost) = 0.0_MK
                   ENDIF
-               ELSE    
+               ELSE
                   !-------------------------------------------------------------
                   !  If not on this sub we need to consider it further
                   !-------------------------------------------------------------
@@ -426,7 +429,7 @@
                   ilist2(nlist2) = ipart
                ENDIF
             ENDDO
-         ENDIF 
+         ENDIF
 
          !----------------------------------------------------------------------
          !  swap the lists
@@ -463,7 +466,7 @@
       DO k=1,ppm_dim
          IF (ppm_bcdef(2*k-1,topoid).EQ.ppm_param_bcdef_periodic) THEN
             iperiodic = iperiodic + 1
-         ENDIF 
+         ENDIF
       ENDDO
 
       !-------------------------------------------------------------------------
@@ -480,8 +483,8 @@
             iopt   = ppm_param_alloc_grow_preserve
             ldu(1) = ppm_dim
             ldu(2) = 2*nghostplus
-            CALL ppm_alloc(xt,ldu,iopt,info) 
-            CALL ppm_alloc(xt_offset,ldu,iopt,info) 
+            CALL ppm_alloc(xt,ldu,iopt,info)
+            CALL ppm_alloc(xt_offset,ldu,iopt,info)
             IF (info.NE.0) THEN
                info = ppm_error_fatal
                CALL ppm_error(ppm_err_alloc,'ppm_map_part_ghost_get',     &
@@ -490,7 +493,7 @@
             ENDIF
 
             ldu(1) = ldu(2)
-            CALL ppm_alloc(ighost,ldu,iopt,info) 
+            CALL ppm_alloc(ighost,ldu,iopt,info)
             IF (info.NE.0) THEN
                 info = ppm_error_fatal
                 CALL ppm_error(ppm_err_alloc,'ppm_map_part_ghost_get',     &
@@ -502,16 +505,16 @@
             !  copy periodic ghosts in the x-direction
             !-------------------------------------------------------------------
 #if    __KIND == __SINGLE_PRECISION
-            xminf = ppm_min_physs(1,topoid) 
+            xminf = ppm_min_physs(1,topoid)
             xmini = ppm_min_physs(1,topoid) + ghostsize
 #else
-            xminf = ppm_min_physd(1,topoid) 
+            xminf = ppm_min_physd(1,topoid)
             xmini = ppm_min_physd(1,topoid) + ghostsize
 #endif
             k     = nghostplus
             DO i=1,nghostplus
                !----------------------------------------------------------------
-               !  first those at the west boundary 
+               !  first those at the west boundary
                !----------------------------------------------------------------
                IF (xt(1,i).GE.xminf.AND.xt(1,i).LT.xmini) THEN
                   k         = k + 1
@@ -523,7 +526,7 @@
                   IF (ppm_dim.EQ.3) THEN
                      xt(3,k)   = xt(3,i)
                      xt_offset(3,k) = 0.0_MK
-                  ENDIF 
+                  ENDIF
                ENDIF
             ENDDO
             IF (isymm.EQ.0) THEN
@@ -531,10 +534,10 @@
                !  then the east bc, but only if we are not using symmetry
                !----------------------------------------------------------------
 #if    __KIND == __SINGLE_PRECISION
-               xmaxf = ppm_max_physs(1,topoid) 
+               xmaxf = ppm_max_physs(1,topoid)
                xmaxi = ppm_max_physs(1,topoid) - ghostsize
 #else
-               xmaxf = ppm_max_physd(1,topoid) 
+               xmaxf = ppm_max_physd(1,topoid)
                xmaxi = ppm_max_physd(1,topoid) - ghostsize
 #endif
                DO i=1,nghostplus
@@ -548,16 +551,16 @@
                      IF (ppm_dim.EQ.3) THEN
                         xt(3,k)   = xt(3,i)
                         xt_offset(3,k) = 0.0_MK
-                     ENDIF 
+                     ENDIF
                   ENDIF
                ENDDO
-            ENDIF 
+            ENDIF
 
             !-------------------------------------------------------------------
             !  update the ghost counter
             !-------------------------------------------------------------------
             nghostplus = k
-         ENDIF ! of periodicity in x 
+         ENDIF ! of periodicity in x
 
          !----------------------------------------------------------------------
          !  handle periodicity in y
@@ -569,8 +572,8 @@
             iopt   = ppm_param_alloc_grow_preserve
             ldu(1) = ppm_dim
             ldu(2) = 2*nghostplus
-            CALL ppm_alloc(xt,ldu,iopt,info) 
-            CALL ppm_alloc(xt_offset,ldu,iopt,info) 
+            CALL ppm_alloc(xt,ldu,iopt,info)
+            CALL ppm_alloc(xt_offset,ldu,iopt,info)
             IF (info.NE.0) THEN
                info = ppm_error_fatal
                CALL ppm_error(ppm_err_alloc,'ppm_map_part_ghost_get',     &
@@ -579,7 +582,7 @@
             ENDIF
 
             ldu(1) = ldu(2)
-            CALL ppm_alloc(ighost,ldu,iopt,info) 
+            CALL ppm_alloc(ighost,ldu,iopt,info)
             IF (info.NE.0) THEN
                 info = ppm_error_fatal
                 CALL ppm_error(ppm_err_alloc,'ppm_map_part_ghost_get',     &
@@ -591,28 +594,28 @@
             !  copy periodic ghosts in the y-direction
             !-------------------------------------------------------------------
 #if    __KIND == __SINGLE_PRECISION
-            yminf = ppm_min_physs(2,topoid) 
+            yminf = ppm_min_physs(2,topoid)
             ymini = ppm_min_physs(2,topoid) + ghostsize
 #else
-            yminf = ppm_min_physd(2,topoid) 
+            yminf = ppm_min_physd(2,topoid)
             ymini = ppm_min_physd(2,topoid) + ghostsize
 #endif
             k     = nghostplus
             DO i=1,nghostplus
                !----------------------------------------------------------------
-               !  first those at the south boundary 
+               !  first those at the south boundary
                !----------------------------------------------------------------
                IF (xt(2,i).GE.yminf.AND.xt(2,i).LT.ymini) THEN
                   k         = k + 1
                   ighost(k) = ighost(i)
-                  xt(1,k)   = xt(1,i) 
+                  xt(1,k)   = xt(1,i)
                   xt(2,k)   = xt(2,i) + len_phys(2)
                   xt_offset(1,k) = 0.0_MK
                   xt_offset(2,k) = len_phys(2)
                   IF (ppm_dim.EQ.3) THEN
                      xt(3,k)   = xt(3,i)
                      xt_offset(3,k) = 0.0_MK
-                  ENDIF 
+                  ENDIF
                ENDIF
             ENDDO
             IF (isymm.EQ.0) THEN
@@ -620,10 +623,10 @@
                !  then the north bc, but only if we are not using symmetry
                !----------------------------------------------------------------
 #if    __KIND == __SINGLE_PRECISION
-               ymaxf = ppm_max_physs(2,topoid) 
+               ymaxf = ppm_max_physs(2,topoid)
                ymaxi = ppm_max_physs(2,topoid) - ghostsize
 #else
-               ymaxf = ppm_max_physd(2,topoid) 
+               ymaxf = ppm_max_physd(2,topoid)
                ymaxi = ppm_max_physd(2,topoid) - ghostsize
 #endif
                DO i=1,nghostplus
@@ -637,16 +640,16 @@
                      IF (ppm_dim.EQ.3) THEN
                         xt(3,k)   = xt(3,i)
                         xt_offset(3,k) = 0.0_MK
-                     ENDIF 
+                     ENDIF
                   ENDIF
                ENDDO
-            ENDIF 
+            ENDIF
 
             !-------------------------------------------------------------------
             !  update the ghost counter
             !-------------------------------------------------------------------
             nghostplus = k
-         ENDIF ! of periodicity in y 
+         ENDIF ! of periodicity in y
 
          !----------------------------------------------------------------------
          !  handle periodicity in z (if 3D)
@@ -664,8 +667,8 @@
                iopt   = ppm_param_alloc_grow_preserve
                ldu(1) = ppm_dim
                ldu(2) = 2*nghostplus
-               CALL ppm_alloc(xt,ldu,iopt,info) 
-               CALL ppm_alloc(xt_offset,ldu,iopt,info) 
+               CALL ppm_alloc(xt,ldu,iopt,info)
+               CALL ppm_alloc(xt_offset,ldu,iopt,info)
                IF (info.NE.0) THEN
                   info = ppm_error_fatal
                   CALL ppm_error(ppm_err_alloc,'ppm_map_part_ghost_get',     &
@@ -674,7 +677,7 @@
                ENDIF
 
                ldu(1) = ldu(2)
-               CALL ppm_alloc(ighost,ldu,iopt,info) 
+               CALL ppm_alloc(ighost,ldu,iopt,info)
                IF (info.NE.0) THEN
                    info = ppm_error_fatal
                    CALL ppm_error(ppm_err_alloc,'ppm_map_part_ghost_get',     &
@@ -686,21 +689,21 @@
                !  copy periodic ghosts in the z-direction
                !----------------------------------------------------------------
 #if    __KIND == __SINGLE_PRECISION
-               zminf = ppm_min_physs(3,topoid) 
+               zminf = ppm_min_physs(3,topoid)
                zmini = ppm_min_physs(3,topoid) + ghostsize
 #else
-               zminf = ppm_min_physd(3,topoid) 
+               zminf = ppm_min_physd(3,topoid)
                zmini = ppm_min_physd(3,topoid) + ghostsize
 #endif
-               k     = nghostplus 
+               k     = nghostplus
                DO i=1,nghostplus
                   !-------------------------------------------------------------
-                  !  first those at the south boundary 
+                  !  first those at the south boundary
                   !-------------------------------------------------------------
                   IF (xt(3,i).GE.zminf.AND.xt(3,i).LT.zmini) THEN
                      k         = k + 1
                      ighost(k) = ighost(i)
-                     xt(1,k)   = xt(1,i) 
+                     xt(1,k)   = xt(1,i)
                      xt(2,k)   = xt(2,i)
                      xt(3,k)   = xt(3,i) + len_phys(3)
 
@@ -714,10 +717,10 @@
                   !  then the north bc, but only if we are not using symmetry
                   !-------------------------------------------------------------
 #if    __KIND == __SINGLE_PRECISION
-                  zmaxf = ppm_max_physs(3,topoid) 
+                  zmaxf = ppm_max_physs(3,topoid)
                   zmaxi = ppm_max_physs(3,topoid) - ghostsize
 #else
-                  zmaxf = ppm_max_physd(3,topoid) 
+                  zmaxf = ppm_max_physd(3,topoid)
                   zmaxi = ppm_max_physd(3,topoid) - ghostsize
 #endif
                   DO i=1,nghostplus
@@ -725,23 +728,23 @@
                         k         = k + 1
                         ighost(k) = ighost(i)
                         xt(1,k)   = xt(1,i)
-                        xt(2,k)   = xt(2,i) 
+                        xt(2,k)   = xt(2,i)
                         xt(3,k)   = xt(3,i) - len_phys(3)
                      ENDIF
                   ENDDO
-               ENDIF 
+               ENDIF
 
                !----------------------------------------------------------------
                !  update the ghost counter
                !----------------------------------------------------------------
                nghostplus = k
-            ENDIF ! of periodicity in y 
+            ENDIF ! of periodicity in y
          ENDIF ! of 3D
       ENDIF ! of periodicity at all/any direction
 
       !-------------------------------------------------------------------------
-      !  Ok, now we have a shorter list of potential ghosts to search 
-      !  allocate memory for the lghosts 
+      !  Ok, now we have a shorter list of potential ghosts to search
+      !  allocate memory for the lghosts
       !-------------------------------------------------------------------------
       iopt   = ppm_param_alloc_fit
       ldu(1) = nghostplus
@@ -854,14 +857,14 @@
 
       !-------------------------------------------------------------------------
       !  Well we only do the stuff for real if we have periodicity !
-      !  (Re)allocate memory for the send buffer. The required size of these 
+      !  (Re)allocate memory for the send buffer. The required size of these
       !  arrays is not easy to compute. The first step (step 1) require at
       !  most ppm_nsublist(topoid)*(nghostplus - nghost)*ppm_dim. The arrays
       !  are resized further below during step 2 and 3.
       !-------------------------------------------------------------------------
       IF (iperiodic.GT.0) THEN
          !----------------------------------------------------------------------
-         !  Well we can grow or fit the arrays - a matter of taste 
+         !  Well we can grow or fit the arrays - a matter of taste
          !----------------------------------------------------------------------
          iopt   = ppm_param_alloc_grow
          ldu(1) = ppm_dim*(nghostplus - nghost)*ppm_nsublist(topoid)
@@ -906,10 +909,10 @@
             !-------------------------------------------------------------------
             !  Get the global ID of the sub
             !-------------------------------------------------------------------
-            isub = ppm_isublist(j,topoid) 
+            isub = ppm_isublist(j,topoid)
 
             !-------------------------------------------------------------------
-            !  Define the extended resize of this sub 
+            !  Define the extended resize of this sub
             !-------------------------------------------------------------------
             IF (isymm.GT.0) THEN
                !----------------------------------------------------------------
@@ -919,25 +922,25 @@
 #if __KIND == __SINGLE_PRECISION
                xmini = ppm_min_subs(1,isub,topoid)
                xmaxi = ppm_max_subs(1,isub,topoid) + ghostsize
-   
+
                ymini = ppm_min_subs(2,isub,topoid)
                ymaxi = ppm_max_subs(2,isub,topoid) + ghostsize
-   
+
                IF (ppm_dim.EQ.3) THEN
                   zmini = ppm_min_subs(3,isub,topoid)
                   zmaxi = ppm_max_subs(3,isub,topoid) + ghostsize
-               ENDIF 
+               ENDIF
 #else
                xmini = ppm_min_subd(1,isub,topoid)
                xmaxi = ppm_max_subd(1,isub,topoid) + ghostsize
-   
+
                ymini = ppm_min_subd(2,isub,topoid)
                ymaxi = ppm_max_subd(2,isub,topoid) + ghostsize
-   
+
                IF (ppm_dim.EQ.3) THEN
                   zmini = ppm_min_subd(3,isub,topoid)
                   zmaxi = ppm_max_subd(3,isub,topoid) + ghostsize
-               ENDIF 
+               ENDIF
 #endif
             ELSE
                !----------------------------------------------------------------
@@ -946,33 +949,33 @@
 #if __KIND == __SINGLE_PRECISION
                xmini = ppm_min_subs(1,isub,topoid) - ghostsize
                xmaxi = ppm_max_subs(1,isub,topoid) + ghostsize
-   
+
                ymini = ppm_min_subs(2,isub,topoid) - ghostsize
                ymaxi = ppm_max_subs(2,isub,topoid) + ghostsize
-   
+
                IF (ppm_dim.EQ.3) THEN
                   zmini = ppm_min_subs(3,isub,topoid) - ghostsize
                   zmaxi = ppm_max_subs(3,isub,topoid) + ghostsize
-               ENDIF 
+               ENDIF
 #else
                xmini = ppm_min_subd(1,isub,topoid) - ghostsize
                xmaxi = ppm_max_subd(1,isub,topoid) + ghostsize
-   
+
                ymini = ppm_min_subd(2,isub,topoid) - ghostsize
                ymaxi = ppm_max_subd(2,isub,topoid) + ghostsize
-   
+
                IF (ppm_dim.EQ.3) THEN
                   zmini = ppm_min_subd(3,isub,topoid) - ghostsize
                   zmaxi = ppm_max_subd(3,isub,topoid) + ghostsize
-               ENDIF 
+               ENDIF
 #endif
-            ENDIF 
+            ENDIF
 
             !-------------------------------------------------------------------
-            !  Reallocate the arrays: ppm_sendbuffers/d and ppm_buffer2part. 
-            !  The required size is the current size minus the current use plus 
+            !  Reallocate the arrays: ppm_sendbuffers/d and ppm_buffer2part.
+            !  The required size is the current size minus the current use plus
             !  the maximum increment (nghostplus-nghost).
-            !  We perform a grow_preserve to preserve the contents but only to 
+            !  We perform a grow_preserve to preserve the contents but only to
             !  reallocate if an increased size is required.
             !-------------------------------------------------------------------
             iopt   = ppm_param_alloc_grow_preserve
@@ -982,7 +985,7 @@
      &                     (nghostplus - nghost - ibuffer)*ppm_dim
                ELSE
                   ldu(1) = (nghostplus - ibuffer)*ppm_dim
-               ENDIF 
+               ENDIF
                CALL ppm_alloc(ppm_sendbufferd,ldu,iopt,info)
                CALL ppm_alloc(ppm_ghost_offsetd,ldu,iopt,info)
             ELSE
@@ -990,8 +993,8 @@
                   ldu(1) = SIZE(ppm_sendbuffers) + &
      &                     (nghostplus - nghost - ibuffer)*ppm_dim
                ELSE
-                  ldu(1) = (nghostplus - nghost - ibuffer)*ppm_dim 
-               ENDIF 
+                  ldu(1) = (nghostplus - nghost - ibuffer)*ppm_dim
+               ENDIF
                CALL ppm_alloc(ppm_sendbuffers,ldu,iopt,info)
                CALL ppm_alloc(ppm_ghost_offsets,ldu,iopt,info)
             ENDIF
@@ -1006,7 +1009,7 @@
                ldu(1) = SIZE(ppm_buffer2part) + nghostplus - nghost - iset
             ELSE
                ldu(1) = nghostplus - nghost - iset
-            ENDIF 
+            ENDIF
             CALL ppm_alloc(ppm_buffer2part,ldu,iopt,info)
             IF (info .NE. 0) THEN
                 info = ppm_error_fatal
@@ -1024,7 +1027,7 @@
                !----------------------------------------------------------------
                DO i=nghost+1,nghostplus
                   !-------------------------------------------------------------
-                  !  and check if it is inside the ghost region 
+                  !  and check if it is inside the ghost region
                   !-------------------------------------------------------------
                   IF (xt(1,i).GT.xmini.AND.xt(1,i).LT.xmaxi.AND. &
      &                xt(2,i).GT.ymini.AND.xt(2,i).LT.ymaxi.AND.lghost(i)) THEN
@@ -1037,61 +1040,61 @@
                      !  found one - increment the buffer counter
                      !----------------------------------------------------------
                      iset                  = iset + 1
-   
+
                      !----------------------------------------------------------
                      !  store the ID of the particles
                      !----------------------------------------------------------
                      ppm_buffer2part(iset) = ighost(i)
-   
+
                      !----------------------------------------------------------
                      !  store the particle
                      !----------------------------------------------------------
                      IF (ppm_kind.EQ.ppm_kind_double) THEN
 #if    __KIND == __SINGLE_PRECISION
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbufferd(ibuffer)   = REAL(xt(1,i),        &
      &                       ppm_kind_double)
                          ppm_ghost_offsetd(ibuffer) = REAL(xt_offset(1,i), &
      &                       ppm_kind_double)
 
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbufferd(ibuffer)   = REAL(xt(2,i),        &
      &                       ppm_kind_double)
                          ppm_ghost_offsetd(ibuffer) = REAL(xt_offset(2,i), &
      &                       ppm_kind_double)
 #else
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbufferd(ibuffer)   = xt(1,i)
                          ppm_ghost_offsetd(ibuffer) = xt_offset(1,i)
 
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbufferd(ibuffer)   = xt(2,i)
                          ppm_ghost_offsetd(ibuffer) = xt_offset(2,i)
 #endif
                      ELSE
 #if    __KIND == __SINGLE_PRECISION
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbuffers(ibuffer)   = xt(1,i)
                          ppm_ghost_offsets(ibuffer) = xt_offset(1,i)
 
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbuffers(ibuffer)   = xt(2,i)
                          ppm_ghost_offsets(ibuffer) = xt_offset(2,i)
 #else
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbuffers(ibuffer)   = REAL(xt(1,i),        &
      &                       ppm_kind_single)
                          ppm_ghost_offsets(ibuffer) = REAL(xt_offset(1,i), &
      &                       ppm_kind_single)
 
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbuffers(ibuffer)   = REAL(xt(2,i),        &
      &                       ppm_kind_single)
                          ppm_ghost_offsets(ibuffer) = REAL(xt_offset(2,i), &
      &                       ppm_kind_single)
 #endif
                      ENDIF
-                  ENDIF 
+                  ENDIF
                ENDDO
             ELSE
                !----------------------------------------------------------------
@@ -1099,10 +1102,10 @@
                !----------------------------------------------------------------
                DO i=nghost+1,nghostplus
                   !-------------------------------------------------------------
-                  !  and check if it is inside the ghost region 
+                  !  and check if it is inside the ghost region
                   !-------------------------------------------------------------
                   IF (xt(1,i).GT.xmini.AND.xt(1,i).LT.xmaxi.AND. &
-     &                xt(2,i).GT.ymini.AND.xt(2,i).LT.ymaxi.AND. & 
+     &                xt(2,i).GT.ymini.AND.xt(2,i).LT.ymaxi.AND. &
      &                xt(3,i).GT.zmini.AND.xt(3,i).LT.zmaxi.AND.lghost(i)) THEN
                      !----------------------------------------------------------
                      !  mark the ghost as taken
@@ -1124,73 +1127,73 @@
                      !----------------------------------------------------------
                      IF (ppm_kind.EQ.ppm_kind_double) THEN
 #if    __KIND == __SINGLE_PRECISION
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbufferd(ibuffer)   = REAL(xt(1,i),        &
      &                      ppm_kind_double)
                          ppm_ghost_offsetd(ibuffer) = REAL(xt_offset(1,i), &
      &                      ppm_kind_double)
 
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbufferd(ibuffer)   = REAL(xt(2,i),        &
      &                      ppm_kind_double)
                          ppm_ghost_offsetd(ibuffer) = REAL(xt_offset(2,i), &
      &                      ppm_kind_double)
 
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbufferd(ibuffer)   = REAL(xt(3,i),        &
      &                      ppm_kind_double)
                          ppm_ghost_offsetd(ibuffer) = REAL(xt_offset(3,i), &
      &                      ppm_kind_double)
 #else
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbufferd(ibuffer)   = xt(1,i)
                          ppm_ghost_offsetd(ibuffer) = xt_offset(1,i)
 
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbufferd(ibuffer)   = xt(2,i)
                          ppm_ghost_offsetd(ibuffer) = xt_offset(2,i)
 
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbufferd(ibuffer)   = xt(3,i)
                          ppm_ghost_offsetd(ibuffer) = xt_offset(3,i)
 #endif
                      ELSE
 #if    __KIND == __SINGLE_PRECISION
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbuffers(ibuffer)   = xt(1,i)
                          ppm_ghost_offsets(ibuffer) = xt_offset(1,i)
 
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbuffers(ibuffer)   = xt(2,i)
                          ppm_ghost_offsets(ibuffer) = xt_offset(2,i)
 
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbuffers(ibuffer)   = xt(3,i)
                          ppm_ghost_offsets(ibuffer) = xt_offset(3,i)
 #else
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbuffers(ibuffer)   = REAL(xt(1,i),        &
      &                      ppm_kind_single)
                          ppm_ghost_offsets(ibuffer) = REAL(xt_offset(1,i), &
      &                      ppm_kind_single)
 
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbuffers(ibuffer)   = REAL(xt(2,i),        &
      &                      ppm_kind_single)
                          ppm_ghost_offsets(ibuffer) = REAL(xt_offset(2,i), &
      &                      ppm_kind_single)
 
-                         ibuffer = ibuffer + 1 
+                         ibuffer = ibuffer + 1
                          ppm_sendbuffers(ibuffer)   = REAL(xt(3,i),        &
      &                      ppm_kind_single)
                          ppm_ghost_offsets(ibuffer) = REAL(xt_offset(3,i), &
      &                      ppm_kind_single)
 #endif
                      ENDIF
-                  ENDIF 
+                  ENDIF
                ENDDO
-            ENDIF ! 2/3 dimension 
-           
+            ENDIF ! 2/3 dimension
+
          ENDDO ! end of loop over subs on local processor
       ENDIF ! of periodic ghosts
 
@@ -1235,18 +1238,18 @@
          !----------------------------------------------------------------------
          IF (sendrank.GE.0) THEN
             !-------------------------------------------------------------------
-            !  loop over all the subs in the current topology 
+            !  loop over all the subs in the current topology
             !  this is a bit tedious and perhaps inefficient, but we do not
             !  have the subs belonging to all processors stored for each topoid
             !  sorry ! so we have to perform the calculations each time
             !-------------------------------------------------------------------
-            DO j=1,ppm_nsubs(topoid) 
+            DO j=1,ppm_nsubs(topoid)
                !----------------------------------------------------------------
                !  consider only those beloging to rank
                !----------------------------------------------------------------
                IF (ppm_subs2proc(j,topoid).EQ.sendrank) THEN
                   !-------------------------------------------------------------
-                  !  Define the extended resize of this sub 
+                  !  Define the extended resize of this sub
                   !-------------------------------------------------------------
                   IF (isymm.GT.0) THEN
                      !----------------------------------------------------------
@@ -1263,18 +1266,18 @@
                      IF (ppm_dim.EQ.3) THEN
                         zmini = ppm_min_subs(3,j,topoid)
                         zmaxi = ppm_max_subs(3,j,topoid) + ghostsize
-                     ENDIF 
+                     ENDIF
 #else
                      xmini = ppm_min_subd(1,j,topoid)
                      xmaxi = ppm_max_subd(1,j,topoid) + ghostsize
 
                      ymini = ppm_min_subd(2,j,topoid)
                      ymaxi = ppm_max_subd(2,j,topoid) + ghostsize
- 
+
                      IF (ppm_dim.EQ.3) THEN
                         zmini = ppm_min_subd(3,j,topoid)
                         zmaxi = ppm_max_subd(3,j,topoid) + ghostsize
-                     ENDIF 
+                     ENDIF
 #endif
                   ELSE
                      !----------------------------------------------------------
@@ -1290,7 +1293,7 @@
                      IF (ppm_dim.EQ.3) THEN
                         zmini = ppm_min_subs(3,j,topoid) - ghostsize
                         zmaxi = ppm_max_subs(3,j,topoid) + ghostsize
-                     ENDIF 
+                     ENDIF
 #else
                      xmini = ppm_min_subd(1,j,topoid) - ghostsize
                      xmaxi = ppm_max_subd(1,j,topoid) + ghostsize
@@ -1301,13 +1304,13 @@
                      IF (ppm_dim.EQ.3) THEN
                         zmini = ppm_min_subd(3,j,topoid) - ghostsize
                         zmaxi = ppm_max_subd(3,j,topoid) + ghostsize
-                     ENDIF 
+                     ENDIF
 #endif
-                  ENDIF 
+                  ENDIF
 
                   !-------------------------------------------------------------
                   !  Reallocate to make sure we have enough memory in the
-                  !  ppm_buffer2part and ppm_sendbuffers/d 
+                  !  ppm_buffer2part and ppm_sendbuffers/d
                   !-------------------------------------------------------------
                   iopt   = ppm_param_alloc_grow_preserve
                   ldu(1) = ibuffer + nghostplus*ppm_dim
@@ -1335,7 +1338,7 @@
                   ENDIF
 
                   !-------------------------------------------------------------
-                  !  loop over the potential ghost particles 
+                  !  loop over the potential ghost particles
                   !-------------------------------------------------------------
                   IF (ppm_dim.EQ.2) THEN
                      !----------------------------------------------------------
@@ -1343,7 +1346,7 @@
                      !----------------------------------------------------------
                      DO i=1,nghostplus
                         !-------------------------------------------------------
-                        !  and check if it is inside the ghost region 
+                        !  and check if it is inside the ghost region
                         !-------------------------------------------------------
                         IF (xt(1,i).GT.xmini.AND.xt(1,i).LT.xmaxi.AND. &
      &                      xt(2,i).GT.ymini.AND.xt(2,i).LT.ymaxi.AND. &
@@ -1368,50 +1371,50 @@
                            !----------------------------------------------------
                            IF (ppm_kind.EQ.ppm_kind_double) THEN
 #if    __KIND == __SINGLE_PRECISION
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbufferd(ibuffer)   = REAL(xt(1,i),        &
      &                            ppm_kind_double)
                                ppm_ghost_offsetd(ibuffer) = REAL(xt_offset(1,i), &
      &                            ppm_kind_double)
 
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbufferd(ibuffer)   = REAL(xt(2,i),        &
      &                            ppm_kind_double)
                                ppm_ghost_offsetd(ibuffer) = REAL(xt_offset(2,i), &
      &                            ppm_kind_double)
 #else
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbufferd(ibuffer)   = xt(1,i)
                                ppm_ghost_offsetd(ibuffer) = xt_offset(1,i)
 
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbufferd(ibuffer)   = xt(2,i)
                                ppm_ghost_offsetd(ibuffer) = xt_offset(2,i)
 #endif
                            ELSE
 #if    __KIND == __SINGLE_PRECISION
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbuffers(ibuffer)   = xt(1,i)
                                ppm_ghost_offsets(ibuffer) = xt_offset(1,i)
 
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbuffers(ibuffer)   = xt(2,i)
                                ppm_ghost_offsets(ibuffer) = xt_offset(2,i)
 #else
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbuffers(ibuffer)   = REAL(xt(1,i),        &
      &                            ppm_kind_single)
                                ppm_ghost_offsets(ibuffer) = REAL(xt_offset(1,i), &
      &                            ppm_kind_single)
 
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbuffers(ibuffer)   = REAL(xt(2,i),   &
      &                            ppm_kind_single)
                                ppm_ghost_offsets(ibuffer) = REAL(xt_offset(2,i), &
      &                            ppm_kind_single)
 #endif
-                           ENDIF 
-                        ENDIF 
+                           ENDIF
+                        ENDIF
                      ENDDO
                   ELSE
                      !----------------------------------------------------------
@@ -1419,10 +1422,10 @@
                      !----------------------------------------------------------
                      DO i=1,nghostplus
                         !-------------------------------------------------------
-                        !  and check if it is inside the ghost region 
+                        !  and check if it is inside the ghost region
                         !-------------------------------------------------------
                         IF (xt(1,i).GT.xmini.AND.xt(1,i).LT.xmaxi.AND. &
-     &                      xt(2,i).GT.ymini.AND.xt(2,i).LT.ymaxi.AND. & 
+     &                      xt(2,i).GT.ymini.AND.xt(2,i).LT.ymaxi.AND. &
      &                      xt(3,i).GT.zmini.AND.xt(3,i).LT.zmaxi.AND. &
      &                      lghost(i)) THEN
 
@@ -1446,68 +1449,68 @@
                            !----------------------------------------------------
                            IF (ppm_kind.EQ.ppm_kind_double) THEN
 #if    __KIND == __SINGLE_PRECISION
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbufferd(ibuffer)   = REAL(xt(1,i),          &
      &                            ppm_kind_double)
                                ppm_ghost_offsetd(ibuffer) = REAL(xt_offset(1,i), &
      &                            ppm_kind_double)
 
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbufferd(ibuffer) = REAL(xt(2,i),          &
      &                            ppm_kind_double)
                                ppm_ghost_offsetd(ibuffer) = REAL(xt_offset(2,i), &
      &                            ppm_kind_double)
 
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbufferd(ibuffer)   = REAL(xt(3,i),        &
      &                            ppm_kind_double)
                                ppm_ghost_offsetd(ibuffer) = REAL(xt_offset(3,i), &
      &                            ppm_kind_double)
 #else
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbufferd(ibuffer)   = xt(1,i)
                                ppm_ghost_offsetd(ibuffer) = xt_offset(1,i)
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbufferd(ibuffer)   = xt(2,i)
                                ppm_ghost_offsetd(ibuffer) = xt_offset(2,i)
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbufferd(ibuffer)   = xt(3,i)
                                ppm_ghost_offsetd(ibuffer) = xt_offset(3,i)
 #endif
                            ELSE
 #if    __KIND == __SINGLE_PRECISION
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbuffers(ibuffer)   = xt(1,i)
                                ppm_ghost_offsets(ibuffer) = xt_offset(1,i)
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbuffers(ibuffer)   = xt(2,i)
                                ppm_ghost_offsets(ibuffer) = xt_offset(2,i)
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbuffers(ibuffer)   = xt(3,i)
                                ppm_ghost_offsets(ibuffer) = xt_offset(3,i)
 #else
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbuffers(ibuffer)   = REAL(xt(1,i),   &
      &                            ppm_kind_single)
                                ppm_ghost_offsets(ibuffer) = REAL(xt_offset(1,i), &
      &                            ppm_kind_single)
 
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbuffers(ibuffer)   = REAL(xt(2,i),   &
      &                            ppm_kind_single)
                                ppm_ghost_offsets(ibuffer) = REAL(xt_offset(2,i), &
      &                            ppm_kind_single)
 
-                               ibuffer = ibuffer + 1 
+                               ibuffer = ibuffer + 1
                                ppm_sendbuffers(ibuffer)   = REAL(xt(3,i),   &
      &                            ppm_kind_single)
                                ppm_ghost_offsets(ibuffer) = REAL(xt_offset(3,i), &
      &                            ppm_kind_single)
 #endif
-                           ENDIF 
-                        ENDIF 
+                           ENDIF
+                        ENDIF
                      ENDDO
-                  ENDIF ! 2/3 dimension 
+                  ENDIF ! 2/3 dimension
                ENDIF ! only consider subs belonging to rank
             ENDDO ! loop over all subs in topo
          ENDIF ! skipped negative ranks
@@ -1571,7 +1574,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_map_part_ghost_get',t0,info)

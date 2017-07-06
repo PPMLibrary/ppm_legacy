@@ -3,7 +3,7 @@
       !-------------------------------------------------------------------------
       !
       !  Purpose      : This module includes the source code for the
-      !                 decomposition routines. 
+      !                 decomposition routines.
       !
       !  Remarks      :
       !
@@ -28,7 +28,7 @@
       !  ETH Zentrum, Hirschengraben 84
       !  CH-8092 Zurich, Switzerland
       !-------------------------------------------------------------------------
-     
+
       !-------------------------------------------------------------------------
       !  Define types
       !-------------------------------------------------------------------------
@@ -39,7 +39,8 @@
          !----------------------------------------------------------------------
          !  Local work arrays used in ppm_decomp_pruned_cell
          !----------------------------------------------------------------------
-         INTEGER , DIMENSION(:), POINTER, PRIVATE :: npbx,npbxg
+         INTEGER , DIMENSION(:), POINTER, PRIVATE :: npbx => NULL()
+         INTEGER , DIMENSION(:), POINTER, PRIVATE :: npbxg => NULL()
 
          !----------------------------------------------------------------------
          !  Define interface to pruned cell decomposition routine
@@ -50,7 +51,7 @@
          END INTERFACE
 
          !----------------------------------------------------------------------
-         !  include the source 
+         !  include the source
          !----------------------------------------------------------------------
          CONTAINS
 

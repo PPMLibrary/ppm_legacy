@@ -17,14 +17,14 @@
       !                                will be checked.
       !
       !  Output       : npbx(nbox) (I) number of particles in a box
-      !                 
+      !
       !  Remarks      : Two do loops do not vectorize. If particles are
       !                 outside the mesh the code will fail.
       !
       !                 The routine uses no (0) automatic arrays! since
       !                 they silently fail when resources are exhausted.
       !
-      !                 Warning! This routine may loose real particles if 
+      !                 Warning! This routine may loose real particles if
       !                 used together with ghost layers
       !
       !
@@ -116,16 +116,16 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(INOUT) :: xp
       REAL(MK), DIMENSION(:)  , INTENT(IN   ) :: xmin,xmax
-      INTEGER , DIMENSION(:)  , INTENT(IN   ) :: Nm     
+      INTEGER , DIMENSION(:)  , INTENT(IN   ) :: Nm
       INTEGER , DIMENSION(:)  , POINTER       :: npbx
       INTEGER                 , INTENT(IN   ) :: Np
       INTEGER                 , INTENT(INOUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), POINTER      :: work
       ! timer
@@ -146,9 +146,9 @@
       ! local info level
       INTEGER                                :: info2
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
       !  Initialise
       !-------------------------------------------------------------------------
@@ -188,10 +188,12 @@
           ENDDO
       ENDIF
 
+      NULLIFY(work,lpdx,lhbx)
+
       !-------------------------------------------------------------------------
       !  Total number of cells
       !-------------------------------------------------------------------------
-      nbox = Nm(1)*Nm(2)  
+      nbox = Nm(1)*Nm(2)
 
       !-------------------------------------------------------------------------
       !  Allocate memory
@@ -260,7 +262,7 @@
       IF (info .NE. 0) THEN
           info = ppm_error_error
           CALL ppm_error(ppm_err_dealloc,'ppm_util_sort2d',     &
-     &        'particle index list LPDX',__LINE__,info) 
+     &        'particle index list LPDX',__LINE__,info)
       ENDIF
       CALL ppm_alloc(lhbx,lda,iopt,info)
       IF (info .NE. 0) THEN

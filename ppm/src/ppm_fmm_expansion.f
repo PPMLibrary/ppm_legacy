@@ -4,21 +4,21 @@
       !
       !  Purpose      : Compute the expansions of the leaf boxes of the created
       !                 tree structure.
-      !                 Calls ppm_fmm_traverse, which traverses the tree and 
+      !                 Calls ppm_fmm_traverse, which traverses the tree and
       !                 shifts the expansions up the tree.
-      !                 
+      !
       !
       !  Input        : xpunord(:,:)      (F) particle positions
       !                 wpunord(:,:)      (F) particle strengths
       !                 Np                (I) number of particles.
       !                 lda               (I) leading dimension of vector case
       !
-      !  Input/output :     
+      !  Input/output :
       !
       !  Output       :
       !                 info         (I) return status. 0 upon success.
       !
-      !  Remarks      :  
+      !  Remarks      :
       !
       !  References   :
       !
@@ -115,7 +115,7 @@
 
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_fmm
@@ -123,11 +123,11 @@
       USE ppm_module_error
       USE ppm_module_fmm_traverse
       USE ppm_module_substart
-      USE ppm_module_substop 
+      USE ppm_module_substop
       USE ppm_module_util_cart2sph
       USE ppm_module_write
       IMPLICIT NONE
-      
+
       !-------------------------------------------------------------------------
       !  Includes
       !-------------------------------------------------------------------------
@@ -139,7 +139,7 @@
 
       !-------------------------------------------------------------------------
       !  Precision
-      !-------------------------------------------------------------------------      
+      !-------------------------------------------------------------------------
 #if    __KIND == __SINGLE_PRECISION
       INTEGER, PARAMETER :: MK = ppm_kind_single
 
@@ -147,11 +147,11 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 
 #endif
-      
+
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
-      REAL(MK),DIMENSION(:,:),POINTER       :: xpunord 
+      REAL(MK),DIMENSION(:,:),POINTER       :: xpunord
       INTEGER                ,INTENT(INOUT) :: Np
       INTEGER                ,INTENT(  OUT) :: info
 
@@ -165,60 +165,55 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       ! auxiliary variables
       LOGICAL ,DIMENSION(3)                 :: fixed
       INTEGER                               :: iopt,i,j,k,m,n,l
       INTEGER                               :: first,last,box,nrpart
-      INTEGER ,DIMENSION(2)                 :: ldu2 
-      REAL(MK)                              :: sine,cosine,val,prod 
-      REAL(MK)                              :: angle,reci 
+      INTEGER ,DIMENSION(2)                 :: ldu2
+      REAL(MK)                              :: sine,cosine,val,prod
+      REAL(MK)                              :: angle,reci
       REAL(MK)                              :: t0,x0,y0,z0
       REAL(MK)                              :: dx,dy,dz,dist
       REAL(MK),DIMENSION(:,:), POINTER      :: min_box,max_box
-      REAL(MK),DIMENSION(:,:), POINTER      :: min_sub,max_sub
       COMPLEX(MK),PARAMETER                 :: CI=(0.0_MK,1.0_MK)
       COMPLEX(MK)                           :: temp
       CHARACTER(LEN=ppm_char)               :: cbuf
-      
+
       ! parallelisation
       INTEGER                               :: isub,topoid
       INTEGER                               :: nsublist,in_topoid
-      REAL(MK),DIMENSION(:)  , POINTER      :: boxcost 
-      
+      REAL(MK),DIMENSION(:)  , POINTER      :: boxcost
+
       ! traversing
       INTEGER                               :: root
-      
+
       ! fmm
-      REAL(MK),DIMENSION(:)  , POINTER      :: rho,theta,phi,radius 
+      REAL(MK),DIMENSION(:)  , POINTER      :: rho,theta,phi,radius
       REAL(MK),DIMENSION(:)  , POINTER      :: fac,fracfac
-      REAL(MK),DIMENSION(:,:), POINTER      :: Anm,Pnm,sqrtfac,xp 
+      REAL(MK),DIMENSION(:,:), POINTER      :: Anm,Pnm,sqrtfac,xp
       REAL(MK),DIMENSION(:,:), POINTER      :: centerofbox
       COMPLEX(MK),DIMENSION(:,:)  ,POINTER  :: Ynm
-      
+
 #if   __DIM == __SFIELD
-      COMPLEX(MK),DIMENSION(:,:)  ,POINTER  :: Cnm  
-      COMPLEX(MK),DIMENSION(:,:,:),POINTER  :: expansion    
+      COMPLEX(MK),DIMENSION(:,:)  ,POINTER  :: Cnm
+      COMPLEX(MK),DIMENSION(:,:,:),POINTER  :: expansion
 
 #else
-      COMPLEX(MK),DIMENSION(:,:,:)  ,POINTER:: Cnm    
-      COMPLEX(MK),DIMENSION(:,:,:,:),POINTER:: expansion  
+      COMPLEX(MK),DIMENSION(:,:,:)  ,POINTER:: Cnm
+      COMPLEX(MK),DIMENSION(:,:,:,:),POINTER:: expansion
 #endif
-      
 
       !-------------------------------------------------------------------------
-      !  Initialize 
+      !  Initialize
       !-------------------------------------------------------------------------
       CALL substart('ppm_fmm_expansion',t0,info)
-      
-
-
 
       !-------------------------------------------------------------------------
       !  Check arguments
       !-------------------------------------------------------------------------
-      IF (ppm_debug.GT.0) THEN  
+      IF (ppm_debug.GT.0) THEN
             IF (Np.LT. 0) THEN
                info = ppm_error_error
                CALL ppm_error(ppm_err_argument,'ppm_fmm_expansion',   &
@@ -233,7 +228,9 @@
             ENDIF
 
       ENDIF
-      
+
+      NULLIFY(xp)
+
       !-------------------------------------------------------------------------
       ! Checking precision and pointing tree data to correct variables
       !-------------------------------------------------------------------------
@@ -247,8 +244,8 @@
       expansion    => expansion_s_sf
       Cnm          => Cnm_s_sf
 #else
-      expansion    => expansion_s_vf 
-      Cnm          => Cnm_s_vf           
+      expansion    => expansion_s_vf
+      Cnm          => Cnm_s_vf
 #endif
       Anm          => Anm_s
       sqrtfac      => sqrtfac_s
@@ -271,7 +268,7 @@
       Cnm          => Cnm_d_sf
 #else
       expansion    => expansion_d_vf
-      Cnm          => Cnm_d_vf            
+      Cnm          => Cnm_d_vf
 #endif
       Anm          => Anm_d
       sqrtfac      => sqrtfac_d
@@ -286,7 +283,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      ! Allocating temporary array for sorted particle positions 
+      ! Allocating temporary array for sorted particle positions
       !     according to tree
       !-------------------------------------------------------------------------
       iopt = ppm_param_alloc_fit
@@ -298,16 +295,16 @@
          CALL ppm_error(ppm_err_alloc,'ppm_fmm_expansion', &
       &       'error allocating xp',__LINE__,info)
       GOTO 9999
-      ENDIF  
-      
+      ENDIF
+
       !-------------------------------------------------------------------------
-      ! Computing the expansions of the leafs 
+      ! Computing the expansions of the leafs
       !-------------------------------------------------------------------------
       topoid = topoidlist(nlevel)
       in_topoid = ppm_internal_topoid(topoid)
-      
+
       DO i=1,ppm_nsublist(in_topoid)
-         
+
 	 !----------------------------------------------------------------------
          ! initialize arrays
          !----------------------------------------------------------------------
@@ -326,14 +323,14 @@
          ENDDO
 
 	 !----------------------------------------------------------------------
-         ! Store the subid and boxid and the indices of the first and the last 
+         ! Store the subid and boxid and the indices of the first and the last
          ! particle in the box
          !----------------------------------------------------------------------
          isub = ppm_isublist(i,in_topoid)
          box = ppm_boxid(isub,nlevel)
          first = lhbx(1,box)
          last  = lhbx(2,box)
-	 
+
 	 !----------------------------------------------------------------------
          ! Sort xp (particle order from tree)
          !----------------------------------------------------------------------
@@ -350,7 +347,7 @@
                xp(3,j) = xpunord(3,lpdx(j))
             ENDDO
          ENDIF
-         
+
 	 nrpart = last-first + 1
 
 	 !----------------------------------------------------------------------
@@ -366,38 +363,38 @@
                    & 'Failed calling util_cart2sph',__LINE__,info)
                 ENDIF
 	 ENDIF
-         
+
 	 !----------------------------------------------------------------------
          ! Loop over the particles in the leaves
          !----------------------------------------------------------------------
-	 DO j=first,last 
-            
+	 DO j=first,last
+
 	    cosine = COS(theta(j))
             sine   = SIN(theta(j))
-            
+
 	    !-------------------------------------------------------------------
             !  Recurrence for Pnm
             !-------------------------------------------------------------------
 	    val  = -sine
             prod = 1.0_MK
-            
+
 	    DO m=0,order
                Pnm(m,m) = fracfac(m)*prod
                prod     = prod * val
             ENDDO
-            
+
 	    DO m=0,order-1
                Pnm(m+1,m) = cosine*REAL(2*m + 1,MK)*Pnm(m,m)
             ENDDO
-            
+
 	    DO n=2,order
                val = cosine*REAL(2*n-1,MK)
                DO m=0,n-2
-                  Pnm(n,m)=(val*Pnm(n-1,m) - & 
+                  Pnm(n,m)=(val*Pnm(n-1,m) - &
                   &        DBLE(n+m-1)*Pnm(n-2,m))/REAL(n-m,MK)
                ENDDO
             ENDDO
-	    
+
 	    !-------------------------------------------------------------------
             !  Compute Ynm(n,m) and Ynm(n,-m)
             !-------------------------------------------------------------------
@@ -406,7 +403,7 @@
                angle    = REAL(m,MK)*phi(j)
                Ynm(n,m) = sqrtfac(n,m)*Pnm(n,m)* &
                &          CMPLX(COS(angle),SIN(angle))
-               
+
 	       DO m=1,n
                   angle     = REAL(m,MK)*phi(j)
                   Ynm(n,m)  = sqrtfac(n,m)* &
@@ -414,13 +411,13 @@
                   Ynm(n,-m) = CONJG(Ynm(n,m))
                ENDDO
             ENDDO
-	    
+
 	    !-------------------------------------------------------------------
             !  Computing Cnm(n,m) - the expansion coefficients
             !-------------------------------------------------------------------
 	    prod = 1.0_MK
             val  = rho(j)
-            
+
 	    DO n=0,order
                DO m=0,n
 #if               __DIM == __SFIELD
@@ -433,7 +430,7 @@
                   ENDDO
 #endif
                ENDDO
-	       
+
                prod = prod * val
             ENDDO
          ENDDO !particles in one sub
@@ -450,10 +447,10 @@
                DO l =1,lda
                   Cnm(l,n,-m) = CONJG(Cnm(l,n,m))
                ENDDO
-#endif 
+#endif
             ENDDO
          ENDDO
-         
+
 	 DO m=1,order
             temp = CI**(-m)
             DO n=m,order
@@ -466,10 +463,10 @@
                   Cnm(l,n,-m)= Cnm(l,n,-m)*temp
                ENDDO
 #endif
-            
+
 	    ENDDO
          ENDDO
-	 
+
          !----------------------------------------------------------------------
          ! Save expansion in fmm_module_data file
          !----------------------------------------------------------------------
@@ -488,9 +485,9 @@
             ENDDO
          ENDDO
 #endif
-      
+
       ENDDO !loop over all subs
-      
+
       !-------------------------------------------------------------------------
       !  Nullify data pointers
       !-------------------------------------------------------------------------
@@ -506,7 +503,7 @@
       NULLIFY(Ynm)
       NULLIFY(Pnm)
       NULLIFY(Cnm)
-      
+
       !-------------------------------------------------------------------------
       ! Traverse the tree and shift the expansions upwards
       !-------------------------------------------------------------------------
@@ -534,8 +531,8 @@
 
       IF (ppm_debug .GT. 0) THEN
         CALL ppm_write(ppm_rank,'ppm_fmm_expansion','traversed tree',info)
-      ENDIF     
-      
+      ENDIF
+
       !-------------------------------------------------------------------------
       ! deallocate local data
       !-------------------------------------------------------------------------
@@ -548,14 +545,14 @@
           GOTO 9999
       ENDIF
 
-      
+
       !-------------------------------------------------------------------------
       !  Return
       !-------------------------------------------------------------------------
 9999  CONTINUE
-      
+
       CALL substop('ppm_fmm_expansion',t0,info)
-      
+
       RETURN
 
 #if   (__KIND == __SINGLE_PRECISION && __DIM == __SFIELD)

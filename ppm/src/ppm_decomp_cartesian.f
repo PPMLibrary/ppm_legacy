@@ -3,7 +3,7 @@
       !-------------------------------------------------------------------------
       !
       !  Purpose      : This routine decomposes space using a Cartesian domain
-      !                 decomposition topology. The decomposition type is given 
+      !                 decomposition topology. The decomposition type is given
       !                 by decomp and can be one of:
       !                          ppm_param_decomp_xpencil
       !                          ppm_param_decomp_ypencil
@@ -20,16 +20,16 @@
       !                 this should be followed by a check of the cost
       !                 balancing and possibly iterated with increasing
       !                 ndom.
-      !                 
+      !
       !
       !  Input        : Nm(:)        (I) the number of mesh points (not
       !                                  cells) in each direction of the
       !                                  global comput. domain. (including
       !                                  those ON the boundaries)
-      !                 min_phys(:)  (F) the minimum coordinate of the 
-      !                                  physical/computational domain 
-      !                 max_phys(:)  (F) the maximum coordinate of the 
-      !                                  physical/computational domain 
+      !                 min_phys(:)  (F) the minimum coordinate of the
+      !                                  physical/computational domain
+      !                 max_phys(:)  (F) the maximum coordinate of the
+      !                                  physical/computational domain
       !                 decomp       (I) Type of decomposition (see above)
       !                 ndom         (I) OPTIONAL. The number of subdomains
       !                                  to be created. If not specified,
@@ -91,7 +91,7 @@
       !
       !  Revision 1.10  2004/03/03 09:07:52  ivos
       !  removed xp and Npart from the argument list. This routine is not aware
-      !  of particles and decomposes space based on a mesh. 
+      !  of particles and decomposes space based on a mesh.
       !  If one wants particles,
       !  either decomp_bisection, decomp_tree or decomp_cartesian with an
       !  iteration can be used. topo_mkfield will support all of them to get
@@ -138,7 +138,7 @@
      &               min_sub,max_sub,nsubs,info,ndom)
 #endif
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -153,7 +153,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), POINTER       :: min_sub,max_sub
       REAL(MK), DIMENSION(:)  , INTENT(IN   ) :: min_phys,max_phys
@@ -163,7 +163,7 @@
       INTEGER , OPTIONAL      , INTENT(IN   ) :: ndom
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK)                          :: t0,minsv,lc,lx,ux,ly,uy,lz,uz
       INTEGER                           :: i,icut,jcut,kcut,nsrem,ncut,j,k
@@ -185,11 +185,11 @@
       INTEGER, DIMENSION(2)             :: ldu
       INTEGER                           :: iopt
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_decomp_cartesian',t0,info)
 
@@ -246,6 +246,9 @@
               ENDIF
           ENDIF
       ENDIF
+
+
+      NULLIFY(Npx,Npxnew)
 
       !-------------------------------------------------------------------------
       !  Number of subdomains
@@ -451,7 +454,7 @@
               lduold = ldu(2)
               nblocks(cutdim) = nblocks(cutdim) + 1
               Npx = Npxnew
-          ENDDO 
+          ENDDO
 
           !---------------------------------------------------------------------
           !  Compute and store the number of subs in each direction
@@ -575,7 +578,7 @@
                   GOTO 9999
               ENDIF
               rc = nsrem*nblocks(cutdim)
-              
+
               !-----------------------------------------------------------------
               !  Grow the new grid point array if needed
               !-----------------------------------------------------------------
@@ -779,7 +782,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_decomp_cartesian',t0,info)

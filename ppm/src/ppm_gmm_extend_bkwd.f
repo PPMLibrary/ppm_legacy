@@ -2,18 +2,18 @@
       !  Subroutine   :                 ppm_gmm_extend_bkwd
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : This routine performs the backward marching 
+      !  Purpose      : This routine performs the backward marching
       !                 step of the GMM. See ppm_gmm_march for details.
       !
       !  Input        : width           (F) Width of the narrow band to
       !                                     be produced on each side of
       !                                     the interface.
       !                 order           (I) Order of the method to be
-      !                                     used. One of 
+      !                                     used. One of
       !                                        ppm_param_order_1
       !                                        ppm_param_order_2
       !                                        ppm_param_order_3
-      !                 npos            (I) Current number of points in the 
+      !                 npos            (I) Current number of points in the
       !                                     close set.
       !                 TM              (F) Current threshold for wave
       !                                     front location.
@@ -27,7 +27,7 @@
       !                 dzinv           (F) inverse of the z grid spacing
       !                                     (Not used in 2D version).
       !                 ghostsize(3)    (I) Size of the ghostlayer on all
-      !                                     sides. 
+      !                                     sides.
       !                 speed(:,:,:,:)  (F) rank 4 (3d) or rank 3 (2d)
       !                                     field of front speeds.
       !                                     OPTIONAL to override rhscst.
@@ -39,13 +39,13 @@
       !                                     assumed if absent.
       !
       !  Input/output : fdta(:,:,:,[:]) (F) pointer to level function.
-      !                                     Needs to be defined in a band 
+      !                                     Needs to be defined in a band
       !                                     (width+order*dx).
       !                 dta(:,:,:,[:])  (F) pointer to value function.
       !
       !  Output       : info            (I) return status. 0 on success.
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   : Chopp:2001, Kim:2001b
       !
@@ -86,7 +86,7 @@
 #elif  __KIND == __DOUBLE_PRECISION
       SUBROUTINE ppm_gmm_extend_bkwd_2dd(fdta,dta,width,order,npos,TM,   &
      &    rhscst,dxinv,dyinv,dzinv,ghostsize,info,speed,chi)
-#endif 
+#endif
 #elif  __DIM == __3D
 #if    __KIND == __SINGLE_PRECISION
       SUBROUTINE ppm_gmm_extend_bkwd_3ds(fdta,dta,width,order,npos,TM,   &
@@ -94,10 +94,10 @@
 #elif  __KIND == __DOUBLE_PRECISION
       SUBROUTINE ppm_gmm_extend_bkwd_3dd(fdta,dta,width,order,npos,TM,   &
      &    rhscst,dxinv,dyinv,dzinv,ghostsize,info,speed,chi)
-#endif 
+#endif
 #endif
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_mesh
@@ -122,7 +122,7 @@
       INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
 #if   __DIM == __2D
       REAL(MK), DIMENSION(:,:,:)     , POINTER          :: fdta,dta
@@ -141,7 +141,7 @@
       INTEGER                        , INTENT(INOUT)    :: npos
       INTEGER                        , INTENT(  OUT)    :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER                          :: i,j,k,p,xhi,yhi,zhi,ii,jj,kk
       INTEGER                          :: jsub,isub
@@ -159,11 +159,11 @@
       REAL(MK), DIMENSION(ppm_dim)     :: alpha,beta
       REAL(MK), DIMENSION(2)           :: roots
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_gmm_extend_bkwd',t0,info)
       phi      = 0.0_MK
@@ -184,7 +184,7 @@
 #if   __DIM == __3D
       dzihalf  = 0.5_MK*dzinv
       dzitwelve  = onetwelfth*dzinv
-#endif 
+#endif
 
       !-------------------------------------------------------------------------
       !  Check arguments
@@ -239,7 +239,7 @@
                       !  Update point i,j,k
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
-                      IF (ABS(valijk) .LT. hsave) dta(i,j,k,jsub) = valijk 
+                      IF (ABS(valijk) .LT. hsave) dta(i,j,k,jsub) = valijk
                   ENDIF
               ENDIF
               i = ii + 1
@@ -253,11 +253,11 @@
                       !  Update point i,j,k
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
-                      IF (ABS(valijk) .LT. hsave) dta(i,j,k,jsub) = valijk 
+                      IF (ABS(valijk) .LT. hsave) dta(i,j,k,jsub) = valijk
                   ENDIF
               ENDIF
               i = ii
-              j = jj - 1 
+              j = jj - 1
               k = kk
               IF (j.GT.0) THEN
                   IF ((gmm_state3d(i,j,k,jsub) .NE.      &
@@ -267,11 +267,11 @@
                       !  Update point i,j,k
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
-                      IF (ABS(valijk) .LT. hsave) dta(i,j,k,jsub) = valijk 
+                      IF (ABS(valijk) .LT. hsave) dta(i,j,k,jsub) = valijk
                   ENDIF
               ENDIF
               i = ii
-              j = jj + 1 
+              j = jj + 1
               k = kk
               IF (j.LE.yhi) THEN
                   IF ((gmm_state3d(i,j,k,jsub) .NE.      &
@@ -281,11 +281,11 @@
                       !  Update point i,j,k
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
-                      IF (ABS(valijk) .LT. hsave) dta(i,j,k,jsub) = valijk 
+                      IF (ABS(valijk) .LT. hsave) dta(i,j,k,jsub) = valijk
                   ENDIF
               ENDIF
               i = ii
-              j = jj 
+              j = jj
               k = kk - 1
               IF (k.GT.0) THEN
                   IF ((gmm_state3d(i,j,k,jsub) .NE.      &
@@ -295,11 +295,11 @@
                       !  Update point i,j,k
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
-                      IF (ABS(valijk) .LT. hsave) dta(i,j,k,jsub) = valijk 
+                      IF (ABS(valijk) .LT. hsave) dta(i,j,k,jsub) = valijk
                   ENDIF
               ENDIF
               i = ii
-              j = jj 
+              j = jj
               k = kk + 1
               IF (k.LE.zhi) THEN
                   IF ((gmm_state3d(i,j,k,jsub) .NE.      &
@@ -309,7 +309,7 @@
                       !  Update point i,j,k
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
-                      IF (ABS(valijk) .LT. hsave) dta(i,j,k,jsub) = valijk 
+                      IF (ABS(valijk) .LT. hsave) dta(i,j,k,jsub) = valijk
                   ENDIF
               ENDIF
           ENDIF           ! TT .LE. TM
@@ -372,7 +372,7 @@
                       !  Update point i,j
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
-                      IF (valijk .LT. hsave) dta(i,j,jsub) = valijk 
+                      IF (valijk .LT. hsave) dta(i,j,jsub) = valijk
                   ENDIF
               ENDIF
               i = ii + 1
@@ -385,11 +385,11 @@
                       !  Update point i,j
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
-                      IF (valijk .LT. hsave) dta(i,j,jsub) = valijk 
+                      IF (valijk .LT. hsave) dta(i,j,jsub) = valijk
                   ENDIF
               ENDIF
               i = ii
-              j = jj - 1 
+              j = jj - 1
               IF (j.GT.0) THEN
                   IF ((gmm_state2d(i,j,jsub) .NE.      &
      &                ppm_gmm_param_accepted) .AND.      &
@@ -398,11 +398,11 @@
                       !  Update point i,j
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
-                      IF (valijk .LT. hsave) dta(i,j,jsub) = valijk 
+                      IF (valijk .LT. hsave) dta(i,j,jsub) = valijk
                   ENDIF
               ENDIF
               i = ii
-              j = jj + 1 
+              j = jj + 1
               IF (j.LE.yhi) THEN
                   IF ((gmm_state2d(i,j,jsub) .NE.      &
      &                ppm_gmm_param_accepted) .AND.      &
@@ -411,7 +411,7 @@
                       !  Update point i,j
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
-                      IF (valijk .LT. hsave) dta(i,j,jsub) = valijk 
+                      IF (valijk .LT. hsave) dta(i,j,jsub) = valijk
                   ENDIF
               ENDIF
           ENDIF           ! TT .LE. TM
@@ -444,10 +444,10 @@
      &        'popping field data failed',__LINE__,info)
           GOTO 9999
       ENDIF
-#endif 
+#endif
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_gmm_extend_bkwd',t0,info)
@@ -457,12 +457,12 @@
       END SUBROUTINE ppm_gmm_extend_bkwd_2ds
 #elif  __KIND == __DOUBLE_PRECISION
       END SUBROUTINE ppm_gmm_extend_bkwd_2dd
-#endif 
+#endif
 
 #elif  __DIM == __3D
 #if    __KIND == __SINGLE_PRECISION
       END SUBROUTINE ppm_gmm_extend_bkwd_3ds
 #elif  __KIND == __DOUBLE_PRECISION
       END SUBROUTINE ppm_gmm_extend_bkwd_3dd
-#endif 
+#endif
 #endif

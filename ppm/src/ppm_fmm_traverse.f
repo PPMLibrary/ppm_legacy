@@ -9,9 +9,9 @@
       !                 prec         (I) not used dummy argument
       !                                  to determine precision
       !
-      !  Input/output :     
+      !  Input/output :
       !
-      !  Output       : 
+      !  Output       :
       !                 info         (I) return status. 0 upon success
       !
       !  Remarks      : The recurrences will not vectorize
@@ -91,23 +91,23 @@
 #elif (__KIND == __SINGLE_PRECISION && __DIM == __VFIELD)
       RECURSIVE SUBROUTINE ppm_fmm_traverse_s_vf(root,lda,prec,info)
 #elif (__KIND == __DOUBLE_PRECISION && __DIM == __VFIELD)
-      RECURSIVE SUBROUTINE ppm_fmm_traverse_d_vf(root,lda,prec,info) 
+      RECURSIVE SUBROUTINE ppm_fmm_traverse_d_vf(root,lda,prec,info)
 #endif
 
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_fmm
       USE ppm_module_error
       USE ppm_module_substart
-      USE ppm_module_substop 
+      USE ppm_module_substop
       USE ppm_module_util_cart2sph
       USE ppm_module_write
 
       IMPLICIT NONE
-      
+
       !-------------------------------------------------------------------------
       !  Includes
       !-------------------------------------------------------------------------
@@ -117,71 +117,71 @@
       INCLUDE 'mpif.h'
 #endif
 
-      
+
       !-------------------------------------------------------------------------
       !  Precision
-      !-------------------------------------------------------------------------      
+      !-------------------------------------------------------------------------
 #if   __KIND == __SINGLE_PRECISION
       INTEGER, PARAMETER :: MK = ppm_kind_single
 #else
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
-      
-      
+
+
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       INTEGER                 , INTENT(IN   ) :: root
       REAL(MK)                , INTENT(IN   ) :: prec !dummy arg for prec.
       INTEGER                 , INTENT(  OUT) :: info
 #if   __DIM == __VFIELD
-      INTEGER                 , INTENT(IN   ) :: lda       
+      INTEGER                 , INTENT(IN   ) :: lda
 #endif
 
-      
+
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
-      ! auxiliary variables 
+      ! auxiliary variables
       LOGICAL                              :: onlocalproc
       INTEGER                              :: m,n,l,j,i,p,iopt
       INTEGER                              :: fir,las,box,istat,topoid
       INTEGER                              :: first,last
       REAL(MK)                             :: sine,cosine,val,prod
       REAL(MK)                             :: angle,reci,t0
-      REAL(MK)                             :: dx,dy,dz,tmp  
+      REAL(MK)                             :: dx,dy,dz,tmp
       REAL(MK),DIMENSION(:  ),POINTER      :: box_rho,box_theta,box_phi
       COMPLEX(MK)                          :: csum
       COMPLEX(MK),PARAMETER                :: CI=(0.0_MK,1.0_MK)
       CHARACTER(LEN=ppm_char)              :: cbuf
-      
-      ! fmm 
+
+      ! fmm
       REAL(MK),DIMENSION(:  ),POINTER      :: fracfac,totalmass,radius
       REAL(MK),DIMENSION(:,:),POINTER      :: Pnm,Anm,sqrtfac,centerofbox
       COMPLEX(MK),DIMENSION(:,:),POINTER   :: Inner,Ynm
-      
+
 #if   __DIM == __SFIELD
       COMPLEX(MK),DIMENSION(:,:,:)  ,POINTER :: expansion
 #else
       COMPLEX(MK),DIMENSION(:,:,:,:),POINTER :: expansion
 #endif
-      
+
       !-------------------------------------------------------------------------
-      !  Initialize 
+      !  Initialize
       !-------------------------------------------------------------------------
       CALL substart('ppm_fmm_traverse',t0,info)
-      
+
       !-------------------------------------------------------------------------
       ! Check precision and pointing tree data to correct variables
       !-------------------------------------------------------------------------
 #if   __KIND == __SINGLE_PRECISION
       centerofbox  => centerofbox_s
-      totalmass    => totalmass_s    
-#if   __DIM == __SFIELD      
+      totalmass    => totalmass_s
+#if   __DIM == __SFIELD
       expansion    => expansion_s_sf
 #else
       expansion    => expansion_s_vf
-#endif           
+#endif
       radius       => radius_s
       Anm          => Anm_s
       sqrtfac      => sqrtfac_s
@@ -195,11 +195,11 @@
 #else
       centerofbox  => centerofbox_d
       totalmass    => totalmass_d
-#if   __DIM == __SFIELD      
+#if   __DIM == __SFIELD
       expansion    => expansion_d_sf
 #else
       expansion    => expansion_d_vf
-#endif 
+#endif
       radius       => radius_d
       Anm          => Anm_d
       sqrtfac      => sqrtfac_d
@@ -211,12 +211,12 @@
       box_phi      => phi_d
       Inner        => Inner_d
 #endif
-      
+
       !-------------------------------------------------------------------------
       ! Check if current root is a leaf,
       ! if yes, no shifting has to be done
       !-------------------------------------------------------------------------
-      IF (nchld(root) .EQ. 0) THEN 
+      IF (nchld(root) .EQ. 0) THEN
           IF (ppm_debug .GT. 0) THEN
             CALL ppm_write(ppm_rank,'ppm_fmm_traverse','leaf box',info)
           ENDIF
@@ -242,12 +242,12 @@
               ENDIF
            ENDDO
          ENDIF
-         
+
 	 IF (onlocalproc) THEN
             DO i=1,nchld(root)
-#if         __DIM == __SFIELD	 
+#if         __DIM == __SFIELD
                CALL ppm_fmm_traverse(child(i,root),prec,info)
-#else 
+#else
                CALL ppm_fmm_traverse(child(i,root),lda,prec,info)
 #endif
                IF (ppm_debug .GT. 0) THEN
@@ -256,11 +256,11 @@
                ENDIF
             ENDDO
 
-	
+
         !-----------------------------------------------------------------------
         ! Now all children have been called recursively, computation can start
         !-----------------------------------------------------------------------
-        
+
         !-----------------------------------------------------------------------
         !  Compute centerofbox and totalmass
         !-----------------------------------------------------------------------
@@ -304,7 +304,7 @@
             ENDIF
 
 
-	
+
         !-----------------------------------------------------------------------
         !  Initiation of spherical coordinates to zero
         !-----------------------------------------------------------------------
@@ -313,7 +313,7 @@
                box_phi(i)   = 0.0_MK
                box_theta(i) = 0.0_MK
             ENDDO
-	
+
         !-----------------------------------------------------------------------
         !  Compute spherical coordinates of child boxes
         !-----------------------------------------------------------------------
@@ -322,7 +322,7 @@
             & centerofbox(1,root),centerofbox(2,root),centerofbox(3,root), &
             & box_rho(1:nchld(root)),box_theta(1:nchld(root)), &
             & box_phi(1:nchld(root)),info)
-        
+
 
             IF (info .NE. 0) THEN
                CALL ppm_error(ppm_err_sub_failed,'ppm_fmm_traverse', &
@@ -332,7 +332,7 @@
             DO i=1,nchld(root)
                first = lhbx(1,child(i,root))
                last  = lhbx(2,child(i,root))
-               
+
                IF (last-first+1 .EQ. 0) CYCLE
 	   !--------------------------------------------------------------------
            !  Compute radius
@@ -341,33 +341,33 @@
                dx = centerofbox(1,box) - centerofbox(1,root)
                dy = centerofbox(2,box) - centerofbox(2,root)
                dz = centerofbox(3,box) - centerofbox(3,root)
-           
+
                tmp = SQRT(dx**2 + dy**2 + dz**2) + radius(box)
-           
+
                IF (tmp .GT. radius(root)) THEN
                   radius(root) = tmp
                ENDIF
-               
-	   
+
+
            !--------------------------------------------------------------------
            ! Compute Legendre polynomial
            !--------------------------------------------------------------------
                reci      = 1.0_MK/box_rho(i)
                sine      = SIN(box_theta(i))
                cosine    = COS(box_theta(i))
-               
+
                val       = -sine
                prod      = 1.0_MK
-	   
+
                DO m=0,order
                   Pnm(m,m) = fracfac(m)*prod
                   prod     = prod * val
                ENDDO
-               
+
                DO m=0,order-1
                   Pnm(m+1,m) = cosine*REAL(2*m + 1,MK)*Pnm(m,m)
                ENDDO
-           
+
                DO n=2,order
                   val = cosine*REAL(2*n-1,MK)
                   DO m=0,n-1
@@ -375,7 +375,7 @@
                      Pnm(n-2,m))/REAL(n-m,MK)
                   ENDDO
                ENDDO
-           
+
                IF (ppm_debug .GT. 0) THEN
                   CALL ppm_write(ppm_rank,'ppm_fmm_traverse','Computed Pnm',info)
                ENDIF
@@ -395,11 +395,11 @@
                      Ynm(n,-m) = CONJG(Ynm(n,m))
                   ENDDO
                ENDDO
-           
+
                IF (ppm_debug .GT. 0) THEN
                   CALL ppm_write(ppm_rank,'ppm_fmm_traverse','Computed Ynm',info)
                ENDIF
-           
+
 	   !--------------------------------------------------------------------
            ! Compute Inner expansion
            !--------------------------------------------------------------------
@@ -453,8 +453,8 @@
            ENDDO
         ENDIF                     !on local proc
       ENDIF
-      
-      
+
+
       !-------------------------------------------------------------------------
       !  Nullify data pointers
       !-------------------------------------------------------------------------
@@ -469,15 +469,15 @@
       NULLIFY(Pnm)
       NULLIFY(Inner)
 
-      
+
       !-------------------------------------------------------------------------
       !  Return
       !-------------------------------------------------------------------------
 
 9999    CONTINUE
-        
+
 	CALL substop('ppm_fmm_traverse',t0,info)
-        
+
 	RETURN
 
 #if   (__KIND == __SINGLE_PRECISION && __DIM == __SFIELD)

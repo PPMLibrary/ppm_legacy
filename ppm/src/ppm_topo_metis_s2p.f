@@ -21,14 +21,14 @@
       !                                   ppm_param_assign_dual_cut
       !                                   ppm_param_assign_dual_comm
       !
-      !  Input/output :                                            
+      !  Input/output :
       !
-      !  Output       : sub2proc(:) (I) full list of processor 
+      !  Output       : sub2proc(:) (I) full list of processor
       !                                 affiliation of subdomains
       !                 isublist(:) (I) list of subdomains assigned to
       !                                 the local processors
       !                 nsublist    (I) the number of subdomains assigned
-      !                 info        (I) return status 
+      !                 info        (I) return status
       !
       !  Routines     : METIS library functions
       !
@@ -121,7 +121,7 @@
      &               cost,nsubs,assig,sub2proc,isublist,nsublist,info)
 #endif
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -140,7 +140,7 @@
       !-------------------------------------------------------------------------
 #include "ppm_define.h"
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: min_sub,max_sub
       REAL(MK), DIMENSION(:  ), INTENT(IN   ) :: cost
@@ -151,7 +151,7 @@
       INTEGER                 , INTENT(  OUT) :: nsublist
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER , DIMENSION(:  ), POINTER   :: elmnts,npart,nxadj,nadjncy
       INTEGER , DIMENSION(:  ), POINTER   :: vwgt,adjwgt,vsize,vote
@@ -170,11 +170,11 @@
       REAL(ppm_kind_double)               :: minsp,maxsp,meansp
       LOGICAL                             :: lasymm
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_topo_metis_s2p',t0,info)
 #if   __KIND == __SINGLE_PRECISION
@@ -191,7 +191,7 @@
       CALL ppm_error(ppm_err_nometis,'ppm_topo_metis_s2p',  &
      &    'PPM was compiled without Metis support',__LINE__,info)
       nsublist = 0
-      GOTO 9999      
+      GOTO 9999
 #else
 
       !-------------------------------------------------------------------------
@@ -228,6 +228,10 @@
              ENDIF
          ENDDO
       ENDIF
+
+      NULLIFY(elmnts,npart,nxadj,nadjncy)
+      NULLIFY(vwgt,adjwgt,vsize,vote)
+      NULLIFY(cornerno,corner,tpwgt)
 
       !-------------------------------------------------------------------------
       !  Allocate the sub2proc array
@@ -269,7 +273,7 @@
             sub2proc(isub) = ppm_rank
          ENDDO
          GOTO 9999
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Number of points per sub and element type
@@ -321,13 +325,13 @@
           DO isub=1,nsubs
               corner(1,1,isub) = min_sub(1,isub)
               corner(2,1,isub) = min_sub(2,isub)
-              
+
               corner(1,2,isub) = min_sub(1,isub)
               corner(2,2,isub) = max_sub(2,isub)
-             
+
               corner(1,3,isub) = max_sub(1,isub)
               corner(2,3,isub) = max_sub(2,isub)
-            
+
               corner(1,4,isub) = max_sub(1,isub)
               corner(2,4,isub) = min_sub(2,isub)
           ENDDO
@@ -336,31 +340,31 @@
               corner(1,1,isub) = min_sub(1,isub)
               corner(2,1,isub) = min_sub(2,isub)
               corner(3,1,isub) = max_sub(3,isub)
-          
+
               corner(1,2,isub) = min_sub(1,isub)
               corner(2,2,isub) = max_sub(2,isub)
               corner(3,2,isub) = max_sub(3,isub)
-         
+
               corner(1,3,isub) = max_sub(1,isub)
               corner(2,3,isub) = max_sub(2,isub)
               corner(3,3,isub) = max_sub(3,isub)
-        
+
               corner(1,4,isub) = max_sub(1,isub)
               corner(2,4,isub) = min_sub(2,isub)
               corner(3,4,isub) = max_sub(3,isub)
-       
+
               corner(1,5,isub) = min_sub(1,isub)
               corner(2,5,isub) = min_sub(2,isub)
               corner(3,5,isub) = min_sub(3,isub)
-      
+
               corner(1,6,isub) = min_sub(1,isub)
               corner(2,6,isub) = max_sub(2,isub)
               corner(3,6,isub) = min_sub(3,isub)
-     
+
               corner(1,7,isub) = max_sub(1,isub)
               corner(2,7,isub) = max_sub(2,isub)
               corner(3,7,isub) = min_sub(3,isub)
-    
+
               corner(1,8,isub) = max_sub(1,isub)
               corner(2,8,isub) = min_sub(2,isub)
               corner(3,8,isub) = min_sub(3,isub)
@@ -378,7 +382,7 @@
       IF (ppm_dim .EQ. 2) THEN
          DO isub=2,nsubs
             DO j=1,points
-               ident = 0 
+               ident = 0
                !----------------------------------------------------------------
                !  Check all points of all neighbors
                !----------------------------------------------------------------
@@ -459,7 +463,7 @@
               'Nodes were missed or counted twice',__LINE__,info)
           GOTO 9999
       ENDIF
-         
+
       !-------------------------------------------------------------------------
       !  Deallocate corner list
       !-------------------------------------------------------------------------
@@ -478,8 +482,8 @@
       maxsp = MAXVAL(ppm_proc_speed(0:ppm_nproc-1))
       meansp = 1.0_ppm_kind_double/REAL(ppm_nproc,ppm_kind_double)
       meansp = (ABS(maxsp-minsp))/meansp
-      lasymm = .FALSE. 
-      ! if there is more than 5 percent difference, do it 
+      lasymm = .FALSE.
+      ! if there is more than 5 percent difference, do it
       IF (meansp .GT. 0.05_ppm_kind_double) lasymm = .TRUE.
 
       IF (ppm_debug .GT. 0) THEN
@@ -614,7 +618,7 @@
       IF (lasymm) THEN
          DO i=1,nparts
             tpwgt(i) = REAL(ppm_proc_speed(i-1),ppm_kind_single)
-         ENDDO 
+         ENDDO
       ENDIF
 
       !-------------------------------------------------------------------------
@@ -625,7 +629,7 @@
       IF (assig .EQ. ppm_param_assign_nodal_cut .OR.   &
      &    assig .EQ. ppm_param_assign_nodal_comm) THEN
          CALL METIS_MeshToNodal(nsubs,nnodes,elmnts,etype,numtype,nxadj,  &
-     &      nadjncy) 
+     &      nadjncy)
          wgtflag = 2  ! weights on vertices only / comput. weights only
          DO i=1,nvert
             vwgt(i)  = 0
@@ -696,7 +700,7 @@
          !  Output diagnostics
          !----------------------------------------------------------------------
          ! egdecut is the number of mesh edges that has been cut by the
-         ! partition. 
+         ! partition.
          IF (ppm_debug .GT. 0) THEN
             WRITE(mesg,'(A,I6)') 'METIS returned edgecut = ',edgecut
             CALL ppm_write(ppm_rank,'ppm_topo_metis_s2p',mesg,info)
@@ -728,7 +732,7 @@
          !  Output diagnostics
          !----------------------------------------------------------------------
          ! egdecut is the number of mesh edges that has been cut by the
-         ! partition. 
+         ! partition.
          IF (ppm_debug .GT. 0) THEN
             WRITE(mesg,'(A,I6)') 'METIS returned communication volume = ',volume
             CALL ppm_write(ppm_rank,'ppm_topo_metis_s2p',mesg,info)
@@ -758,7 +762,7 @@
          DO i=1,nsubs
             vote(1:nparts) = 0
             DO j=1,points
-               ! the processor this node was assigned to 
+               ! the processor this node was assigned to
                jj = npart(cornerno(j,i))
                vote(jj) = vote(jj) + 1
             ENDDO

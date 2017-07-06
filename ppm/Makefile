@@ -48,7 +48,7 @@
 
 SHELL   := /bin/sh
 
-include Make.ifort
+include Make.gfortran
 
 # Default value for the dependency pre-processor
 # = same as code-generating pre-processor
@@ -90,8 +90,9 @@ RMCPP := 'rm'
 endif
 
 $(warning Checking for directories...)
-$(shell mkdir $(BUILDDIR)/objects)
-$(shell mkdir $(BUILDDIR)/include)
+$(shell mkdir -p $(OBJ_DIR))
+$(shell mkdir -p $(MODULES_DIR))
+$(shell mkdir -p $(INSTALL_DIR))
 
 
 .DEFAULT: ;
@@ -123,7 +124,7 @@ $(OBJ_DIR)/%.d: $(SRC_DIR)/%.f
 	@grep "INCLUDE " $(OBJ_DIR)/__$*.f | \
         sed -e 's#^[ \t]*##;s#[ \t]*##' \
 	    -e  '/^!/d;/mpif.h/d' \
-		-e  '/^!/d;/fftw3.f/d' \
+	    -e  '/^!/d;/fftw3.f/d' \
             -e 's#INCLUDE ##;s#$$#\\#' \
             -e 's#"##g' -e "s#'##g" -e 's# ##g' >> $@
 	@echo '# end of source dependencies for .o and .d files' >> $@

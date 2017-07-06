@@ -7,14 +7,14 @@
       !
       !  Input        : data_in(:,:)   (F) 2d data array to be transformed
       !
-      !  Input/output : lda(:)         (I) size of data              
-      !                                
+      !  Input/output : lda(:)         (I) size of data
+      !
       !
       !  Output       : data_out(:,:)  (F) transformed data
       !                 info           (I) return status. =0 if no error.
       !
-      !  Remarks      : 
-      !                                                  
+      !  Remarks      :
+      !
       !  References   :
       !
       !  Revisions    :
@@ -66,9 +66,9 @@
       USE ppm_module_error
       USE ppm_module_alloc
       IMPLICIT NONE
-#if   __KIND == __SINGLE_PRECISION | __KIND ==__SINGLE_PRECISION_COMPLEX 
+#if   __KIND == __SINGLE_PRECISION | __KIND ==__SINGLE_PRECISION_COMPLEX
       INTEGER, PARAMETER :: MK = ppm_kind_single
-#elif __KIND == __DOUBLE_PRECISION | __KIND ==__DOUBLE_PRECISION_COMPLEX 
+#elif __KIND == __DOUBLE_PRECISION | __KIND ==__DOUBLE_PRECISION_COMPLEX
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
@@ -78,7 +78,7 @@
       INCLUDE "fftw3.f"
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       ! input data
 #if   __KIND == __SINGLE_PRECISION | __KIND == __DOUBLE_PRECISION
@@ -93,15 +93,15 @@
       INTEGER                       , INTENT(  OUT) :: info
 
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       ! timer
       REAL(MK)                                :: t0
       ! counters
       INTEGER                                 :: i,j,iopt
-      ! size of the data_in 
+      ! size of the data_in
       INTEGER                                 :: Nx_in, Ny_in
-      ! size of the data_out 
+      ! size of the data_out
       INTEGER                                 :: Nx_out, Ny_out
 
 #ifdef __FFTW
@@ -118,20 +118,25 @@
       ! scale of the transformation
       REAL(MK)                                :: scale_fft
       ! working storage
-      REAL(MK), DIMENSION(:),POINTER          :: table, work
+      REAL(MK), DIMENSION(:),POINTER          :: work
       ! the size of the working storage
       INTEGER, DIMENSION(1)                   :: lda_table, lda_work
 #endif
 
 
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
 
       !-------------------------------------------------------------------------
       !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_fdsolver_fft_fd_2d',t0,info)
+
+#ifdef __MATHKEISAN
+      ! MATHKEISAN variables for MathKeisan FFTs
+      NULLIFY(work)
+#endif
 
 #if  !(defined(__FFTW) | defined(__MATHKEISAN))
 
@@ -150,7 +155,7 @@
      &    'PPM was compiled without MATHKEISAN support',__LINE__,info)
 #endif
 
-      GOTO 9999   
+      GOTO 9999
 
 
 #else
@@ -191,7 +196,7 @@
 #elif __KIND == __SINGLE_PRECISION_COMPLEX| __KIND == __DOUBLE_PRECISION_COMPLEX
       Nx_out = Nx_in
 #endif
- 
+
       Ny_out=Ny_in
 
 
@@ -241,7 +246,7 @@
 
 
       !-------------------------------------------------------------------------
-      !  Forward FFT 
+      !  Forward FFT
       !-------------------------------------------------------------------------
 
       scale_fft = 1
@@ -292,7 +297,7 @@
       !  FFTW version for LINUX,...
       !-------------------------------------------------------------------------
 
- 
+
 
 
 #if   __KIND == __SINGLE_PRECISION
@@ -309,7 +314,7 @@
 
 
 #endif
-#endif 
+#endif
 
 #if __KIND == __SINGLE_PRECISION_COMPLEX | __KIND == __DOUBLE_PRECISION_COMPLEX
       !-------------------------------------------------------------------------
@@ -317,7 +322,7 @@
       !-------------------------------------------------------------------------
       DO j=1,Ny_out
             data_out(lda(1),j) = data_out(1,j)
-      ENDDO     
+      ENDDO
 #endif
 
 

@@ -3,10 +3,10 @@
       !-------------------------------------------------------------------------
       !
       !  Purpose      : This routine find the neighbours of a sub domain.
-      !                 It does that by comparing the coordinates of the 
-      !                 bounding box of the sub domains using an N-square 
+      !                 It does that by comparing the coordinates of the
+      !                 bounding box of the sub domains using an N-square
       !                 algorithm ! Moreover, since the routine is called before
-      !                 any mapping has been performed, ALL the subs (nsubs) 
+      !                 any mapping has been performed, ALL the subs (nsubs)
       !                 must be searched !
       !
       !  Input        : min_phys(:)  (F) the min. extent of the physical domain
@@ -17,13 +17,13 @@
       !  Input/output : min_sub(:,:) (F) the min. extent of the sub domain
       !                 max_sub(:,:) (F) the max. extent of the sub domain
       !
-      !  Output       : nneigh(:)    (I) nneigh(isub) returns the total number 
+      !  Output       : nneigh(:)    (I) nneigh(isub) returns the total number
       !                                  of neighbouring subs of isub
       !               : ineigh(:,:)  (I) points to the nneigh(:) subs of isub
       !                 info         (I) return status
       !
       !  Remarks      : No sub is listed as a neighbor of itself.
-      !           
+      !
       !                 The side effect of this routine is that the lists
       !                 min_sub(:) and max_sub(:) are extended to include
       !                 ghost sub domains. This is not used beyond this routine.
@@ -35,11 +35,11 @@
       !                 ghosts.
       !
       !                 This routine uses cell lists of the sub centers
-      !                 for fast search. The size of the cells is the 
-      !                 extent(1:3) of the largest sub that exists. 
+      !                 for fast search. The size of the cells is the
+      !                 extent(1:3) of the largest sub that exists.
       !                 Therefore: if we have one large sub and tons of
       !                 small ones, this routine will perform poorly.
-      !                 (N**2 in the worst case). 
+      !                 (N**2 in the worst case).
       !
       !  References   :
       !
@@ -105,7 +105,7 @@
      &           min_sub,max_sub,nsubs,nneigh,ineigh,info)
 #endif
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -129,7 +129,7 @@
       INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:)  , INTENT(IN   ) :: min_phys,max_phys
       INTEGER , DIMENSION(:  ), INTENT(IN   ) :: bcdef
@@ -139,7 +139,7 @@
       INTEGER                 , INTENT(IN   ) :: nsubs
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(ppm_dim)            :: bsize,len_sub
       REAL(MK), DIMENSION(:,:), POINTER       :: ctrs
@@ -158,18 +158,18 @@
       REAL(MK)                                :: t0
       LOGICAL                                 :: isin,pbdrx,pbdry,pbdrz
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_find_neigh',t0,info)
 
       !-------------------------------------------------------------------------
       !  Allocate memory for subdomain IDs
       !-------------------------------------------------------------------------
-      iopt = ppm_param_alloc_fit 
+      iopt = ppm_param_alloc_fit
       ldc(1) = nsubs
       CALL ppm_alloc(subid,ldc,iopt,info)
       IF (info.NE.ppm_param_success) THEN
@@ -178,6 +178,8 @@
      &        'Sub IDs SUBID',__LINE__,info)
           GOTO 9999
       ENDIF
+
+      NULLIFY(ctrs,subid,lhbx,lpdx,inp,jnp)
 
       !-------------------------------------------------------------------------
       !  Initialize the ID
@@ -197,7 +199,7 @@
       !  Allocate memory for the neighbours of the subdomains
       !-------------------------------------------------------------------------
       iopt   = ppm_param_alloc_grow
-      ldc(1) = nsubsplus 
+      ldc(1) = nsubsplus
       CALL ppm_alloc(nneigh,ldc,iopt,info)
       IF (info.NE.ppm_param_success) THEN
           info = ppm_error_fatal
@@ -263,9 +265,9 @@
               ctrs(1,i)  = 0.5_MK*(min_sub(1,i) + max_sub(1,i))
               ctrs(2,i)  = 0.5_MK*(min_sub(2,i) + max_sub(2,i))
               ctrs(3,i)  = 0.5_MK*(min_sub(3,i) + max_sub(3,i))
-              len_sub(1) = max_sub(1,i) - min_sub(1,i) 
-              len_sub(2) = max_sub(2,i) - min_sub(2,i) 
-              len_sub(3) = max_sub(3,i) - min_sub(3,i) 
+              len_sub(1) = max_sub(1,i) - min_sub(1,i)
+              len_sub(2) = max_sub(2,i) - min_sub(2,i)
+              len_sub(3) = max_sub(3,i) - min_sub(3,i)
               IF (len_sub(1).GT.bsize(1)) bsize(1) = len_sub(1)
               IF (len_sub(2).GT.bsize(2)) bsize(2) = len_sub(2)
               IF (len_sub(3).GT.bsize(3)) bsize(3) = len_sub(3)
@@ -275,8 +277,8 @@
           DO i=1,nsubsplus
               ctrs(1,i) = 0.5_MK*(min_sub(1,i) + max_sub(1,i))
               ctrs(2,i) = 0.5_MK*(min_sub(2,i) + max_sub(2,i))
-              len_sub(1) = max_sub(1,i) - min_sub(1,i) 
-              len_sub(2) = max_sub(2,i) - min_sub(2,i) 
+              len_sub(1) = max_sub(1,i) - min_sub(1,i)
+              len_sub(2) = max_sub(2,i) - min_sub(2,i)
               IF (len_sub(1).GT.bsize(1)) bsize(1) = len_sub(1)
               IF (len_sub(2).GT.bsize(2)) bsize(2) = len_sub(2)
           ENDDO
@@ -286,7 +288,7 @@
       !  Determine number of cells
       !-------------------------------------------------------------------------
       DO i=1,ppm_dim
-          ! number of cells based on a cellsize = cutoff 
+          ! number of cells based on a cellsize = cutoff
           Nm(i) = INT((max_phys(i) - min_phys(i))/bsize(i))
           ! make at least one box
           IF (Nm(i) .LT. 1) Nm(i) = 1
@@ -367,7 +369,7 @@
                       pbdrx = .FALSE.
                   ENDIF
                   ! index of the center box
-                  cbox = i + 1 + n1*j 
+                  cbox = i + 1 + n1*j
                   ! loop over all box-box interactions
                   DO iinter=1,nnp
                       ! determine box indices for this interaction
@@ -380,7 +382,7 @@
                       iend   = lhbx(ibox+1)-1
                       IF (iend .LT. istart) CYCLE
                       !---------------------------------------------------------
-                      !  Within the box itself use symmetry and avoid 
+                      !  Within the box itself use symmetry and avoid
                       !  adding the particle itself to its own list
                       !---------------------------------------------------------
                       IF (ibox .EQ. jbox) THEN
@@ -400,7 +402,7 @@
                       !  For the other boxes check all particles
                       !---------------------------------------------------------
                       ELSE
-                          ! get pointers to first and last particle 
+                          ! get pointers to first and last particle
                           jstart = lhbx(jbox)
                           jend   = lhbx(jbox+1)-1
                           ! skip this iinter if other box is empty
@@ -474,7 +476,7 @@
                           iend   = lhbx(ibox+1)-1
                           IF (iend .LT. istart) CYCLE
                           !-----------------------------------------------------
-                          !  Within the box itself use symmetry and avoid 
+                          !  Within the box itself use symmetry and avoid
                           !  adding the particle itself to its own list
                           !-----------------------------------------------------
                           IF (ibox .EQ. jbox) THEN
@@ -494,7 +496,7 @@
                           !  For the other boxes check all particles
                           !-----------------------------------------------------
                           ELSE
-                              ! get pointers to first and last particle 
+                              ! get pointers to first and last particle
                               jstart = lhbx(jbox)
                               jend   = lhbx(jbox+1)-1
                               ! skip this iinter if other box is empty
@@ -529,35 +531,35 @@
           CALL ppm_error(ppm_err_dealloc,'ppm_find_neigh',     &
      &        'Sub center points CTRS',__LINE__,info)
           GOTO 9999
-      ENDIF 
+      ENDIF
       CALL ppm_alloc(lpdx,ldc,iopt,info)
       IF (info.NE.ppm_param_success) THEN
           info = ppm_error_error
           CALL ppm_error(ppm_err_dealloc,'ppm_find_neigh',     &
      &        'cell list pointers LPDX',__LINE__,info)
           GOTO 9999
-      ENDIF 
+      ENDIF
       CALL ppm_alloc(lhbx,ldc,iopt,info)
       IF (info.NE.ppm_param_success) THEN
           info = ppm_error_error
           CALL ppm_error(ppm_err_dealloc,'ppm_find_neigh',     &
      &        'cell list headers LHBX',__LINE__,info)
           GOTO 9999
-      ENDIF 
+      ENDIF
       CALL ppm_alloc(inp,ldc,iopt,info)
       IF (info.NE.ppm_param_success) THEN
           info = ppm_error_error
           CALL ppm_error(ppm_err_dealloc,'ppm_find_neigh',     &
      &        'cell-cell interactaion index INP',__LINE__,info)
           GOTO 9999
-      ENDIF 
+      ENDIF
       CALL ppm_alloc(jnp,ldc,iopt,info)
       IF (info.NE.ppm_param_success) THEN
           info = ppm_error_error
           CALL ppm_error(ppm_err_dealloc,'ppm_find_neigh',     &
      &        'cell-cell interaction index JNP',__LINE__,info)
           GOTO 9999
-      ENDIF 
+      ENDIF
  8888 iopt = ppm_param_dealloc
       CALL ppm_alloc(subid,ldc,iopt,info)
       IF (info.NE.ppm_param_success) THEN
@@ -565,10 +567,10 @@
           CALL ppm_error(ppm_err_dealloc,'ppm_find_neigh',     &
      &        'Sub IDs SUBID',__LINE__,info)
           GOTO 9999
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_find_neigh',t0,info)

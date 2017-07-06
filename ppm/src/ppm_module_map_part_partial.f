@@ -3,7 +3,7 @@
       !-------------------------------------------------------------------------
       !
       !  Purpose      : This module includes the source code for the mapping
-      !                 routines. 
+      !                 routines.
       !
       !  Remarks      :
       !
@@ -28,7 +28,7 @@
       !  ETH Zentrum, Hirschengraben 84
       !  CH-8092 Zurich, Switzerland
       !-------------------------------------------------------------------------
-     
+
       !-------------------------------------------------------------------------
       !  Define types
       !-------------------------------------------------------------------------
@@ -40,7 +40,10 @@
          !----------------------------------------------------------------------
          !  Work lists
          !----------------------------------------------------------------------
-         INTEGER, DIMENSION(:), POINTER :: ilist1,ilist2,part2proc,ineighsubs
+         INTEGER, DIMENSION(:), POINTER :: ilist1 => NULL()
+         INTEGER, DIMENSION(:), POINTER :: ilist2 => NULL()
+         INTEGER, DIMENSION(:), POINTER :: part2proc => NULL()
+         INTEGER, DIMENSION(:), POINTER :: ineighsubs => NULL()
 
          PRIVATE :: ilist1,ilist2,part2proc,ineighsubs
 
@@ -53,7 +56,7 @@
          END INTERFACE
 
          !----------------------------------------------------------------------
-         !  include the source 
+         !  include the source
          !----------------------------------------------------------------------
          CONTAINS
 

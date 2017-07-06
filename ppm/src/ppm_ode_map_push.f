@@ -11,9 +11,9 @@
       !
       !  Output       : info                   (I) return status
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
-      !  References   : 
+      !  References   :
       !
       !  Revisions    :
       !-------------------------------------------------------------------------
@@ -71,7 +71,7 @@
         USE ppm_module_data_ode
         USE ppm_module_substop
         USE ppm_module_data
-        
+
         IMPLICIT NONE
 #if     __KIND == __SINGLE_PRECISION
         INTEGER, PARAMETER :: mk = ppm_kind_single
@@ -95,20 +95,20 @@
         INTEGER                                   :: throwaway
         INTEGER                                   :: mid, umidmax, umidmin
         INTEGER                                   :: to_topo
-        
+
         !-----------------------------------------------------------------------
         !  call substart
         !-----------------------------------------------------------------------
         CALL substart('ppm_ode_map_push',t0,info)
-        
+
         !-----------------------------------------------------------------------
         ! general remark:
         ! were going to push only the stages that are needed to the
         ! other cpu. But that guy will pop the stuff and create a new
         ! array to comprise  only the stages that weve sent? so the
-        ! array may shrink? must not happen. 
+        ! array may shrink? must not happen.
         !-----------------------------------------------------------------------
-        
+
         IF(Npart.EQ.0) THEN
            !--------------------------------------------------------------------
            ! just save the number of stages that we would have sent
@@ -150,12 +150,12 @@
                  ! user mid does not exist
                  !--------------------------------------------------------------
                  info = ppm_error_error
-                 CALL ppm_error(ppm_err_argument,'ppm_ode_step',& 
+                 CALL ppm_error(ppm_err_argument,'ppm_ode_step',&
                       & 'odeid does not exist',__LINE__,info)
                  GOTO 9999
               END IF
            END IF
-           
+
            !--------------------------------------------------------------------
            ! check dimension
            !--------------------------------------------------------------------
@@ -182,19 +182,19 @@
         mid     = ppm_internal_mid(odeid)
         ldasend = lda*ppm_ode_sent(mid)
         IF(ldasend.EQ.0) GOTO 9999
-        
+
         to_topo = -1
-        CALL ppm_map_part(bfr,ldasend,Npart,mpart,to_topo,& 
+        CALL ppm_map_part(bfr,ldasend,Npart,mpart,to_topo,&
              & ppm_param_map_push, info)
         IF(info.NE.0) THEN
            GOTO 9999
         END IF
-        
-        
-        
 
 
-9999    CONTINUE        
+
+
+
+9999    CONTINUE
         !-----------------------------------------------------------------------
         ! substop
         !-----------------------------------------------------------------------

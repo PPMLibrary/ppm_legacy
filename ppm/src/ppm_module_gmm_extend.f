@@ -2,7 +2,7 @@
       !  Module       :               ppm_module_gmm_extend
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : This module includes the source code for the 
+      !  Purpose      : This module includes the source code for the
       !                 extend routine of the marching method.
       !
       !  Remarks      :
@@ -33,7 +33,7 @@
       !  ETH Zentrum, Hirschengraben 84
       !  CH-8092 Zurich, Switzerland
       !-------------------------------------------------------------------------
-     
+
       !-------------------------------------------------------------------------
       !  Define types
       !-------------------------------------------------------------------------
@@ -51,16 +51,16 @@
          !----------------------------------------------------------------------
          !  Modules
          !----------------------------------------------------------------------
-         USE ppm_module_data, ONLY: ppm_kind_single, ppm_kind_double 
+         USE ppm_module_data, ONLY: ppm_kind_single, ppm_kind_double
          PRIVATE :: ppm_kind_single, ppm_kind_double
-         
+
          !----------------------------------------------------------------------
          !  Work memory
          !----------------------------------------------------------------------
-         REAL(ppm_kind_single), DIMENSION(:,:,:  ), POINTER :: ext_wrk_2ds
-         REAL(ppm_kind_single), DIMENSION(:,:,:,:), POINTER :: ext_wrk_3ds
-         REAL(ppm_kind_double), DIMENSION(:,:,:  ), POINTER :: ext_wrk_2dd
-         REAL(ppm_kind_double), DIMENSION(:,:,:,:), POINTER :: ext_wrk_3dd
+         REAL(ppm_kind_single), DIMENSION(:,:,:  ), POINTER :: ext_wrk_2ds => NULL()
+         REAL(ppm_kind_single), DIMENSION(:,:,:,:), POINTER :: ext_wrk_3ds => NULL()
+         REAL(ppm_kind_double), DIMENSION(:,:,:  ), POINTER :: ext_wrk_2dd => NULL()
+         REAL(ppm_kind_double), DIMENSION(:,:,:,:), POINTER :: ext_wrk_3dd => NULL()
 
          !----------------------------------------------------------------------
          !  Define interfaces to ppm_gmm_extend
@@ -92,7 +92,7 @@
          END INTERFACE
 
          !----------------------------------------------------------------------
-         !  include the source 
+         !  include the source
          !----------------------------------------------------------------------
          CONTAINS
 

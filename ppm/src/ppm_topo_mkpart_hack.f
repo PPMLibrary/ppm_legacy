@@ -8,15 +8,15 @@
       !                 onto the processors and a neighbour list is established.
       !
       !                 The decomposition is based on the particle positions
-      !                 If nsubs is greater than zero, the subdomains 
-      !                 described by (min_sub,max_sub) given by the user is 
-      !                 used. If nsubs is less than one the subdomains are 
-      !                 found using the decomposition defined by the option 
-      !                 decomp. 
-      !                 
-      !                 If nsubs on input is greater than zero, the assigment 
-      !                 of subdomain to the processors is used (as described 
-      !                 in sub2proc) or else 
+      !                 If nsubs is greater than zero, the subdomains
+      !                 described by (min_sub,max_sub) given by the user is
+      !                 used. If nsubs is less than one the subdomains are
+      !                 found using the decomposition defined by the option
+      !                 decomp.
+      !
+      !                 If nsubs on input is greater than zero, the assigment
+      !                 of subdomain to the processors is used (as described
+      !                 in sub2proc) or else
       !                 the assigment of subdomain to the processors will be
       !                 performed to assign as best as possible an equal number
       !                 of particles/grid points and at the same time
@@ -50,10 +50,10 @@
       !                                  library METIS and is only
       !                                  available if ppm was compiled with
       !                                  METIS support.
-      !                 min_phys(:)  (F) the minimum coordinates of the 
-      !                                  physical/computational domain 
-      !                 max_phys(:)  (F) the maximum coordinates of the 
-      !                                  physical/computational domain 
+      !                 min_phys(:)  (F) the minimum coordinates of the
+      !                                  physical/computational domain
+      !                 max_phys(:)  (F) the maximum coordinates of the
+      !                                  physical/computational domain
       !                 bcdef(:)     (I) the definition of the BC on all
       !                                  sides
       !                 ghostsize    (F) the size (width) of the ghost
@@ -62,7 +62,7 @@
       !                                  which specifies the computational
       !                                  cost attributed to each particle.
       !                                  If this is absent, a unity cost is
-      !                                  assumed for each particle. 
+      !                                  assumed for each particle.
       !
       !  Input/output : topo_id      (I) topology identifier (user
       !                                  numbering) for which to create
@@ -80,7 +80,7 @@
       !                                  ID (or ID of the new topology if
       !                                  <0 on input).
       !                 min_sub(:,:) (F) the min. extent of the subdomains
-      !                                  (user-specified on input or 
+      !                                  (user-specified on input or
       !                                  decomposition-result on output)
       !                 max_sub(:,:) (F) the max. extent of the subdomains
       !                 sub2proc(:)  (I) the list proc affiliations of
@@ -96,7 +96,7 @@
       !                                  input or decomposition result on
       !                                  output.
       !
-      !  Output       : isublist(:)  (I) list of subdomains handled by 
+      !  Output       : isublist(:)  (I) list of subdomains handled by
       !                                  the local processor
       !                 nsublist     (I) the number of subs assigned to the
       !                                  current processor
@@ -264,8 +264,8 @@
       !  (3) inserted ppm_error and ppm_write, (4) added argument checking.
       !
       !  Revision 1.5  2003/12/12 16:12:02  ivos
-      !  Removed topoid from the argument list of all decomp* subroutines as 
-      !  they do not need it. Changed topoid (internal) to topo_id 
+      !  Removed topoid from the argument list of all decomp* subroutines as
+      !  they do not need it. Changed topoid (internal) to topo_id
       !  (user-provided). Translation will be done by ppm_topo_store.
       !
       !  Revision 1.4  2003/12/05 11:19:32  ivos
@@ -298,7 +298,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -331,7 +331,7 @@
       INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), POINTER       :: xp
       REAL(MK), DIMENSION(:  ), INTENT(IN   ) :: min_phys,max_phys
@@ -347,7 +347,7 @@
       INTEGER                 , INTENT(  OUT) :: nsublist
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER , DIMENSION(:,:), POINTER :: ineigh,subs_bc
       INTEGER , DIMENSION(  :), POINTER :: nneigh,nchld
@@ -363,11 +363,11 @@
       INTEGER, DIMENSION(ppm_dim)       :: Nm
       CHARACTER(ppm_char)               :: mesg
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_topo_mkpart',t0,info)
 #if   __KIND == __SINGLE_PRECISION
@@ -524,14 +524,14 @@
      &     'topo_id was set to zero for null decomposition',__LINE__, info)
          topo_id = 0
       ENDIF
-     
+
       IF ((decomp .NE. ppm_param_decomp_null) .AND. (topo_id .EQ. 0)) THEN
          info = ppm_error_warning
          CALL ppm_error(ppm_err_argument, 'ppm_topo_mkpart',    &
      &     'topo_id was reset for non-null decomposition',__LINE__, info)
          topo_id = -1
       ENDIF
-     
+
       !-------------------------------------------------------------------------
       !  Check that we have particles
       !-------------------------------------------------------------------------
@@ -548,15 +548,17 @@
          CALL ppm_error(ppm_err_argument,'ppm_topo_mkpart',   &
      &       'No particles in domain',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 #else
       IF (Npart.LT.1) THEN
          info = ppm_error_notice
          CALL ppm_error(ppm_err_argument,'ppm_topo_mkpart',   &
      &       'No particle on this processor',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 #endif
+
+      NULLIFY(ineigh,subs_bc,nneigh,nchld,min_box,max_box)
 
       !----------------------------------------------------------------------
       !  Dummy argument for non-existing mesh
@@ -585,7 +587,7 @@
          ENDIF
       ELSEIF (decomp.EQ.ppm_param_decomp_tree) THEN
          !-------------------------------------------------------------------
-         !  a tree data structure; use a default maxvariance of 10 pct 
+         !  a tree data structure; use a default maxvariance of 10 pct
          !-------------------------------------------------------------------
          IF (PRESENT(pcost)) THEN
              CALL ppm_decomp_tree(xp,Npart,min_phys,max_phys,ghostsize, &
@@ -830,7 +832,7 @@
       !-------------------------------------------------------------------------
       !  Find the neighbours to the subdomains
       !-------------------------------------------------------------------------
-      CALL ppm_find_neigh(min_phys,max_phys,bcdef, & 
+      CALL ppm_find_neigh(min_phys,max_phys,bcdef, &
      &                    min_sub,max_sub,nsubs,nneigh,ineigh,info)
       IF (info.NE.0) THEN
          info = ppm_error_error
@@ -932,7 +934,7 @@
       ELSE
           nsublist = nsubs
           !---------------------------------------------------------------------
-          !  Now the assignment of this one subdomain to this processor 
+          !  Now the assignment of this one subdomain to this processor
           !  (i.e. every processor has the same subdomain)
           !---------------------------------------------------------------------
           iopt = ppm_param_alloc_fit
@@ -990,14 +992,14 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Get internal topoid. If no topology has ever been defined, set 
+      !  Get internal topoid. If no topology has ever been defined, set
       !  this as the current topology.
       !-------------------------------------------------------------------------
       topoid = ppm_internal_topoid(topo_id)
       IF (ppm_topoid .EQ. -1) ppm_topoid = topoid
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_topo_mkpart',t0,info)

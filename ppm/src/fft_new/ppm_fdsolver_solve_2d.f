@@ -3,14 +3,14 @@
       !-------------------------------------------------------------------------
       !
       !  Purpose      : Poisson solver  using FFTW
-      !                 Solves the negative poisson equation in a 2-dimensional 
+      !                 Solves the negative poisson equation in a 2-dimensional
       !                 periodic domain
       !                            - Laplacian of Phi = omega
-      !                 It takes the field quantity omega in DATA_fv which is 
-      !                 assumed to be periodic outside the domain. The most 
-      !                 efficient initial topology for the fieldsolver is 
-      !                 a x-pencil topology. After performing a FFT on the  
-      !                 x-pencils the data is mapped onto y-pencils where 
+      !                 It takes the field quantity omega in DATA_fv which is
+      !                 assumed to be periodic outside the domain. The most
+      !                 efficient initial topology for the fieldsolver is
+      !                 a x-pencil topology. After performing a FFT on the
+      !                 x-pencils the data is mapped onto y-pencils where
       !                 again a FFT is performed.
       !                 The version solve_init is based on recomputed FFT-plans
       !                 created in ppm_fdsolver_init and destroyed in
@@ -20,51 +20,51 @@
       !                 The solution Phi is finally returned in DATA_fv.
       !                 Note: field quantity must live on current topology
       !
-      !                 Usage:   
-      !    
+      !                 Usage:
+      !
       !                    ppm_fdsolver_init(arguments)
-      !   
+      !
       !                    ppm_fdsolver_solve_init(arguments)
-      !   
+      !
       !                    ppm_fdsolver_finalize(info)
-      !   
-      !   
+      !
+      !
       !                 Standalone Usage:
       !
       !                    ppm_fdsolver_solve(arguments)
       !
-      !  Input        : 
+      !  Input        :
       !                  lda_fv      (F) leading dimension (vector case only)
       !                  mesh_id_user(I) mesh ID of the current data field mesh
-      !                  topo_ids(2) (I) topology IDs on which the FFTs are 
+      !                  topo_ids(2) (I) topology IDs on which the FFTs are
       !                                  performed
       !                                  topo_ids(1) initial topology
-      !                                               solve:      xpencils  
-      !                                               solve_init: xpencils  
+      !                                               solve:      xpencils
+      !                                               solve_init: xpencils
       !                                  topo_ids(2) second  topology
-      !                                               solve:      ypencils  
-      !                                               solve_init: ypencils  
+      !                                               solve:      ypencils
+      !                                               solve_init: ypencils
       !
       !                  mesh_ids(3) (I) mesh IDs where the FFTs are performed
-      !                                  mesh_ids(1) first mesh 
-      !                                             solve:      xpencils,real  
-      !                                             solve_init: xpencils,real  
-      !                                  mesh_ids(2) second mesh 
+      !                                  mesh_ids(1) first mesh
+      !                                             solve:      xpencils,real
+      !                                             solve_init: xpencils,real
+      !                                  mesh_ids(2) second mesh
       !                                             solve:      xpencils,complex
-      !                                             solve_init: xpencils,complex  
-      !                                  mesh_ids(3) third mesh 
+      !                                             solve_init: xpencils,complex
+      !                                  mesh_ids(3) third mesh
       !                                             solve:      ypencils,complex
-      !                                             solve_init: ypencils,complex  
+      !                                             solve_init: ypencils,complex
       !                  ghostsize(3) (I)ghostsize
-      !                                
       !
-      !  Input/output : 
-      !                  DATA_fv(:,:,:,:) (F) field data         
-      !                                
-      !                                
+      !
+      !  Input/output :
+      !                  DATA_fv(:,:,:,:) (F) field data
+      !
+      !
       !
       !  Output       : info       (I) return status. =0 if no error.
-      !                   
+      !
       !  Remarks      :
       !
       !  References   :
@@ -142,7 +142,7 @@
       SUBROUTINE ppm_fdsolver_solve_init_2d_ss(DATA_fv, mesh_id_user,&
          topo_ids, mesh_ids, ghostsize,  info)
 #elif __KIND == __DOUBLE_PRECISION
-      SUBROUTINE ppm_fdsolver_solve_init_2d_sd(DATA_fv, mesh_id_user,& 
+      SUBROUTINE ppm_fdsolver_solve_init_2d_sd(DATA_fv, mesh_id_user,&
          topo_ids, mesh_ids,  ghostsize,info)
 #endif
 #endif
@@ -165,7 +165,7 @@
       SUBROUTINE ppm_fdsolver_solve_2d_ss(DATA_fv, mesh_id_user,&
          topo_ids, mesh_ids, ghostsize, info)
 #elif __KIND == __DOUBLE_PRECISION
-      SUBROUTINE ppm_fdsolver_solve_2d_sd(DATA_fv, mesh_id_user,& 
+      SUBROUTINE ppm_fdsolver_solve_2d_sd(DATA_fv, mesh_id_user,&
          topo_ids, mesh_ids, ghostsize, info)
 #endif
 #endif
@@ -207,7 +207,7 @@
       USE   ppm_module_fdsolver_fft_fd
       USE   ppm_module_fdsolver_fft_bd
       USE   ppm_module_fdsolver_poisson
-  
+
       IMPLICIT NONE
 
 #if   __KIND == __SINGLE_PRECISION
@@ -235,7 +235,7 @@
 
       ! topo / mesh ID for the mapping
       INTEGER, DIMENSION(2)      , INTENT(IN   )   :: topo_ids
-      INTEGER, DIMENSION(3)      , INTENT(IN   )   :: mesh_ids 
+      INTEGER, DIMENSION(3)      , INTENT(IN   )   :: mesh_ids
       INTEGER, DIMENSION(2)      , INTENT(IN   )   :: ghostsize
       INTEGER                    , INTENT(  OUT)   :: info
       !-------------------------------------------------------------------------
@@ -264,7 +264,7 @@
 #endif
 
 
-      REAL(MK), DIMENSION(:, :),       POINTER :: data_in 
+      REAL(MK), DIMENSION(:, :),       POINTER :: data_in
       COMPLEX(MK), DIMENSION(:,:),     POINTER :: data_com
       COMPLEX(MK), DIMENSION(:,:),     POINTER :: FFT_x, FFT_xy
       REAL(MK), DIMENSION(:,:),        POINTER :: Result
@@ -277,14 +277,14 @@
       REAL(MK), DIMENSION(2  )                :: min_phys, max_phys
       REAL(MK), DIMENSION(2  )                :: length
       REAL(MK), DIMENSION(2  )                :: length_phys
-      INTEGER , DIMENSION(4  )                :: bcdef 
+      INTEGER , DIMENSION(4  )                :: bcdef
       INTEGER                                 :: nsubs,topo_id, mesh_id
       INTEGER                                 :: mesh_id_internal
       INTEGER                                 :: mesh_id_xpen, mesh_id_ypen
       INTEGER                                 :: mesh_id_xpen_complex
       REAL(MK), DIMENSION(:,:), POINTER       :: min_sub,max_sub
       REAL(MK), DIMENSION(:  ), POINTER       :: cost
-      INTEGER , DIMENSION(:,:), POINTER       :: istart, istart_xpen_complex  
+      INTEGER , DIMENSION(:,:), POINTER       :: istart, istart_xpen_complex
       INTEGER , DIMENSION(:,:), POINTER       :: istart_ypen, istart_trans
       INTEGER , DIMENSION(:,:), POINTER       :: ndata, ndata_xpen_complex
       INTEGER , DIMENSION(:,:), POINTER       :: ndata_ypen, ndata_trans
@@ -296,23 +296,26 @@
       INTEGER                                 :: topo_id_user, topo_id_internal
       INTEGER                                 :: topo_id_xpen, topo_id_ypen
       INTEGER, DIMENSION(2)                   :: topo_ids_tmp
-      INTEGER, DIMENSION(3)                   :: mesh_ids_tmp 
+      INTEGER, DIMENSION(3)                   :: mesh_ids_tmp
       INTEGER, DIMENSION(2)                   :: Nm, Nm_com, Nm_poisson
       LOGICAL                                 :: Its_xpencil_topo
       CHARACTER(LEN=ppm_char)                 :: mesg
 
 
-      
+
       !-------------------------------------------------------------------------
       !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_fdsolver_solve_2d',t0,info)
 
+      NULLIFY(DATA_fv_com,lda_DATA_fv_com,data_in,data_com,FFT_x,FFT_xy,Result)
+      NULLIFY(xp,min_sub,max_sub,cost,istart,istart_ypen,istart_trans)
+      NULLIFY(ndata,ndata_xpen_complex,ndata_ypen,ndata_trans,sub2proc,isublist)
 
       !-------------------------------------------------------------------------
       ! Check arguments
       !-------------------------------------------------------------------------
-      
+
       IF (ppm_debug .GT. 0) THEN
           IF (.NOT. ppm_initialized) THEN
               info = ppm_error_error
@@ -374,9 +377,9 @@
       !  Initialize variables
       !-------------------------------------------------------------------------
       dim              = 1
-      bcdef(1)         = ppm_param_bcdef_freespace 
+      bcdef(1)         = ppm_param_bcdef_freespace
       bcdef(2)         = ppm_param_bcdef_freespace
-      bcdef(3)         = ppm_param_bcdef_freespace 
+      bcdef(3)         = ppm_param_bcdef_freespace
       bcdef(4)         = ppm_param_bcdef_freespace
       asign           = ppm_param_assign_internal
       topo_id_internal = ppm_field_topoid
@@ -393,27 +396,27 @@
       Npart            = 0
 
 #if   __KIND == __SINGLE_PRECISION
-      
-      min_phys(1) = ppm_min_physs(1, topo_id_internal) 
-      min_phys(2) = ppm_min_physs(2, topo_id_internal) 
+
+      min_phys(1) = ppm_min_physs(1, topo_id_internal)
+      min_phys(2) = ppm_min_physs(2, topo_id_internal)
       max_phys(1) = ppm_max_physs(1, topo_id_internal)
       max_phys(2) = ppm_max_physs(2, topo_id_internal)
 
 #elif __KIND == __DOUBLE_PRECISION
-      
-      min_phys(1) = ppm_min_physd(1, topo_id_internal) 
-      min_phys(2) = ppm_min_physd(2, topo_id_internal) 
+
+      min_phys(1) = ppm_min_physd(1, topo_id_internal)
+      min_phys(2) = ppm_min_physd(2, topo_id_internal)
       max_phys(1) = ppm_max_physd(1, topo_id_internal)
       max_phys(2) = ppm_max_physd(2, topo_id_internal)
- 
+
 #endif
 
-      
+
       IF (ppm_debug .GT. 0) THEN
 
-         WRITE(mesg,'(A,2F15.3)' ) 'minimal extent', min_phys(1), min_phys(2) 
+         WRITE(mesg,'(A,2F15.3)' ) 'minimal extent', min_phys(1), min_phys(2)
          CALL ppm_write(ppm_rank,'ppm_fdsolver_solve',mesg,j)
-         WRITE(mesg,'(A,2F15.3)' ) 'maximal extent', max_phys(1), max_phys(2) 
+         WRITE(mesg,'(A,2F15.3)' ) 'maximal extent', max_phys(1), max_phys(2)
          CALL ppm_write(ppm_rank,'ppm_fdsolver_solve',mesg,j)
       ENDIF
 
@@ -431,14 +434,14 @@
 
 #if   __KIND == __SINGLE_PRECISION
          length(1)=ppm_max_subs(1,idom,topo_id_internal) &
-     &                                 - ppm_min_subs(1,idom,topo_id_internal) 
-         IF( abs(length(1) - length_phys(1)).GT.(ppm_myepss) ) THEN 
+     &                                 - ppm_min_subs(1,idom,topo_id_internal)
+         IF( abs(length(1) - length_phys(1)).GT.(ppm_myepss) ) THEN
             Its_xpencil_topo=.FALSE.
          ENDIF
 #elif __KIND == __DOUBLE_PRECISION
          length(1)=ppm_max_subd(1,idom,topo_id_internal) &
-     &                                 - ppm_min_subd(1,idom,topo_id_internal) 
-         IF( abs(length(1) - length_phys(1)).GT.(ppm_myepsd) ) THEN 
+     &                                 - ppm_min_subd(1,idom,topo_id_internal)
+         IF( abs(length(1) - length_phys(1)).GT.(ppm_myepsd) ) THEN
             Its_xpencil_topo=.FALSE.
          ENDIF
 #endif
@@ -448,17 +451,17 @@
       IF (ppm_debug .GT. 0) THEN
 
          IF(Its_xpencil_topo) THEN
-            WRITE(mesg,'(A)' ) 'X pencil topology' 
+            WRITE(mesg,'(A)' ) 'X pencil topology'
             CALL ppm_write(ppm_rank,'ppm_fdsolver_solve',mesg,j)
-         
+
          ELSE
-            WRITE(mesg,'(A)' ) 'Not X pencil topology' 
+            WRITE(mesg,'(A)' ) 'Not X pencil topology'
             CALL ppm_write(ppm_rank,'ppm_fdsolver_solve',mesg,j)
          ENDIF
       ENDIF
 
       !-------------------------------------------------------------------------
-      !   Setting of x-pencil topology 
+      !   Setting of x-pencil topology
       !-------------------------------------------------------------------------
 
       IF(Its_xpencil_topo) THEN
@@ -480,11 +483,11 @@
       ENDIF
 
       IF (ppm_debug .GT. 0) THEN
-         WRITE(mesg,'(A)' ) '  ID             topo  mesh' 
+         WRITE(mesg,'(A)' ) '  ID             topo  mesh'
          CALL ppm_write(ppm_rank,'ppm_fdsolver_solve',mesg,j)
          WRITE(mesg,'(A)' ) '-----------------------------------'
          CALL ppm_write(ppm_rank,'ppm_fdsolver_solve',mesg,j)
-         WRITE(mesg,'(A,2I4)' ) 'Original        ',topo_id_user, mesh_id_user  
+         WRITE(mesg,'(A,2I4)' ) 'Original        ',topo_id_user, mesh_id_user
          CALL ppm_write(ppm_rank,'ppm_fdsolver_solve',mesg,j)
          WRITE(mesg,'(A,2I4)' ) 'X Pencil        ', topo_id_xpen, mesh_id_xpen
          CALL ppm_write(ppm_rank,'ppm_fdsolver_solve',mesg,j)
@@ -554,16 +557,16 @@
 
 #if   __DIM == __SFIELD
       lda_DATA_fv_com(1)= Nm_com(1)
-      lda_DATA_fv_com(2)= yhmax   
+      lda_DATA_fv_com(2)= yhmax
       lda_DATA_fv_com(3)= nsublist
 #elif __DIM == __VFIELD
       lda_DATA_fv_com(1)= lda_fv
       lda_DATA_fv_com(2)= Nm_com(1)
-      lda_DATA_fv_com(3)= yhmax   
+      lda_DATA_fv_com(3)= yhmax
       lda_DATA_fv_com(4)= nsublist
-#endif   
+#endif
 
-    
+
       iopt = ppm_param_alloc_fit
       CALL ppm_alloc(DATA_fv_com, lda_DATA_fv_com, iopt,info)
 
@@ -572,11 +575,11 @@
           CALL ppm_error(ppm_err_alloc,'ppm_fdsolver_solve',     &
      &        'data array',__LINE__,info)
           GOTO 9999
-      ENDIF     
-     
-      
-      
-      
+      ENDIF
+
+
+
+
       !-------------------------------------------------------------------------
       !  FFT - Transformation in x-direction
       !-------------------------------------------------------------------------
@@ -595,15 +598,15 @@
       DO k=1,ppm_nsublist(topo_id_internal)
          idom = ppm_isublist(k,topo_id_internal)
          CALL  ppm_alloc(data_in, ndata(:,idom), ppm_param_alloc_fit, info)
-         
+
          IF (info .NE. 0) THEN
             info = ppm_error_fatal
             CALL ppm_error(ppm_err_alloc,'ppm_fdsolver_solve',     &
      &        'data_in array',__LINE__,info)
             GOTO 9999
          ENDIF
-  
-#if  __DIM == __VFIELD       
+
+#if  __DIM == __VFIELD
          DO n=1,lda_fv
 #endif
 
@@ -617,10 +620,10 @@
 #endif
                ENDDO
             ENDDO
-   
+
 #if __CASE == __INIT
             CALL ppm_fdsolver_fft_fd( data_in, ndata(:,idom), FFT_x, info)
-#else 
+#else
             CALL ppm_util_fft_forward( data_in, ndata(:,idom), FFT_x, info)
 #endif
 
@@ -640,10 +643,10 @@
             ENDDO
 
          ENDDO
-   
+
 #if __DIM == __VFIELD
       ENDDO
-#endif     
+#endif
 
       !-------------------------------------------------------------------------
       !  Decompose complex domain in xpencils
@@ -661,7 +664,7 @@
      &                bcdef,ghostsize,topo_id_ypen,mesh_id_ypen,min_sub,&
      &                max_sub,cost,sub2proc,nsubs,isublist,          &
      &                nsublist,istart_ypen,ndata,info)
- 
+
 
 
       !-------------------------------------------------------------------------
@@ -669,7 +672,7 @@
       !-------------------------------------------------------------------------
       mesh_ids_tmp(1) = mesh_id_xpen_complex
       mesh_ids_tmp(2) = mesh_id_ypen
- 
+
 #if __DIM == __SFIELD
       CALL ppm_fdsolver_map(DATA_fv_com,topo_ids_tmp, mesh_ids_tmp, info)
 #elif __DIM == __VFIELD
@@ -677,21 +680,21 @@
 #endif
 
       DO k=1,ppm_nsublist(ppm_field_topoid)
-         idom = ppm_isublist(k,ppm_field_topoid)     
+         idom = ppm_isublist(k,ppm_field_topoid)
          lda(1)=2
          lda(2)=idom
          iopt = ppm_param_alloc_fit
          CALL ppm_alloc(ndata_trans,lda,iopt, info)
-          
+
          ndata_trans(1,idom)=ndata(2,idom)
          ndata_trans(2,idom)=ndata(1,idom)
-          
+
          CALL ppm_alloc(data_com,ndata_trans(:,idom),iopt, info)
 
 #if __DIM == __VFIELD
          DO n=1,lda_fv
 #endif
- 
+
             DO i=1, ndata(1,idom)
                DO j=1, ndata(2,idom)
 #if __DIM == __SFIELD
@@ -702,21 +705,21 @@
                ENDDO
             ENDDO
 
-           
+
       !-------------------------------------------------------------------------
       !  FFT - Transformation in y-direction
       !-------------------------------------------------------------------------
 
 #if __CASE == __INIT
-            CALL ppm_fdsolver_fft_fd(data_com,ndata_trans(:,idom),FFT_xy,info) 
+            CALL ppm_fdsolver_fft_fd(data_com,ndata_trans(:,idom),FFT_xy,info)
 #else
-            CALL ppm_util_fft_forward(data_com,ndata_trans(:,idom),FFT_xy,info) 
+            CALL ppm_util_fft_forward(data_com,ndata_trans(:,idom),FFT_xy,info)
 #endif
 
             iopt = ppm_param_dealloc
             CALL ppm_alloc(data_com,ndata_trans(:,idom),iopt, info)
 
-      
+
       !-------------------------------------------------------------------------
       !  Solve Poisson Equation
       !-------------------------------------------------------------------------
@@ -737,14 +740,14 @@
             iopt = ppm_param_dealloc
             CALL ppm_alloc(istart,lda,iopt,info)
 
-      
+
       !-------------------------------------------------------------------------
       !  FFT - Backward Transformation in y-direction
       !-------------------------------------------------------------------------
 #if __CASE == __INIT
-            CALL ppm_fdsolver_fft_bd(FFT_xy, ndata_trans(:,idom), data_com,info) 
+            CALL ppm_fdsolver_fft_bd(FFT_xy, ndata_trans(:,idom), data_com,info)
 #else
-            CALL ppm_util_fft_backward(FFT_xy, ndata_trans(:,idom), data_com,info) 
+            CALL ppm_util_fft_backward(FFT_xy, ndata_trans(:,idom), data_com,info)
 #endif
 
       !-------------------------------------------------------------------------
@@ -768,7 +771,7 @@
          iopt = ppm_param_dealloc
          CALL ppm_alloc(data_com, lda, iopt,info)
       ENDDO ! end of do loop over k=1,nsublist
- 
+
 
       topo_id    = topo_ids_tmp(1)
       topo_ids_tmp(1)= topo_ids_tmp(2)
@@ -799,19 +802,19 @@
 #endif
                ENDDO
             ENDDO
-            
+
 
       !-------------------------------------------------------------------------
       !  FFT - Backward Transformation in y-direction
       !-------------------------------------------------------------------------
 #if __CASE == __INIT
-            CALL ppm_fdsolver_fft_bd(FFT_x,ndata_xpen_complex(:,idom),Result,info) 
+            CALL ppm_fdsolver_fft_bd(FFT_x,ndata_xpen_complex(:,idom),Result,info)
 #else
-            CALL ppm_util_fft_backward(FFT_x,ndata_xpen_complex(:,idom),Result,info) 
+            CALL ppm_util_fft_backward(FFT_x,ndata_xpen_complex(:,idom),Result,info)
 #endif
-            
+
       !-------------------------------------------------------------------------
-      ! Correct Inverse by problem size factor 1/(Nx*Ny)     
+      ! Correct Inverse by problem size factor 1/(Nx*Ny)
       ! Subtract 1 to fit ppm convention
       !-------------------------------------------------------------------------
 
@@ -831,7 +834,7 @@
 #endif
 
       ENDDO ! end of do loop k=1,nsublist
-      
+
 
       !-------------------------------------------------------------------------
       ! Map to original topology if not x-pencil topology
@@ -848,7 +851,7 @@
 #elif __DIM == __VFIELD
          CALL ppm_fdsolver_map(DATA_fv, lda_fv, topo_ids_tmp, mesh_ids_tmp, info)
 #endif
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       ! Deallocate memory

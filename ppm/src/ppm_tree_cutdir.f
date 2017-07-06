@@ -6,17 +6,17 @@
       !                 positions for the given cut directions.
       !
       !  Input        : xp(:,:)      (F) the positions of the particles
-      !                 Npart        (I) the number of particles 
+      !                 Npart        (I) the number of particles
       !                 weights(3)   (F) weights for the three cost
       !                                  contributions: particles, mesh,
       !                                  geometry for finding the cut
       !                                  directions.
-      !                 min_box(:,:) (F) the minimum coordinate of the 
+      !                 min_box(:,:) (F) the minimum coordinate of the
       !                                  boxes
-      !                 max_box(:,:) (F) the maximum coordinate of the 
+      !                 max_box(:,:) (F) the maximum coordinate of the
       !                                  boxes
       !                 cutbox       (I) ID of box to be cut
-      !                 ncut         (I) number of cut directions 
+      !                 ncut         (I) number of cut directions
       !                 fixed(:)     (L) set to .TRUE. for dimensions which
       !                                  must not be cut
       !                 minboxsize(:)(F) minimum size of a box in all
@@ -26,13 +26,13 @@
       !                                  computational cost of each
       !                                  particle.
       !
-      !  Input/output :                                            
+      !  Input/output :
       !
       !  Output         : icut(:)      (I) directions of best cut. icut=i
       !                                  means: cutting plane is orthogonal
       !                                  to i-th coordinate axis. index:
       !                                  1..ncut. The directions are sorted
-      !                                  with the most favorable first. 
+      !                                  with the most favorable first.
       !                   info         (I) return status
       !
       !  Remarks      : The cost of a particle is counted as pcost (if
@@ -69,7 +69,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_tree
@@ -91,7 +91,7 @@
       INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: min_box,max_box
@@ -102,7 +102,7 @@
       INTEGER , DIMENSION(:  ), POINTER       :: icut
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(ppm_dim)            :: len_box
       REAL(MK), DIMENSION(ppm_dim)            :: cgeom,cmesh,cpart,ctotal
@@ -119,11 +119,11 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_tree_cutdir',t0,info)
 #if   __KIND == __SINGLE_PRECISION
@@ -141,29 +141,29 @@
             CALL ppm_error(ppm_err_argument,'ppm_tree_cutdir',     &
      &          'cutbox must be > 0 !',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
          IF (SIZE(min_box,2) .LT. cutbox) THEN
             info = ppm_error_error
             CALL ppm_error(ppm_err_argument,'ppm_tree_cutdir',     &
      &          'size of min_box must be at least cutbox !',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
          IF (SIZE(max_box,2) .LT. cutbox) THEN
             info = ppm_error_error
             CALL ppm_error(ppm_err_argument,'ppm_tree_cutdir',     &
      &          'size of max_box must be at least cutbox !',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
          DO i=1,ppm_dim
             IF (min_box(i,cutbox) .GT. max_box(i,cutbox)) THEN
                info = ppm_error_error
                CALL ppm_error(ppm_err_argument,'ppm_tree_cutdir',     &
      &             'min_box must be <= max_box !',__LINE__,info)
                GOTO 9999
-            ENDIF 
+            ENDIF
          ENDDO
-      ENDIF 
-      
+      ENDIF
+
       !-------------------------------------------------------------------------
       !  If we have less than 1 direction to cut, we are done
       !-------------------------------------------------------------------------
@@ -196,7 +196,7 @@
           IF ((.NOT.fixed(i)) .AND. (len_box(i)-(2.0_MK*minboxsize(i))   &
      &        .GT.lmyeps*len_box(i))) THEN
               ip = ip + 1
-              cutable(i) = .TRUE.      
+              cutable(i) = .TRUE.
           ENDIF
       ENDDO
 
@@ -225,25 +225,25 @@
           GOTO 9999
       ENDIF
 
-           
+
 #ifdef __MPI
       !-------------------------------------------------------------------------
       !  Determine MPI data type
       !-------------------------------------------------------------------------
 #if   __KIND == __SINGLE_PRECISION
       MPTYPE = MPI_REAL
-#elif __KIND == __DOUBLE_PRECISION 
+#elif __KIND == __DOUBLE_PRECISION
       MPTYPE = MPI_DOUBLE_PRECISION
 #endif
 #endif
-       
+
       !------------------------------------------------------------------------
       !  Compute the geometry cost:
       !  - for 3D the cgeom(1) = len_box(2)*len_box(3)
       !               cgeom(2) = len_box(1)*len_box(3)
       !               cgeom(3) = len_box(1)*len_box(2)
-      !  In order to obtain the sum of the geometry costs on all axes 1, 
-      !  the cost on each axis is normalized with the sum of all costs.  
+      !  In order to obtain the sum of the geometry costs on all axes 1,
+      !  the cost on each axis is normalized with the sum of all costs.
       !------------------------------------------------------------------------
       ctotal = 0.0_MK
       cgeom  = 0.0_MK
@@ -277,7 +277,7 @@
       ENDIF
 
       !------------------------------------------------------------------------
-      !  Compute the mesh cost: 
+      !  Compute the mesh cost:
       !  - for 2D the cmesh(i) Nm_box(i,cutbox)
       !  - for 3D the cmesh(1) = Nm_box(2,cutbox)*Nm_box(3,cutbox)
       !               cmesh(2) = Nm_box(1,cutbox)*Nm_box(3,cutbox)
@@ -288,7 +288,7 @@
           IF (ppm_dim .GT. 2) THEN
               cmesh(1) = Nm_box(2,cutbox)*Nm_box(3,cutbox)
               cmesh(2) = Nm_box(1,cutbox)*Nm_box(3,cutbox)
-              cmesh(3) = Nm_box(1,cutbox)*Nm_box(2,cutbox) 
+              cmesh(3) = Nm_box(1,cutbox)*Nm_box(2,cutbox)
               ! normalization: total cost contribution of each part needs to
               ! sum up to 1 in order to get correct weighting.
               csum     = REAL(cmesh(1),MK)+REAL(cmesh(2),MK)+REAL(cmesh(3),MK)
@@ -312,12 +312,12 @@
               ctotal(2)= ctotal(2) + (weights(2)*cmesh(2))
           ENDIF
       ENDIF
-      
+
       !------------------------------------------------------------------------
       !  Compute the particles cost: the moments of inertia
       !------------------------------------------------------------------------
       cpart = 0.0_MK
-      IF (have_particles .AND. weights(1) .NE. 0.0_MK) THEN      
+      IF (have_particles .AND. weights(1) .NE. 0.0_MK) THEN
           !---------------------------------------------------------------------
           !  Compute the cost of local particles
           !---------------------------------------------------------------------
@@ -336,7 +336,7 @@
                   cpart(2) = cpart(2) + (x2*dm)
               ENDDO
           ELSE
-              shift(3) = 0.5_MK*(min_box(3,cutbox)+max_box(3,cutbox))  
+              shift(3) = 0.5_MK*(min_box(3,cutbox)+max_box(3,cutbox))
               DO k=tree_lhbx(1,cutbox),tree_lhbx(2,cutbox)
                   ip = tree_lpdx(k)
                   x = xp(1,ip)-shift(1)
@@ -347,14 +347,14 @@
                   z2 = x*x+y*y
                   dm = 1.0_MK
                   IF (PRESENT(pcost)) dm = pcost(ip)
-                  cpart(1) = cpart(1) + (x2*dm) 
+                  cpart(1) = cpart(1) + (x2*dm)
                   cpart(2) = cpart(2) + (y2*dm)
                   cpart(3) = cpart(3) + (z2*dm)
               ENDDO
           ENDIF
 #ifdef __MPI
           !---------------------------------------------------------------------
-          !  Allreduce of particle costs 
+          !  Allreduce of particle costs
           !---------------------------------------------------------------------
           CALL MPI_Allreduce(cpart,cpart_tot,ppm_dim,MPTYPE,MPI_SUM,    &
      &        ppm_comm,info)
@@ -363,10 +363,10 @@
               CALL ppm_error(ppm_err_mpi_fail,'ppm_tree_cutdir',   &
      &            'MPI_Allreduce of inertia tensor failed!',__LINE__,info)
               GOTO 9999
-          ENDIF 
+          ENDIF
           cpart = cpart_tot
 #endif
-         
+
           !---------------------------------------------------------------------
           !  Normalize the particle cost
           !---------------------------------------------------------------------
@@ -376,22 +376,22 @@
               cpart(1)  = cpart(1)*csuminv
               cpart(2)  = cpart(2)*csuminv
               cpart(3)  = cpart(3)*csuminv
-              ctotal(1) = ctotal(1)+(weights(1)*cpart(1))           
-              ctotal(2) = ctotal(2)+(weights(1)*cpart(2))           
-              ctotal(3) = ctotal(3)+(weights(1)*cpart(3))           
+              ctotal(1) = ctotal(1)+(weights(1)*cpart(1))
+              ctotal(2) = ctotal(2)+(weights(1)*cpart(2))
+              ctotal(3) = ctotal(3)+(weights(1)*cpart(3))
           ELSE
               csum      = cpart(1)+cpart(2)
               csuminv   = 1.0_MK/csum
               cpart(1)  = cpart(1)*csuminv
               cpart(2)  = cpart(2)*csuminv
-              ctotal(1) = ctotal(1)+(weights(1)*cpart(1))           
-              ctotal(2) = ctotal(2)+(weights(1)*cpart(2))           
+              ctotal(1) = ctotal(1)+(weights(1)*cpart(1))
+              ctotal(2) = ctotal(2)+(weights(1)*cpart(2))
           ENDIF
       ENDIF ! have_particles
-   
+
       !-------------------------------------------------------------------------
-      !  Sort directions in decreasing order by total cost. We do not need to 
-      !  normalize ctotal by SUM(weights), since we are only interested in the 
+      !  Sort directions in decreasing order by total cost. We do not need to
+      !  normalize ctotal by SUM(weights), since we are only interested in the
       !  ORDER of directions and not the actual cost values.
       !-------------------------------------------------------------------------
       IF (ppm_dim .EQ. 2) THEN
@@ -400,7 +400,7 @@
       ELSE
           isort(1:3) = (/1,2,3/)
           IF (ctotal(2) .LT. ctotal(1)) isort(1:3) = (/2,1,3/)
-          IF (ctotal(3).LT.ctotal(1).AND.ctotal(3).LT.ctotal(2)) THEN 
+          IF (ctotal(3).LT.ctotal(1).AND.ctotal(3).LT.ctotal(2)) THEN
               isort(3) = isort(2)
               isort(2) = isort(1)
               isort(1) = 3
@@ -425,7 +425,7 @@
       ENDDO
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_tree_cutdir',t0,info)
@@ -435,4 +435,4 @@
 #elif __KIND == __DOUBLE_PRECISION
       END SUBROUTINE ppm_tree_cutdir_d
 #endif
- 
+

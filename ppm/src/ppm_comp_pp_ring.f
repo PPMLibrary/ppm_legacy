@@ -41,7 +41,7 @@
       !                                 pass dxtableinv (the inverse of the
       !                                 table spacing) as a scalar here.
       !
-      !  Input/output : 
+      !  Input/output :
       !
       !  Output       : dpd(:,:)    (O) Change of particle data (pdata) due
       !                                 to interaction. Overloaded types:
@@ -54,7 +54,7 @@
       !                 resetting dpd to zero before doing the PP
       !                 interactions. This allows contributions from
       !                 different kernels to be accumulated. If needed,
-      !                 set it to zero before calling this routine the 
+      !                 set it to zero before calling this routine the
       !                 first time.
       !
       !  References   :
@@ -271,11 +271,14 @@
 #endif
       ENDIF
 
+
+      NULLIFY(xp2,pdata2,dpd2)
+
       !-------------------------------------------------------------------------
       !  Allocate memory for the copy of the local particles
       !-------------------------------------------------------------------------
       iopt = ppm_param_alloc_fit
-      ldu(1) = ppm_dim 
+      ldu(1) = ppm_dim
       ldu(2) = Np
       CALL ppm_alloc(xp2,ldu,iopt,info)
       IF (info .NE. ppm_param_success) THEN
@@ -328,7 +331,7 @@
       !-------------------------------------------------------------------------
       itarget = MOD(ppm_nproc+ppm_rank-1,ppm_nproc)
       isource = MOD(ppm_rank+1,ppm_nproc)
-      
+
       !-------------------------------------------------------------------------
       !  Compute how often we have to shift a copy of the particles to the
       !  neighbour processor
@@ -361,7 +364,7 @@
             GOTO 9999
          ENDIF
       ENDDO
-      
+
       !-------------------------------------------------------------------------
       !  If we have symmetry we only have send the particles half the round,
       !  so we have to check the case of an even number of processors
@@ -402,7 +405,7 @@
              GOTO 9999
           ENDIF
       ENDIF
-      
+
       !-------------------------------------------------------------------------
       !  Send the particles where they belong to
       !-------------------------------------------------------------------------
@@ -419,7 +422,7 @@
           CALL ppm_map_part(dpd2,lda,Lpart,Lpart,-1,ppm_param_map_pop,info)
           CALL ppm_map_part(pdata2,lda,Lpart,Lpart,-1,ppm_param_map_pop,info)
           CALL ppm_map_part(xp2,ppm_dim,Lpart,Lpart,-1,ppm_param_map_pop,info)
-      
+
           IF (Lpart .NE. Np) THEN
              info = ppm_error_error
              CALL ppm_error(ppm_err_part_lost,'ppm_comp_pp_ring',     &

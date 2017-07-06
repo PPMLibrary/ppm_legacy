@@ -2,12 +2,12 @@
       !  Subroutine   :               ppm_util_fft_backward_3d
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : Parallel backward FFT for 3D arrays. This does the 
+      !  Purpose      : Parallel backward FFT for 3D arrays. This does the
       !                 complete transform. Call ppm_util_fft_init before
       !                 using this routine!
-      !                 It takes the field quantity in DATA_fv which is 
-      !                 assumed to be periodic outside the domain. 
-      !                 This routine comes in two versions: 
+      !                 It takes the field quantity in DATA_fv which is
+      !                 assumed to be periodic outside the domain.
+      !                 This routine comes in two versions:
       !                    ppm_util_fft_backward_3d is the standard version
       !                    ppm_util_fft_backward_pencil_3d is the pencil version
       !
@@ -30,7 +30,7 @@
       !                                          output.
       !
       !  Output       : info       (I) return status. 0 on success.
-      !                   
+      !
       !  Remarks      :
       !
       !  References   :
@@ -93,8 +93,8 @@
       !  Bugfix: arguments are now checked BEFORE they are assigned to Nx_in...
       !
       !  Revision 1.2  2004/02/11 10:13:23  hiebers
-      !  changed arguments, included test on info, included ppm_define.h, 
-      !  shortened lines to 80 characters, excluded module_mesh, 
+      !  changed arguments, included test on info, included ppm_define.h,
+      !  shortened lines to 80 characters, excluded module_mesh,
       !  included fftw3.f
       !
 >>>>>>> 1.15
@@ -124,7 +124,7 @@
       SUBROUTINE ppm_util_fft_backward_3d_vs(DATA_fv,lda_fv,mesh_id_user, &
         ghostsize,info)
 #elif __KIND == __DOUBLE_PRECISION
-      SUBROUTINE ppm_util_fft_backward_3d_vd(DATA_fv,lda_fv,mesh_id_user, & 
+      SUBROUTINE ppm_util_fft_backward_3d_vd(DATA_fv,lda_fv,mesh_id_user, &
         ghostsize,info)
 #endif
 #endif
@@ -180,9 +180,9 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
-<<<<<<< ppm_util_fft_backward_3d.f
+      ! ppm_util_fft_backward_3d.f
 #if   __DIM == __SFIELD
       REAL(MK), DIMENSION(:,:,:,:),    POINTER     :: DATA_fv
 #elif __DIM == __VFIELD
@@ -191,7 +191,7 @@
       INTEGER                    , INTENT(IN)      :: mesh_id_user
 #if   __DIM == __VFIELD
       INTEGER                    , INTENT(IN)      :: lda_fv
-=======
+      !
       ! input data
       COMPLEX(MK), DIMENSION(:,:,:) , INTENT(IN   ) :: data_in
 
@@ -199,21 +199,21 @@
       ! size of data
       INTEGER, DIMENSION(:)         , INTENT(INOUT) :: lda
       ! output data, inverse fast fourier transformed
-#if   __KIND == __SINGLE_PRECISION         | __KIND == __DOUBLE_PRECISION 
+#if   __KIND == __SINGLE_PRECISION         | __KIND == __DOUBLE_PRECISION
       REAL(MK), DIMENSION(:,:,:)    , POINTER       :: data_out
 #elif __KIND == __SINGLE_PRECISION_COMPLEX| __KIND == __DOUBLE_PRECISION_COMPLEX
-      COMPLEX(MK), DIMENSION(:,:,:) , POINTER       :: data_out 
->>>>>>> 1.15
+      COMPLEX(MK), DIMENSION(:,:,:) , POINTER       :: data_out
+      ! 1.15
 #endif
       INTEGER, DIMENSION(3)      , INTENT(IN   )   :: ghostsize
       INTEGER                    , INTENT(  OUT)   :: info
 
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK)                                   :: t0
       INTEGER, DIMENSION(3)                      :: lda
-      INTEGER                                    :: i,j,k,l,m 
+      INTEGER                                    :: i,j,k,l,m
       INTEGER                                    :: ires,jres,lres
       REAL(MK)                                   :: rN
 #if   __DIM == __SFIELD
@@ -231,7 +231,7 @@
       REAL(MK), DIMENSION(:,:,:), POINTER        :: data_in
       COMPLEX(MK), DIMENSION(:,:,:), POINTER     :: data_com
       COMPLEX(MK), DIMENSION(:,:,:), POINTER     :: FFT_x,FFT_xy,FFT_xyz
-      REAL(MK), DIMENSION(:,:,:), POINTER        :: Reslt
+      REAL(MK), DIMENSION(:,:,:), POINTER        :: Result
       INTEGER , DIMENSION(:,:)  , POINTER        :: ndata,ndata_trans
       INTEGER , DIMENSION(:,:)  , POINTER        :: ndata_ypen,ndata_zpen
       INTEGER , DIMENSION(:,:)  , POINTER        :: ndata_xpen_complex
@@ -247,11 +247,16 @@
       INTEGER                                    :: topo_id_zpen
       INTEGER, DIMENSION(3)                      :: Nm,Nm_com
       CHARACTER(LEN=ppm_char)                    :: mesg
-      
+
       !-------------------------------------------------------------------------
       !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_util_fft_backward_3d',t0,info)
+
+      NULLIFY(DATA_fv_com,data_in,data_com,FFT_x,FFT_xy,FFT_xyz,Result)
+      NULLIFY(min_sub,max_sub,cost,istart,istart_xpen_complex,istart_ypen,istart_trans)
+      NULLIFY(ndata,ndata_trans,ndata_ypen,ndata_zpen,ndata_xpen_complex)
+      NULLIFY(data_out)
 
       !-------------------------------------------------------------------------
       ! Check arguments
@@ -284,15 +289,15 @@
       CALL ppm_error(ppm_err_noMathKeisan,'ppm_util_fft_backward_3d',  &
      &    'PPM was compiled without MATHKEISAN support',__LINE__,info)
 #endif
-      GOTO 9999   
+      GOTO 9999
 #else
 
       !-------------------------------------------------------------------------
-      !  FFT - Backward Transformation in z-direction. Each subdomain and 
+      !  FFT - Backward Transformation in z-direction. Each subdomain and
       !        vector dimension is treated seperately.
       !-------------------------------------------------------------------------
       DO k=1,ppm_nsublist(ppm_field_topoid)
-          idom   = ppm_isublist(k,ppm_field_topoid)     
+          idom   = ppm_isublist(k,ppm_field_topoid)
           lda(1) = 3
           lda(2) = idom
           iopt   = ppm_param_alloc_fit
@@ -323,11 +328,11 @@
 #if __DIM == __VFIELD
           DO n=1,lda_fv
 #endif
-      
+
 #if __CASE == __SLAB
-              CALL ppm_util_fft_z_bd(FFT_xyz,ndata_trans(:,idom),data_com,info) 
+              CALL ppm_util_fft_z_bd(FFT_xyz,ndata_trans(:,idom),data_com,info)
 #else
-              CALL ppm_util_fft_z_bd(FFT_xyz,ndata_trans(:,idom),data_com,info) 
+              CALL ppm_util_fft_z_bd(FFT_xyz,ndata_trans(:,idom),data_com,info)
 #endif
 
               !-----------------------------------------------------------------
@@ -367,7 +372,7 @@
           ENDIF
 
       ENDDO            ! loop over subdomains
- 
+
 #if __CASE ==  __SLAB
       !-------------------------------------------------------------------------
       !  SLAB CASE: skip the y-transform
@@ -380,7 +385,7 @@
       !-------------------------------------------------------------------------
       topo_ids_tmp(1) = topo_id_zpen
       topo_ids_tmp(2) = topo_id_ypen
-      
+
       mesh_ids_tmp(1) = mesh_id_zpen
       mesh_ids_tmp(2) = mesh_id_ypen
 
@@ -396,7 +401,7 @@
       !  Y-transform for each subdomain and vector element separately
       !-------------------------------------------------------------------------
       DO k=1,ppm_nsublist(ppm_field_topoid)
-          idom = ppm_isublist(k,ppm_field_topoid)     
+          idom = ppm_isublist(k,ppm_field_topoid)
           iopt = ppm_param_alloc_fit
           ndata_trans(1,idom) = ndata_ypen(2,idom)
           ndata_trans(2,idom) = ndata_ypen(1,idom)
@@ -413,15 +418,15 @@
               GOTO 9999
           ENDIF
 
-#if __DIM == __VFIELD         
+#if __DIM == __VFIELD
           DO n=1,lda_fv
 #endif
-              DO l=1,ndata_ypen(3,idom) 
+              DO l=1,ndata_ypen(3,idom)
                   DO j=1,ndata_ypen(2,idom)
                       DO i=1,ndata_ypen(1,idom)
-#if __DIM == __SFIELD         
+#if __DIM == __SFIELD
                           FFT_xy(j,i,l) = DATA_fv_com(i,j,l,k)
-#elif __DIM == __VFIELD         
+#elif __DIM == __VFIELD
                           FFT_xy(j,i,l) = DATA_fv_com(n,i,j,l,k)
 #endif
                       ENDDO
@@ -432,7 +437,7 @@
               !  FFT - Backward Transformation in y-direction
               !-----------------------------------------------------------------
               CALL ppm_util_fft_step_bd(FFT_xy,ndata_trans(:,idom),   &
-     &            data_com,info) 
+     &            data_com,info)
 
               !-----------------------------------------------------------------
               !  Transpose y-direction and x-direction
@@ -441,15 +446,15 @@
                   DO i=1,ndata_ypen(1,idom)
                       DO j=1,ndata_ypen(2,idom)
 
-#if __DIM == __SFIELD         
+#if __DIM == __SFIELD
                           DATA_fv_com(i,j,l,k) = data_com(j,i,l)
-#elif __DIM == __VFIELD         
+#elif __DIM == __VFIELD
                           DATA_fv_com(n,i,j,l,k) = data_com(j,i,l)
 #endif
                       ENDDO
                   ENDDO
               ENDDO
-#if __DIM == __VFIELD         
+#if __DIM == __VFIELD
           ENDDO              ! loop over lda
 #endif
 
@@ -462,13 +467,13 @@
              info = ppm_error_error
              CALL ppm_error(ppm_err_alloc,'ppm_util_fft_backward_3d',     &
      &           'data_com',__LINE__,info)
-          ENDIF     
+          ENDIF
           CALL ppm_alloc(FFT_xy,lda,iopt,info)
           IF (info .NE. 0) THEN
              info = ppm_error_error
              CALL ppm_error(ppm_err_alloc,'ppm_util_fft_backward_3d',     &
      &           'FFT_x',__LINE__,info)
-          ENDIF     
+          ENDIF
       ENDDO            ! loop over subdomains
 
 #if   __CASE == __SLAB
@@ -477,7 +482,7 @@
       !-------------------------------------------------------------------------
 2000  CONTINUE               ! SLAB CASE continue
 #endif
-      
+
       !-------------------------------------------------------------------------
       !  Map data onto x pencils or xy slabs
       !-------------------------------------------------------------------------
@@ -507,12 +512,12 @@
       mesh_ids_tmp(1) = mesh_id_zpen
 #endif
 
-#if __DIM == __SFIELD         
+#if __DIM == __SFIELD
       CALL ppm_util_fft_map(DATA_fv_com,topo_ids_tmp,mesh_ids_tmp,    &
-     &    ghostsize,info)     
-#elif __DIM == __VFIELD         
+     &    ghostsize,info)
+#elif __DIM == __VFIELD
       CALL ppm_util_fft_map(DATA_fv_com,lda_fv,topo_ids_tmp,    &
-     &    mesh_ids_tmp,ghostsize, info)     
+     &    mesh_ids_tmp,ghostsize, info)
 #endif
 
       !-------------------------------------------------------------------------
@@ -529,16 +534,16 @@
           lda(3) = ndata_xpen_complex(3,idom)
           CALL ppm_alloc(FFT_x,lda,iopt,info)
 
-#if __DIM == __VFIELD         
+#if __DIM == __VFIELD
           DO n=1,lda_fv
 #endif
               lda = ndata_xpen_complex(:,idom)
               DO l=1,ndata_xpen_complex(3,idom)
                   DO j=1,ndata_xpen_complex(2,idom)
                       DO i=1,ndata_xpen_complex(1,idom)
-#if __DIM == __SFIELD        
+#if __DIM == __SFIELD
                           FFT_x(i,j,l) = DATA_fv_com(i,j,l,k)
-#elif __DIM == __VFIELD         
+#elif __DIM == __VFIELD
                           FFT_x(i,j,l) = DATA_fv_com(n,i,j,l,k)
 #endif
                       ENDDO
@@ -549,9 +554,9 @@
               !  FFT - Backward Transformation in x-direction
               !-----------------------------------------------------------------
 #if __CASE == __SLAB
-              CALL ppm_util_fft_slab_bd(FFT_x,lda,Reslt,info) 
+              CALL ppm_util_fft_slab_bd(FFT_x,lda,Result,info)
 #else
-              CALL ppm_util_fft_step_bd(FFT_x,lda,Reslt,info) 
+              CALL ppm_util_fft_step_bd(FFT_x,lda,Result,info)
 #endif
 
               !-----------------------------------------------------------------
@@ -563,19 +568,19 @@
               DO l=1,lda(3)
                   DO j=1,lda(2)
                       DO i=1,lda(1)
-#if __DIM == __SFIELD     
-                          DATA_fv(i,j,l,k) = Reslt(i,j,l)*rN
-#elif __DIM == __VFIELD         
-                          DATA_fv(n,i,j,l,k) = Reslt(i,j,l)*rN
+#if __DIM == __SFIELD
+                          DATA_fv(i,j,l,k) = Result(i,j,l)*rN
+#elif __DIM == __VFIELD
+                          DATA_fv(n,i,j,l,k) = Result(i,j,l)*rN
 #endif
                       ENDDO
                   ENDDO
               ENDDO
-#if __DIM == __VFIELD         
+#if __DIM == __VFIELD
           ENDDO                 ! loop over lda
 #endif
       ENDDO             ! loop over subs
- 
+
       iopt = ppm_param_dealloc
       CALL ppm_alloc(FFT_x,lda,iopt,info)
 
@@ -590,15 +595,15 @@
          mesh_ids_tmp(1) = mesh_id_xpen
          mesh_ids_tmp(2) = mesh_id_user
 
-#if __DIM == __SFIELD        
+#if __DIM == __SFIELD
          CALL ppm_util_fft_map(DATA_fv,topo_ids_tmp,mesh_ids_tmp,    &
      &       ghostsize,info)
-#elif __DIM == __VFIELD         
+#elif __DIM == __VFIELD
          CALL ppm_util_fft_map(DATA_fv,lda_fv,topo_ids_tmp,mesh_ids_tmp,    &
      &       ghostsize, info)
 #endif
       ENDIF
-#else 
+#else
       !-------------------------------------------------------------------------
       ! Map to original topology if not x-pencil topology
       !-------------------------------------------------------------------------
@@ -609,10 +614,10 @@
          mesh_ids_tmp(1) = mesh_id_xpen
          mesh_ids_tmp(2) = mesh_id_user
 
-#if __DIM == __SFIELD        
+#if __DIM == __SFIELD
          CALL ppm_util_fft_map(DATA_fv,topo_ids_tmp,mesh_ids_tmp,   &
      &       ghostsize,info)
-#elif __DIM == __VFIELD         
+#elif __DIM == __VFIELD
          CALL ppm_util_fft_map(DATA_fv,lda_fv,topo_ids_tmp,   &
      &       mesh_ids_tmp,ghostsize, info)
 #endif
@@ -623,7 +628,7 @@
       !  Deallocate memory
       !-------------------------------------------------------------------------
       iopt = ppm_param_dealloc
-      CALL ppm_alloc(Reslt,lda,iopt,info)
+      CALL ppm_alloc(Result,lda,iopt,info)
       IF (info .NE. 0) THEN
           info = ppm_error_error
           CALL ppm_error(ppm_err_dealloc,'ppm_util_fft_forward_3d',   &
@@ -687,7 +692,7 @@
 #if   __DIM == __VFIELD
 =======
       !-------------------------------------------------------------------------
-      !  Forward FFT 
+      !  Forward FFT
       !-------------------------------------------------------------------------
 
       isign_fft = 1
@@ -713,12 +718,12 @@
      &                                data_out(1,j,k), table, work, isys)
 #elif __KIND == __SINGLE_PRECISION_COMPLEX
             CALL  cfft(isign_fft, Nx_out, scale_fft, data_in(1,j,k), incx, &
-     &               data_out(1,j,k), incy, table, lda_table(1), & 
+     &               data_out(1,j,k), incy, table, lda_table(1), &
      &              work, lda_work(1),isys)
 
 #elif __KIND == __DOUBLE_PRECISION_COMPLEX
             CALL  zfft(isign_fft, Nx_out, scale_fft, data_in(1,j,k), incx, &
-     &               data_out(1,j,k), incy, table, lda_table(1), & 
+     &               data_out(1,j,k), incy, table, lda_table(1), &
      &               work, lda_work(1),isys)
 >>>>>>> 1.15
 #endif
@@ -726,7 +731,7 @@
 <<<<<<< ppm_util_fft_backward_3d.f
 =======
 
-         ENDDO      
+         ENDDO
       ENDDO
 
 

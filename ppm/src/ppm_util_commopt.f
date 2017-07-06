@@ -18,7 +18,7 @@
       !
       !  Routines     : vizing_coloring (libvizing)
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   : V.G. Vizing, On an estimate of the chromatic class
       !                 of a p-graph. Discret. Analiz. 3, 1964, pp.25-30.
@@ -56,7 +56,7 @@
       !  bug fix: size check for ilinks changed from nlinks to 2*nlinks.
       !
       !  Revision 1.8  2003/12/16 13:38:48  ivos
-      !  bug fix: length of ilinks set to 2*nlinks (because each link has 2 
+      !  bug fix: length of ilinks set to 2*nlinks (because each link has 2
       !  nodes). Eliminated SIGSEGV in vizing_coloring.
       !
       !  Revision 1.7  2003/12/16 08:48:16  ivos
@@ -108,7 +108,7 @@
       INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       ! The ID of the topology which is to be optimized
       INTEGER                 , INTENT(IN   ) :: topoid
@@ -116,7 +116,7 @@
       INTEGER                 , INTENT(INOUT) :: info
 
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(ppm_kind_double)                 :: t0
       INTEGER, DIMENSION(2)                 :: ldu
@@ -146,9 +146,9 @@
       INTEGER, DIMENSION(MPI_STATUS_SIZE)   :: status
 #endif
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
       !  Initialise
       !-------------------------------------------------------------------------
@@ -201,6 +201,8 @@
           ppm_icommseq(1,topoid) = ppm_rank
           GOTO 9999
       END IF
+
+      NULLIFY(ilinks,optres,nneighprocs,ineighprocs)
 
 #ifdef __MPI
 
@@ -343,7 +345,7 @@
 
           !---------------------------------------------------------------------
           ! Call the C++ wrapper to the Vizing code obtained from:
-          ! The Stony Brook Algorithm Repository 
+          ! The Stony Brook Algorithm Repository
           ! http://www.cs.sunysb.edu/~algorith/implement/stony/distrib/Vizing/
           !---------------------------------------------------------------------
           CALL vizing_coloring(ppm_nproc,nlinks,ilinks,optres)
@@ -363,7 +365,7 @@
               IF (optres(i) .LT. mincolor) mincolor = optres(i)
               IF (optres(i) .GT. maxcolor) maxcolor = optres(i)
           END DO
-              
+
           !---------------------------------------------------------------------
           !  Allocate memory for neighbor communication lists
           !---------------------------------------------------------------------
@@ -424,11 +426,11 @@
       !  Everybody gets the memory needed
       !-------------------------------------------------------------------------
       iopt   = ppm_param_alloc_grow_preserve
-      ! the +1 is due to the fact that the processor itself also needs 
-      ! to be in the list (as element 1) in order for map_part_send to 
+      ! the +1 is due to the fact that the processor itself also needs
+      ! to be in the list (as element 1) in order for map_part_send to
       ! work properly
       ppm_ncommseq(topoid) = ppm_ncommseq(topoid) + 1
-      ldu(1) = ppm_ncommseq(topoid)   
+      ldu(1) = ppm_ncommseq(topoid)
       ldu(2) = ppm_max_topoid
       CALL ppm_alloc(ppm_icommseq,ldu,iopt,info)
       IF (info .NE. 0) THEN

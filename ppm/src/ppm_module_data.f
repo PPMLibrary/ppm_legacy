@@ -3,7 +3,7 @@
       !-------------------------------------------------------------------------
       !
       !  Purpose      :  Declare global types and variables.
-      !                
+      !
       !  Remarks      :
       !
       !  References   :
@@ -61,76 +61,70 @@
          !----------------------------------------------------------------------
          !  buffers for communication
          !----------------------------------------------------------------------
-         REAL(ppm_kind_double), DIMENSION(  :), POINTER :: &
-     &      ppm_sendbufferd, & ! send buffer for particles (double)
-     &      ppm_recvbufferd    ! recv buffer for particles (double)
+         REAL(ppm_kind_double), DIMENSION(  :), POINTER :: ppm_sendbufferd => NULL() ! send buffer for particles (double)
+         REAL(ppm_kind_double), DIMENSION(  :), POINTER :: ppm_recvbufferd => NULL() ! recv buffer for particles (double)
 
-         REAL(ppm_kind_single), DIMENSION(  :), POINTER :: &
-     &      ppm_sendbuffers, & ! send buffer for particles (single)
-     &      ppm_recvbuffers    ! recv buffer for particles (single)
+         REAL(ppm_kind_single), DIMENSION(  :), POINTER :: ppm_sendbuffers => NULL() ! send buffer for particles (single)
+         REAL(ppm_kind_single), DIMENSION(  :), POINTER :: ppm_recvbuffers => NULL() ! recv buffer for particles (single)
 
-         INTEGER              , DIMENSION(:,:), POINTER :: &
-     &      ppm_ghosthack      ! invert map of ghost for symmetry
+         INTEGER              , DIMENSION(:,:), POINTER :: ppm_ghosthack => NULL()   ! invert map of ghost for symmetry
 
-         INTEGER              , DIMENSION(  :), POINTER :: &
-     &      ppm_psendbuffer, & ! pointer to particles within the send buffer
-     &      ppm_precvbuffer    ! pointer to particles within the recv buffer
-                               ! both in terms of particle NOT the actual
-                               ! position in the buffer
+         INTEGER              , DIMENSION(  :), POINTER :: ppm_psendbuffer => NULL() ! pointer to particles within the send buffer
+         INTEGER              , DIMENSION(  :), POINTER :: ppm_precvbuffer => NULL() ! pointer to particles within the recv buffer
+                                                                                     ! both in terms of particle NOT the actual
+                                                                                     ! position in the buffer
 
-         INTEGER                                        :: &
-     &      ppm_nsendbuffer, & ! the size of the send buffer 
-     &      ppm_nrecvbuffer    ! the size of the recv buffer
-                               ! both in terms of entries in the buffer NOT
-                               ! the number of particles 
+         INTEGER                                        :: ppm_nsendbuffer, & ! the size of the send buffer
+         &                                                 ppm_nrecvbuffer    ! the size of the recv buffer
+                                                                              ! both in terms of entries in the buffer NOT
+                                                                              ! the number of particles
 
-         INTEGER                                        :: &
-     &      ppm_buffer_set     ! the total number of particle fields packed in
-                               ! the send buffer, ie. xp, vp is two sets
+         INTEGER                                        :: ppm_buffer_set     ! the total number of particle fields packed in
+                                                                              ! the send buffer, ie. xp, vp is two sets
 
          ! the original on-processor particle IDs in the order in which
          ! they are in the sendbuffer. Used to push additional particle
          ! data on the buffer in the correct order.
-         INTEGER              , DIMENSION(  :), POINTER :: ppm_buffer2part
-         INTEGER              , DIMENSION(  :), POINTER :: ppm_buffer_type
-         INTEGER              , DIMENSION(  :), POINTER :: ppm_buffer_dim
+         INTEGER              , DIMENSION(  :), POINTER :: ppm_buffer2part => NULL()
+         INTEGER              , DIMENSION(  :), POINTER :: ppm_buffer_type => NULL()
+         INTEGER              , DIMENSION(  :), POINTER :: ppm_buffer_dim  => NULL()
 
          !----------------------------------------------------------------------
          !  ghost offset:
          !  ghost particles may have a spatial offset compared to their real
          !  particle - we need to store this offset in terms of the buffer id
-         !  in order to be able to push/send/pop ghost coordinates in the 
+         !  in order to be able to push/send/pop ghost coordinates in the
          !  ghost_get and ghost_put mapping; this is needed when using Verlet
-         !  lists: here nothing is remapped and for symmetry we need both to 
-         !  put the particle forces etc. and to get the updated particle 
+         !  lists: here nothing is remapped and for symmetry we need both to
+         !  put the particle forces etc. and to get the updated particle
          !  position; for the asymmetric case we do not put the forces back but
-         !  we need to get the updated positions of the ghost - NOT getting 
+         !  we need to get the updated positions of the ghost - NOT getting
          !  ghosts - because a new mapping is NOT needed but simply reusing
-         !  the old mapping push/send/popping the updated coordinates 
+         !  the old mapping push/send/popping the updated coordinates
          !  The offsets are stored as the pdata in the psendbuffer, i.e.,
          !  ppm_ghost_offset(ibuffer+0) = xp_offset(1,)
          !  ppm_ghost_offset(ibuffer+1) = xp_offset(2,)
          !  ppm_ghost_offset(ibuffer+2) = xp_offset(3,)
          !----------------------------------------------------------------------
-         REAL(ppm_kind_single), DIMENSION(:), POINTER :: ppm_ghost_offsets
-         REAL(ppm_kind_double), DIMENSION(:), POINTER :: ppm_ghost_offsetd
+         REAL(ppm_kind_single), DIMENSION(:), POINTER :: ppm_ghost_offsets => NULL()
+         REAL(ppm_kind_double), DIMENSION(:), POINTER :: ppm_ghost_offsetd => NULL()
 
          !----------------------------------------------------------------------
          !  pointers to the subdomains
          !----------------------------------------------------------------------
          ! number of subs on the current processor. index: topoid
-         INTEGER              , DIMENSION(:    ), POINTER :: ppm_nsublist
+         INTEGER              , DIMENSION(:    ), POINTER :: ppm_nsublist => NULL()
          ! list of subs of the current processor. 1st index: local sub
          ! number. 2nd: topoid
-         INTEGER              , DIMENSION(:,:  ), POINTER :: ppm_isublist
+         INTEGER              , DIMENSION(:,:  ), POINTER :: ppm_isublist => NULL()
          ! total number of subs on all processors. index: topoid
-         INTEGER              , DIMENSION(:    ), POINTER :: ppm_nsubs 
+         INTEGER              , DIMENSION(:    ), POINTER :: ppm_nsubs => NULL()
          ! extensions of all subs (double and single prec). 1st index:
          ! x,y,(z). 2nd: sub-ID. 3rd: topoid
-         REAL(ppm_kind_double), DIMENSION(:,:,:), POINTER :: &
-     &      ppm_min_subd,ppm_max_subd
-         REAL(ppm_kind_single), DIMENSION(:,:,:), POINTER :: &
-     &      ppm_min_subs,ppm_max_subs
+         REAL(ppm_kind_double), DIMENSION(:,:,:), POINTER :: ppm_min_subd => NULL()
+         REAL(ppm_kind_double), DIMENSION(:,:,:), POINTER :: ppm_max_subd => NULL()
+         REAL(ppm_kind_single), DIMENSION(:,:,:), POINTER :: ppm_min_subs => NULL()
+         REAL(ppm_kind_single), DIMENSION(:,:,:), POINTER :: ppm_max_subs => NULL()
          ! boundary conditions on a sub:
          !    west  : 1
          !    east  : 2
@@ -143,12 +137,12 @@
          !    value: 1 otherwise
          ! index 2: the sub id (GLOBAL of ALL the subs!)
          ! index 3: the topoid
-         INTEGER              , DIMENSION(:,:,:), POINTER :: ppm_subs_bc
+         INTEGER              , DIMENSION(:,:,:), POINTER :: ppm_subs_bc => NULL()
 
          !----------------------------------------------------------------------
          !  topology
          !----------------------------------------------------------------------
-         INTEGER , DIMENSION(:,:), POINTER :: ppm_subs2proc
+         INTEGER , DIMENSION(:,:), POINTER :: ppm_subs2proc => NULL()
          ! highest internal topology number (= #of topologies)
          INTEGER                           :: ppm_max_topoid
          ! ID of the current particle topology (in internal numbering)
@@ -156,51 +150,52 @@
          ! ID of the current field topology (in internal numbering)
          INTEGER                           :: ppm_field_topoid
          ! user-numbering of the topologies
-         INTEGER , DIMENSION(:), POINTER   :: ppm_user_topoid
+         INTEGER , DIMENSION(:), POINTER   :: ppm_user_topoid => NULL()
          ! inverse list: internal numbers indexed by user numbering
-         INTEGER , DIMENSION(:), POINTER   :: ppm_internal_topoid
-         ! list of neighboring subs of all local subs. 
+         INTEGER , DIMENSION(:), POINTER   :: ppm_internal_topoid => NULL()
+         ! list of neighboring subs of all local subs.
          !    index 1: neighbor index
          !    index 2: sub id (local index, not global ID!)
          !    index 3: topoid
-         INTEGER , DIMENSION(:,:,:), POINTER :: ppm_ineighsubs
-         ! number of neighboring subs of all local subs. 
+         INTEGER , DIMENSION(:,:,:), POINTER :: ppm_ineighsubs => NULL()
+         ! number of neighboring subs of all local subs.
          !    index 1: sub id (local index, not global ID!)
          !    index 2: topoid
-         INTEGER , DIMENSION(:,:), POINTER :: ppm_nneighsubs
+         INTEGER , DIMENSION(:,:), POINTER :: ppm_nneighsubs => NULL()
          ! list of neighboring processors. Index 1: neighbor index, index
          ! 2: topoid
-         INTEGER , DIMENSION(:,:), POINTER :: ppm_ineighlist
+         INTEGER , DIMENSION(:,:), POINTER :: ppm_ineighlist => NULL()
          ! number of neighboring processors. Index: topoid
-         INTEGER , DIMENSION(:  ), POINTER :: ppm_nneighlist
+         INTEGER , DIMENSION(:  ), POINTER :: ppm_nneighlist => NULL()
          ! has optimal communication sequence already been determined for a
          ! certain topology (index: topoid)
-         LOGICAL , DIMENSION(:  ), POINTER :: ppm_isoptimized
+         LOGICAL , DIMENSION(:  ), POINTER :: ppm_isoptimized => NULL()
          ! number of communication rounds needed for partial mapping
          ! (index: topoid)
-         INTEGER , DIMENSION(:  ), POINTER :: ppm_ncommseq
+         INTEGER , DIMENSION(:  ), POINTER :: ppm_ncommseq => NULL()
          ! optimal communication sequence for this processor. 1st index:
          ! communication round, 2nd index: topoid
-         INTEGER , DIMENSION(:,:), POINTER :: ppm_icommseq
+         INTEGER , DIMENSION(:,:), POINTER :: ppm_icommseq => NULL()
 
          ! boundary conditions for the topology
          !   first  index: 1-6 each of the faces: x-, x+, y-, y+, z-, z+
          !   second index: topoid
-         INTEGER              , DIMENSION(:,:  ), POINTER :: ppm_bcdef
-         ! physical extend of the topology 
-         !   first  index: ppm_dim 
+         INTEGER              , DIMENSION(:,:  ), POINTER :: ppm_bcdef => NULL()
+         ! physical extend of the topology
+         !   first  index: ppm_dim
          !   second index: topoid
-         REAL(ppm_kind_single), DIMENSION(:,:  ), POINTER :: ppm_min_physs, &
-        &                                                    ppm_max_physs
-         REAL(ppm_kind_double), DIMENSION(:,:  ), POINTER :: ppm_min_physd, &
-        &                                                    ppm_max_physd
+         REAL(ppm_kind_single), DIMENSION(:,:  ), POINTER :: ppm_min_physs => NULL()
+         REAL(ppm_kind_single), DIMENSION(:,:  ), POINTER :: ppm_max_physs => NULL()
+         REAL(ppm_kind_double), DIMENSION(:,:  ), POINTER :: ppm_min_physd => NULL()
+         REAL(ppm_kind_double), DIMENSION(:,:  ), POINTER :: ppm_max_physd => NULL()
 
          !----------------------------------------------------------------------
          !  mapping
          !----------------------------------------------------------------------
-         INTEGER                        :: ppm_map_type 
+         INTEGER                        :: ppm_map_type
          INTEGER                        :: ppm_nsendlist,ppm_nrecvlist
-         INTEGER, DIMENSION(:), POINTER :: ppm_isendlist,ppm_irecvlist
+         INTEGER, DIMENSION(:), POINTER :: ppm_isendlist => NULL()
+         INTEGER, DIMENSION(:), POINTER :: ppm_irecvlist => NULL()
 
          !----------------------------------------------------------------------
          !  Precision
@@ -230,7 +225,7 @@
          INTEGER :: ppm_rank
          INTEGER :: ppm_comm
          ! relative speeds of the processors (for load balancing)
-         REAL(ppm_kind_double), DIMENSION(:), POINTER :: ppm_proc_speed
+         REAL(ppm_kind_double), DIMENSION(:), POINTER :: ppm_proc_speed => NULL()
 
          !----------------------------------------------------------------------
          !  Numerical tolerance. Differences smaller than this are considered
@@ -251,5 +246,5 @@
          INTEGER               :: ppm_stdout = 6
          INTEGER               :: ppm_stderr = 0
          INTEGER               :: ppm_logfile = -1
-         
+
       END MODULE ppm_module_data

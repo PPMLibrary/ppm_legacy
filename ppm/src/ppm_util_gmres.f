@@ -8,7 +8,7 @@
       !                 b          (F) Right-hand side
       !                 n          (I) size
       !                 m          (I) restart size
-      !  
+      !
       !  Input/Output : X          (F) Initial guess/solution
       !                 tol        (F) tolerance
       !
@@ -19,9 +19,9 @@
       !                    5 -> 10 -> 30, depending on the size of the problem
       !                    and the available memory
       !
-      !  References   : Y. SAAD AND M. SCHULTZ, GMRES: A generalized minimal 
-      !                 residual algorithm for solving nonsymmetric linear 
-      !                 systems, SIAM J. Sci. Statist. Comput., 7 (1986), 
+      !  References   : Y. SAAD AND M. SCHULTZ, GMRES: A generalized minimal
+      !                 residual algorithm for solving nonsymmetric linear
+      !                 systems, SIAM J. Sci. Statist. Comput., 7 (1986),
       !                 pp. 856-869.
       !
       !
@@ -85,7 +85,7 @@
          INTEGER                                        :: A
          END FUNCTION A
       END INTERFACE
-#else 
+#else
       INTERFACE
          FUNCTION A(in,out,ninout,info)
          INTEGER                          , INTENT(OUT) :: info
@@ -108,7 +108,7 @@
       !-------------------------------------------------------------------------
       REAL(MK)                              :: t0,tolin,lmyeps
       INTEGER                               :: solver_info
-      
+
       ! Accumulators
       ! Need double precision for the inner products
       REAL(KIND(1.0D0)),DIMENSION(:)  ,POINTER :: tmphd
@@ -116,7 +116,7 @@
       REAL(KIND(1.0D0))                        :: lnorm,gnorm,groti,grotip1
       REAL(KIND(1.0D0)),DIMENSION(:),POINTER   :: s,y
       REAL(KIND(1.0D0)),DIMENSION(:,:),POINTER :: cossin
-      
+
       REAL(MK), DIMENSION(:), POINTER       :: w
       REAL(MK), DIMENSION(:,:), POINTER     :: v
       INTEGER                               :: i,j,k,l,throwaway, iopt
@@ -168,6 +168,8 @@
           ENDIF
       ENDIF
 
+      NULLIFY(tmphd,ghd,s,y,cossin,w,v)
+
 #if   __KIND == __SINGLE_PRECISION
       lmyeps = ppm_myepss
 #elif __KIND == __DOUBLE_PRECISION
@@ -187,7 +189,7 @@
      &        'allocation of vector w',__LINE__,info)
           GOTO 9999
       ENDIF
-      
+
       iopt = ppm_param_alloc_fit
       ldl(1) = 1
       ldu(1) = m+1
@@ -198,7 +200,7 @@
      &        'allocation of vector s',__LINE__,info)
           GOTO 9999
       ENDIF
-      
+
       iopt = ppm_param_alloc_fit
       ldl(1) = 1
       ldu(1) = n
@@ -232,7 +234,7 @@
      &        'allocation of vector TMPH of local inner products',__LINE__,info)
           GOTO 9999
       ENDIF
-      
+
       iopt = ppm_param_alloc_fit
       ldl(1) = 1
       ldu(1) = m+1
@@ -287,17 +289,17 @@
 #endif
          gnorm = SQRT(gnorm)
          v(:,1) = w / gnorm
-         
+
          s = 0.0
          s(1) = gnorm
-         
+
          breakdown = .FALSE.
          ghd = 0.0
          DO i=1,m
             !-------------------------------------------------------------------
             !  Growing the Krylov space basis: Modified Gram-Schmidt
             !  NB: could switch to a more stable orthognalization scheme
-            !      like Householder 
+            !      like Householder
             !-------------------------------------------------------------------
             throwaway = A(v(:,i),w,n,info)
 #ifdef __MPI
@@ -351,8 +353,8 @@
             END IF
 
             v(:,i+1) = w / ghd(i+1,i)
-            
-            ! Apply previous Givens rotations 
+
+            ! Apply previous Givens rotations
             DO k=1,i-1
                groti   =  cossin(1,k)*ghd(k,i) + cossin(2,k)*ghd(k+1,i)
                grotip1 = -cossin(2,k)*ghd(k,i) + cossin(1,k)*ghd(k+1,i)
@@ -375,7 +377,7 @@
             s(i) = groti
             s(i+1) = grotip1
             tol = ABS(s(i+1))
-            
+
             IF (tol.LT.tolin) THEN
                ! We are done, update tol, compute solution and exit
                IF (ppm_debug .GE. 1) THEN
@@ -384,7 +386,7 @@
                   CALL ppm_write(ppm_rank,'ppm_util_gmres',  &
                   &              mesg,info)
                ENDIF
-               
+
                CALL ppm_util_gmres_solveupper(ghd,s,y,i,info)
                IF (info .NE. 0) THEN
                   info = ppm_error_fatal
@@ -399,9 +401,9 @@
                solver_info = ppm_gmres_param_success
                GOTO 8000
             END IF
-            
+
          END DO
-         
+
          ! We got out of the inner loop, either i=m+1 or breakdown and i<=m+1
          tol = ABS(s(i))
          IF (.NOT.breakdown) THEN
@@ -443,7 +445,7 @@
          ENDIF
       END DO
 
-      
+
       !-------------------------------------------------------------------------
       !  De-allocate
       !-------------------------------------------------------------------------

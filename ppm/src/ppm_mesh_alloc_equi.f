@@ -81,14 +81,14 @@
       USE ppm_module_error
       IMPLICIT NONE
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       INTEGER                 , DIMENSION(:  ), INTENT(IN   ) :: lda
       INTEGER                                 , INTENT(IN   ) :: iopt
       TYPE(ppm_type_equi_mesh), DIMENSION(:,:), POINTER :: equi_mesh
       INTEGER                                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER            :: i,j
       INTEGER, DIMENSION(2) :: ldc
@@ -96,11 +96,11 @@
       TYPE(ppm_type_equi_mesh), DIMENSION(:,:), POINTER :: work_mesh
       LOGICAL            :: lcopy,lalloc,lrealloc,ldealloc
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_mesh_alloc_equi',t0,info)
 
@@ -206,7 +206,7 @@
               ldealloc = .TRUE.
           ENDIF
       ENDIF
-              
+
       !-------------------------------------------------------------------------
       !  Perform the actual alloc action
       !-------------------------------------------------------------------------
@@ -302,7 +302,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_mesh_alloc_equi',t0,info)

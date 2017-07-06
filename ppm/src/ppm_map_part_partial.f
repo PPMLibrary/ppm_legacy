@@ -2,7 +2,7 @@
       !  Subroutine   :                ppm_map_part_partial
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : This routine maps the particles onto the current 
+      !  Purpose      : This routine maps the particles onto the current
       !                 topology using a local map (i.e. each processor
       !                 only communicates with its neighbors).
       !
@@ -92,21 +92,21 @@
       !  Changed info on error from 1 to -1.
       !
       !  Revision 1.7  2003/12/16 12:20:45  ivos
-      !  Changed alloc_grow to alloc_fit (new mappings can be smaller than 
-      !  old ones) and added DEALLOC for ineighsubs at the end of the 
+      !  Changed alloc_grow to alloc_fit (new mappings can be smaller than
+      !  old ones) and added DEALLOC for ineighsubs at the end of the
       !  subroutine.
       !
       !  Revision 1.6  2003/12/12 18:02:33  ivos
       !  Changed name of map type to ppm_param_map_update.
       !
       !  Revision 1.5  2003/12/12 16:40:11  ivos
-      !  Always uses the internally stored current topology ID and does not 
+      !  Always uses the internally stored current topology ID and does not
       !  take topoid as an argument any more.
       !
       !  Revision 1.4  2003/12/11 13:54:31  ivos
       !  Bugfixes: (1) single and double precision arrays were switched in the
-      !  #ifdefs when storing the particles to the send buffer. (2) the last 
-      !  index in ppm_psendbuffer was corrected from ppm_nneighlist(topoid)+1 
+      !  #ifdefs when storing the particles to the send buffer. (2) the last
+      !  index in ppm_psendbuffer was corrected from ppm_nneighlist(topoid)+1
       !  to ppm_ncommseq(topoid)+1.
       !
       !  Revision 1.3  2003/12/09 09:53:30  ivos
@@ -128,14 +128,14 @@
       SUBROUTINE ppm_map_part_partial_s(xp,Npart,info)
 #elif  __KIND == __DOUBLE_PRECISION
       SUBROUTINE ppm_map_part_partial_d(xp,Npart,info)
-#endif 
+#endif
       !-------------------------------------------------------------------------
       !  Includes
       !-------------------------------------------------------------------------
 #include "ppm_define.h"
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -149,14 +149,14 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
       INTEGER                 , INTENT(IN   ) :: Npart
       ! list and number of neighboring processors
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER                        :: topoid
       INTEGER, DIMENSION(3)          :: ldu
@@ -169,11 +169,11 @@
       CHARACTER(ppm_char)            :: mesg
       REAL(MK)                       :: t0
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_map_part_partial',t0,info)
       topoid = ppm_topoid
@@ -192,7 +192,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Save the map type for the subsequent calls 
+      !  Save the map type for the subsequent calls
       !-------------------------------------------------------------------------
       ppm_map_type = ppm_param_map_partial
 
@@ -262,7 +262,7 @@
 
       !-------------------------------------------------------------------------
       !  Allocate memory for the pointer to the buffer; for the partial map we
-      !  need entries for each communication round. Thus ldu(1) = 
+      !  need entries for each communication round. Thus ldu(1) =
       !  ncommseq(topoid) + 1
       !-------------------------------------------------------------------------
       iopt   = ppm_param_alloc_fit
@@ -302,7 +302,7 @@
       nlist1 = Npart
       DO ipart=1,Npart
          ilist1(ipart)    = ipart
-         part2proc(ipart) = -1 
+         part2proc(ipart) = -1
       ENDDO
 
       !-------------------------------------------------------------------------
@@ -328,7 +328,7 @@
 #if    __KIND == __SINGLE_PRECISION
                IF (xp(1,ipart).GE.ppm_min_subs(1,idom,topoid).AND.   &
      &             xp(1,ipart).LE.ppm_max_subs(1,idom,topoid).AND.   &
-     &             xp(2,ipart).GE.ppm_min_subs(2,idom,topoid).AND.   & 
+     &             xp(2,ipart).GE.ppm_min_subs(2,idom,topoid).AND.   &
      &             xp(2,ipart).LE.ppm_max_subs(2,idom,topoid)) THEN
                    !------------------------------------------------------------
                    !  In the non-periodic case, allow particles that are
@@ -343,7 +343,7 @@
 #elif  __KIND == __DOUBLE_PRECISION
                IF (xp(1,ipart).GE.ppm_min_subd(1,idom,topoid).AND.   &
      &             xp(1,ipart).LE.ppm_max_subd(1,idom,topoid).AND.   &
-     &             xp(2,ipart).GE.ppm_min_subd(2,idom,topoid).AND.   & 
+     &             xp(2,ipart).GE.ppm_min_subd(2,idom,topoid).AND.   &
      &             xp(2,ipart).LE.ppm_max_subd(2,idom,topoid)) THEN
                    !------------------------------------------------------------
                    !  In the non-periodic case, allow particles that are
@@ -381,7 +381,7 @@
                DO i=1,nlist1
                   ilist1(i) = ilist2(i)
                ENDDO
-            ENDIF 
+            ENDIF
 
             !-------------------------------------------------------------------
             !  Exit if the list is empty
@@ -398,7 +398,7 @@
             idom = ineighsubs(jdom)
             sendrank   = ppm_subs2proc(idom,topoid)
             !-------------------------------------------------------------------
-            !  Loop over the remaining particles 
+            !  Loop over the remaining particles
             !-------------------------------------------------------------------
             nlist2 = 0
             DO i=1,nlist1
@@ -409,9 +409,9 @@
 #if    __KIND == __SINGLE_PRECISION
                IF (xp(1,ipart).GE.ppm_min_subs(1,idom,topoid).AND.   &
      &             xp(1,ipart).LE.ppm_max_subs(1,idom,topoid).AND.   &
-     &             xp(2,ipart).GE.ppm_min_subs(2,idom,topoid).AND.   & 
+     &             xp(2,ipart).GE.ppm_min_subs(2,idom,topoid).AND.   &
      &             xp(2,ipart).LE.ppm_max_subs(2,idom,topoid).AND.   &
-     &             xp(3,ipart).GE.ppm_min_subs(3,idom,topoid).AND.   & 
+     &             xp(3,ipart).GE.ppm_min_subs(3,idom,topoid).AND.   &
      &             xp(3,ipart).LE.ppm_max_subs(3,idom,topoid)) THEN
                    !------------------------------------------------------------
                    !  In the non-periodic case, allow particles that are
@@ -429,9 +429,9 @@
 #elif  __KIND == __DOUBLE_PRECISION
                IF (xp(1,ipart).GE.ppm_min_subd(1,idom,topoid).AND.   &
      &             xp(1,ipart).LE.ppm_max_subd(1,idom,topoid).AND.   &
-     &             xp(2,ipart).GE.ppm_min_subd(2,idom,topoid).AND.   & 
+     &             xp(2,ipart).GE.ppm_min_subd(2,idom,topoid).AND.   &
      &             xp(2,ipart).LE.ppm_max_subd(2,idom,topoid).AND.   &
-     &             xp(3,ipart).GE.ppm_min_subd(3,idom,topoid).AND.   & 
+     &             xp(3,ipart).GE.ppm_min_subd(3,idom,topoid).AND.   &
      &             xp(3,ipart).LE.ppm_max_subd(3,idom,topoid)) THEN
                    !------------------------------------------------------------
                    !  In the non-periodic case, allow particles that are
@@ -466,14 +466,14 @@
                DO i=1,nlist1
                   ilist1(i) = ilist2(i)
                ENDDO
-            ENDIF 
+            ENDIF
 
             !-------------------------------------------------------------------
             !  Exit if the list is empty
             !-------------------------------------------------------------------
             IF (nlist1.EQ.0) EXIT
          ENDDO
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Check if we sold all the particles. If not some of them have move
@@ -483,7 +483,7 @@
          info = ppm_error_error
          CALL ppm_error(ppm_err_part_unass,'ppm_map_part_partial', &
      &       'Please call ppm_map_part_global',__LINE__,info)
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Store the number of buffer entries (this is the first)
@@ -515,7 +515,7 @@
       ppm_buffer_type(ppm_buffer_set) = ppm_kind_single
 #else
       ppm_buffer_type(ppm_buffer_set) = ppm_kind_double
-#endif 
+#endif
 
       !-------------------------------------------------------------------------
       !  (Re)allocate memory for the buffer
@@ -526,7 +526,7 @@
          CALL ppm_alloc(ppm_sendbufferd,ldu,iopt,info)
       ELSE
          CALL ppm_alloc(ppm_sendbuffers,ldu,iopt,info)
-      ENDIF 
+      ENDIF
       IF (info .NE. 0) THEN
           info = ppm_error_fatal
           CALL ppm_error(ppm_err_alloc,'ppm_map_part_partial',     &
@@ -556,7 +556,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Initialize the particle lists 
+      !  Initialize the particle lists
       !-------------------------------------------------------------------------
       nlist1 = Npart
       DO ipart=1,Npart
@@ -582,20 +582,20 @@
          !----------------------------------------------------------------------
          !  Store the processor to which we will send to
          !----------------------------------------------------------------------
-         ppm_nsendlist                = ppm_nsendlist + 1 
+         ppm_nsendlist                = ppm_nsendlist + 1
          ppm_isendlist(ppm_nsendlist) = sendrank
 
          !----------------------------------------------------------------------
          !  Store the processor to which we will recv from
          !----------------------------------------------------------------------
-         ppm_nrecvlist                = ppm_nrecvlist + 1 
+         ppm_nrecvlist                = ppm_nrecvlist + 1
          ppm_irecvlist(ppm_nrecvlist) = recvrank
- 
+
          !----------------------------------------------------------------------
          !  Only assign particles if there is any communication for this
          !  processor in this round
          !----------------------------------------------------------------------
-         IF (sendrank .GE. 0) THEN 
+         IF (sendrank .GE. 0) THEN
 
              !------------------------------------------------------------------
              !  Initialize the buffer count
@@ -604,12 +604,12 @@
              IF (ppm_dim .EQ. 2) THEN
                 DO j=1,nlist1
                    ipart = ilist1(j)
-                   IF (part2proc(ipart).EQ.sendrank) THEN  
+                   IF (part2proc(ipart).EQ.sendrank) THEN
                       !---------------------------------------------------------
                       !  increment the buffer counter
                       !---------------------------------------------------------
                       iset = iset + 1
-     
+
                       !---------------------------------------------------------
                       !  Store the id of the particle
                       !---------------------------------------------------------
@@ -655,12 +655,12 @@
              ELSE
                 DO j=1,nlist1
                    ipart = ilist1(j)
-                   IF (part2proc(ipart).EQ.sendrank) THEN  
+                   IF (part2proc(ipart).EQ.sendrank) THEN
                       !---------------------------------------------------------
                       !  increment the buffer counter
                       !---------------------------------------------------------
                       iset = iset + 1
-     
+
                       !---------------------------------------------------------
                       !  Store the id of the particle
                       !---------------------------------------------------------
@@ -771,7 +771,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_map_part_partial',t0,info)

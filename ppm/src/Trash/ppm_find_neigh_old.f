@@ -3,10 +3,10 @@
       !-------------------------------------------------------------------------
       !
       !  Purpose      : This routine find the neighbours of a sub domain.
-      !                 It does that by comparing the coordinates of the 
-      !                 bounding box of the sub domains using an N-square 
+      !                 It does that by comparing the coordinates of the
+      !                 bounding box of the sub domains using an N-square
       !                 algorithm ! Moreover, since the routine is called before
-      !                 any mapping has been performed, ALL the subs (nsubs) 
+      !                 any mapping has been performed, ALL the subs (nsubs)
       !                 must be searched !
       !
       !  Input        : min_phys(:)  (F) the min. extent of the physical domain
@@ -17,16 +17,16 @@
       !  Input/output : min_sub(:,:) (F) the min. extent of the sub domain
       !                 max_sub(:,:) (F) the max. extent of the sub domain
       !
-      !  Output       : nneigh(:)    (I) nneigh(isub) returns the total number 
+      !  Output       : nneigh(:)    (I) nneigh(isub) returns the total number
       !                                  of neighbouring subs of isub
       !               : ineigh(:,:)  (I) points to the nneigh(:) subs of isub
       !                 info         (I) return status
       !
       !  Remarks      : This routine offers plenty of performance improvements
       !                 If it becomes too expensive we could do some ranking
-      !                 of the sub domains to search the neighbours more   
+      !                 of the sub domains to search the neighbours more
       !                 efficiently.
-      !           
+      !
       !                 The side effect of this routine is that the lists
       !                 min_sub(:) and max_sub(:) are extended to include
       !                 ghost sub domains. This is not used beyond this routine.
@@ -91,7 +91,7 @@
      &           min_sub,max_sub,nsubs,nneigh,ineigh,info)
 #endif
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -113,7 +113,7 @@
       INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:)  , INTENT(IN   ) :: min_phys,max_phys
       INTEGER , DIMENSION(:  ), INTENT(IN   ) :: bcdef
@@ -123,7 +123,7 @@
       INTEGER                 , INTENT(IN   ) :: nsubs
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(ppm_dim) :: len_phys
       REAL(MK):: mean_npbx,rmean_npbx,max_npbx,var_npbx
@@ -137,19 +137,20 @@
       REAL(MK)              :: t0
       LOGICAL               :: isin
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_find_neigh_old',t0,info)
 
       !-------------------------------------------------------------------------
       !  Allocate memory for subdomain IDs
       !-------------------------------------------------------------------------
-      iopt = ppm_param_alloc_fit 
+      iopt = ppm_param_alloc_fit
       ldc(1) = nsubs
+      NULLIFY(subid)
       CALL ppm_alloc(subid,ldc,iopt,info)
       IF (info.NE.0) THEN
           info = ppm_error_fatal
@@ -176,7 +177,7 @@
       !  Allocate memory for the neighbours of the subdomains
       !-------------------------------------------------------------------------
       iopt   = ppm_param_alloc_grow
-      ldc(1) = nsubsplus 
+      ldc(1) = nsubsplus
       CALL ppm_alloc(nneigh,ldc,iopt,info)
       IF (info.NE.0) THEN
           info = ppm_error_fatal
@@ -220,7 +221,7 @@
       isize = SIZE(ineigh,1)
 
       !-------------------------------------------------------------------------
-      !  Searching the neighbours 
+      !  Searching the neighbours
       !-------------------------------------------------------------------------
       IF (ppm_dim.EQ.2) THEN
          !----------------------------------------------------------------------
@@ -273,11 +274,11 @@
                               GOTO 9999
                            ENDIF
                            !----------------------------------------------------
-                           !  Save the size 
+                           !  Save the size
                            !----------------------------------------------------
                            isize  = ldc(1)
-                        ENDIF 
-                    
+                        ENDIF
+
                         !-------------------------------------------------------
                         !  Store the neighbour set
                         !-------------------------------------------------------
@@ -285,11 +286,11 @@
                         ineigh(nneigh(i),i)   = jj
                         nneigh(jj)            = nneigh(jj) + 1
                         ineigh(nneigh(jj),jj) = i
-                     ENDIF 
-                  ENDIF 
-               ENDIF  
+                     ENDIF
+                  ENDIF
+               ENDIF
             ENDDO
-         ENDDO   
+         ENDDO
       ELSE
          !----------------------------------------------------------------------
          !  three dimensions
@@ -345,11 +346,11 @@
                               GOTO 9999
                            ENDIF
                            !----------------------------------------------------
-                           !  Save the size 
+                           !  Save the size
                            !----------------------------------------------------
                            isize  = ldc(1)
-                        ENDIF 
-                    
+                        ENDIF
+
                         !-------------------------------------------------------
                         !  Store the neighbour set
                         !-------------------------------------------------------
@@ -357,12 +358,12 @@
                         ineigh(nneigh(i),i)   = jj
                         nneigh(jj)            = nneigh(jj) + 1
                         ineigh(nneigh(jj),jj) = i
-                     ENDIF 
-                  ENDIF 
-               ENDIF  
+                     ENDIF
+                  ENDIF
+               ENDIF
             ENDDO
          ENDDO
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Free the memory again
@@ -374,10 +375,10 @@
           CALL ppm_error(ppm_err_alloc,'ppm_find_neigh_old',     &
      &        'deallocation of subid failed',__LINE__,info)
           GOTO 9999
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_find_neigh_old',t0,info)

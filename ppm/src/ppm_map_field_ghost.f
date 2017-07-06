@@ -9,7 +9,7 @@
       !                                  (only important for push and pop)
       !                                  for vector fields. For scalar
       !                                  fields, omit this argument.
-      !                 topo_id      (I) user topology ID. If <=0, the current 
+      !                 topo_id      (I) user topology ID. If <=0, the current
       !                                  mesh topology is used.
       !                 mesh_id      (I) user mesh ID. If <=0,
       !                                  the first mesh of the current
@@ -115,7 +115,7 @@
       !  fields on the same mesh. Not tested yet.
       !
       !  Revision 1.3  2004/04/07 09:21:23  ivos
-      !  Added ghostsize to the argument list since map_field_pop now needs 
+      !  Added ghostsize to the argument list since map_field_pop now needs
       !  this.
       !
       !  Revision 1.2  2004/04/05 12:01:56  ivos
@@ -156,7 +156,7 @@
 #elif __KIND == __LOGICAL
       SUBROUTINE ppm_map_field_ghost_2d_sca_l(fv,topo_id,mesh_id,ghostsize,  &
      &                              maptype,info,mask)
-#endif 
+#endif
 #elif __MESH_DIM  == __3D
 #if   __KIND == __SINGLE_PRECISION
       SUBROUTINE ppm_map_field_ghost_3d_sca_s(fv,topo_id,mesh_id,ghostsize,  &
@@ -176,7 +176,7 @@
 #elif __KIND == __LOGICAL
       SUBROUTINE ppm_map_field_ghost_3d_sca_l(fv,topo_id,mesh_id,ghostsize,  &
      &                              maptype,info,mask)
-#endif 
+#endif
 #endif
 
 #elif __DIM == __VFIELD
@@ -199,7 +199,7 @@
 #elif __KIND == __LOGICAL
       SUBROUTINE ppm_map_field_ghost_2d_vec_l(fv,lda,topo_id,mesh_id,    &
      &                                        ghostsize,maptype,info,mask)
-#endif 
+#endif
 #elif __MESH_DIM  == __3D
 #if   __KIND == __SINGLE_PRECISION
       SUBROUTINE ppm_map_field_ghost_3d_vec_s(fv,lda,topo_id,mesh_id,    &
@@ -219,7 +219,7 @@
 #elif __KIND == __LOGICAL
       SUBROUTINE ppm_map_field_ghost_3d_vec_l(fv,lda,topo_id,mesh_id,    &
      &                                        ghostsize,maptype,info,mask)
-#endif 
+#endif
 #endif
 #endif
 
@@ -229,7 +229,7 @@
 #include "ppm_define.h"
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_mesh
@@ -255,7 +255,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
 #if   __DIM == __SFIELD
 #if   __MESH_DIM  == __2D
@@ -319,7 +319,7 @@
       INTEGER                       , INTENT(IN   ) :: maptype
       INTEGER                       , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK)            :: t0
       INTEGER             :: i,target_topoid,target_meshid
@@ -329,11 +329,11 @@
       INTEGER, PARAMETER  :: lda = 1
 #endif
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialize 
+      !  Initialize
       !-------------------------------------------------------------------------
       CALL substart('ppm_map_field_ghost',t0,info)
 
@@ -571,7 +571,7 @@
 
       ELSEIF (maptype.EQ.ppm_param_map_send) THEN
          !----------------------------------------------------------------------
-         !  Add the last data and send/recv the packages 
+         !  Add the last data and send/recv the packages
          !----------------------------------------------------------------------
          ! send can only be called for get or put cases, not for init
          IF ((ppm_map_type .NE. ppm_param_map_ghost_get) .AND.   &
@@ -744,7 +744,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_map_field_ghost',t0,info)

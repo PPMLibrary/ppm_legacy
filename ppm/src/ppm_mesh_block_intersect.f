@@ -12,14 +12,14 @@
       !  Input        : isub         (I) source sub (from which data will
       !                                  be sent) in global numbering
       !                 jsub         (I) destination sub in global numbering
-      !                 frommesh     (I) source mesh identifier 
+      !                 frommesh     (I) source mesh identifier
       !                                  (internal numbering)
-      !                 tomesh       (I) target mesh identifier (internal 
+      !                 tomesh       (I) target mesh identifier (internal
       !                                  numbering)
-      !                 fromtopo     (I) source topology identifier (internal 
-      !                                  numbering) 
-      !                 totopo       (I) target topology identifier (internal 
-      !                                  numbering) 
+      !                 fromtopo     (I) source topology identifier (internal
+      !                                  numbering)
+      !                 totopo       (I) target topology identifier (internal
+      !                                  numbering)
       !                 offset(:)    (I) Shift offset for the source
       !                                  subdomain. Index: 1:ppm_dim
       !                 ghostsize(:) (I) size of the ghost layer in numbers
@@ -97,7 +97,7 @@
      &    isendtosub,isendblkstart,isendblksize,ioffset,info)
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_mesh
@@ -111,7 +111,7 @@
       !-------------------------------------------------------------------------
 #include "ppm_define.h"
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       INTEGER                 , INTENT(IN   ) :: fromtopo,totopo,frommesh,   &
      &                                           tomesh,isub,jsub
@@ -122,7 +122,7 @@
       INTEGER                 , INTENT(INOUT) :: nsendlist
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER, DIMENSION(3)            :: ldu
       INTEGER, DIMENSION(ppm_dim)      :: iblockstart,nblocksize
@@ -132,11 +132,11 @@
       LOGICAL                          :: dosend
       REAL(ppm_kind_double)            :: t0
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_mesh_block_intersect',t0,info)
       pdim = ppm_dim
@@ -264,7 +264,7 @@
               ENDIF
           ENDIF
           !---------------------------------------------------------------------
-          !  send block (isendblkstart...isendblkstart+nblocksize-1) 
+          !  send block (isendblkstart...isendblkstart+nblocksize-1)
           !  from sub isub to sub jsub
           !---------------------------------------------------------------------
           ! global sub index of local sub where the blocks come from
@@ -280,7 +280,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_mesh_block_intersect',t0,info)

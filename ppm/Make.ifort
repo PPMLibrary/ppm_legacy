@@ -62,10 +62,10 @@ VERSION := OPTIMIZED
 
 #MPILIBDIR   := /usr/local/lib/
 #MPIINCLDIR  := /usr/local/include/
-MPILIBDIR   := /opt/lib/
-MPIINCLDIR  := /opt/include/
-FFTWLIBDIR  := ./lib/
-FFTWINCLDIR := ./include/
+MPILIBDIR   := /opt/mpi/openmpi/intel/2.1.1/lib 
+MPIINCLDIR  := /opt/mpi/openmpi/intel/2.1.1/include
+FFTWLIBDIR  := /usr/lib/x86_64-linux-gnu
+FFTWINCLDIR := /usr/include
 CPPINCLDIR  := 
 # Pre-compiler
 # One for dependency generation
@@ -73,7 +73,7 @@ DEPCPP  := cpp
 # and one for F90 code generation
 CPP     := cpp
 # Compiler
-FC      := /opt/intel/fc/9.1.039/bin/ifort
+FC      := mpifort
 # Linker/Archiver
 AR      := ar
 # Linker Flags
@@ -97,18 +97,18 @@ NOOPT_FFLAGS = $(DEFINE) -O0 -FR
 # We can now set the INCL FLAGS
 INCL   := -I$(MPIINCLDIR) -I$(FFTWINCLDIR) -I$(CPPINCLDIR)
 # and the LIBS
-LIBS   := -L$(FFTWLIBDIR) -lm -lmetis -lvizing -lstdc++ -lmpich -lpmpich -lfftw3f
+LIBS   := -L$(FFTWLIBDIR) -lfftw3f -L/home/yaser/git/ppm_legacy/lib -lmetis -lvizing -lstdc++ -L/opt/intel/compilers_and_libraries_2017/linux/mkl/lib/intel64 -lmkl_blas95_lp64 -lmkl_lapack95_lp64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -lpthread -lm -ldl
 
 ifeq "$(VERSION)" "DEBUG"
 FFLAGS := $(DEBUG_FFLAGS)
-BUILDDIR:= ./
+BUILDDIR:= .
 endif
 ifeq "$(VERSION)" "OPTIMIZED"
 FFLAGS := $(OPTIMIZED_FFLAGS)
-BUILDDIR:= ./
+BUILDDIR:= .
 endif
 ifeq "$(VERSION)" "NOOPT"
 FFLAGS := $(NOOPT_FFLAGS)
-BUILDDIR:= ./
+BUILDDIR:= .
 endif
 

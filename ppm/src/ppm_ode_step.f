@@ -24,9 +24,9 @@
       !
       !  Output       : info                   (I) return status
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
-      !  References   : 
+      !  References   :
       !
       !  Revisions    :
       !-------------------------------------------------------------------------
@@ -109,7 +109,7 @@
       !-------------------------------------------------------------------------
 
 #if   __MODE == __SCA
-      
+
 #if   __KIND == __SINGLE_PRECISION
       SUBROUTINE ppm_ode_step_ss(odeid,xp,up,dup,lda,Npart,bfr,istage,time,&
       & rhsfunc, ipackdata, rpackdata, lpackdata, info)
@@ -143,7 +143,7 @@
         USE ppm_module_data
         USE ppm_module_error
 
-        
+
         IMPLICIT NONE
 #if     __KIND == __SINGLE_PRECISION
         INTEGER, PARAMETER :: mk = ppm_kind_single
@@ -164,7 +164,7 @@
              REAL(KIND(1.0E0)), DIMENSION(:,:), POINTER     :: xp,up
              REAL(KIND(1.0E0)), DIMENSION(:,:), POINTER     :: dup
 #endif
-      
+
              INTEGER,  DIMENSION(:,:), INTENT(IN), OPTIONAL :: ipack
              LOGICAL,  DIMENSION(:,:), INTENT(IN), OPTIONAL :: lpack
              REAL(kind(1.0E0)), DIMENSION(:,:), INTENT(IN), OPTIONAL :: rpack
@@ -192,7 +192,7 @@
            END FUNCTION rhsfunc
         END INTERFACE
 #endif
-        
+
 
         !-----------------------------------------------------------------------
         !  Arguments
@@ -200,10 +200,10 @@
         INTEGER,                    INTENT(  out) :: info
         INTEGER,                    INTENT(in   ) :: odeid
 #if     __MODE == __SCA
-        REAL(mk), DIMENSION(:  ), POINTER         :: up,dup        
-#elif   __MODE == __VEC        
+        REAL(mk), DIMENSION(:  ), POINTER         :: up,dup
+#elif   __MODE == __VEC
         REAL(mk), DIMENSION(:,:), POINTER         :: up,dup
-#endif        
+#endif
         REAL(mk), DIMENSION(:,:), POINTER         :: xp
         REAL(mk), DIMENSION(:,:), POINTER         :: bfr
         INTEGER,                    INTENT(in   ) :: istage
@@ -239,7 +239,7 @@
         !  call substart
         !-----------------------------------------------------------------------
         CALL substart('ppm_ode_step',t0,info)
-        
+
         !-----------------------------------------------------------------------
         !  check input arguments
         !-----------------------------------------------------------------------
@@ -250,7 +250,7 @@
            time(3) = time(3) + time(4)
            GOTO 9999
         END IF
-        
+
         IF(ppm_debug.GT.0) THEN
            IF(.NOT.ppm_initialized) THEN
               info = ppm_error_error
@@ -278,13 +278,13 @@
                  ! user mid does not exist
                  !--------------------------------------------------------------
                  info = ppm_error_error
-                 CALL ppm_error(ppm_err_argument,'ppm_ode_step',& 
+                 CALL ppm_error(ppm_err_argument,'ppm_ode_step',&
                       & 'ODEID does not exist',__LINE__,info)
                  GOTO 9999
               END IF
            END IF
-           
-           
+
+
            !--------------------------------------------------------------------
            ! check dimension
            !--------------------------------------------------------------------
@@ -353,7 +353,7 @@
                    & 'BFR is empty',__LINE__,info)
               GOTO 9999
            END IF
-           
+
         END IF ! (ppm_debug.GT.0)
 
         mid = ppm_internal_mid(odeid)
@@ -366,7 +366,7 @@
         ! bail out
         !-----------------------------------------------------------------------
         IF(ppm_ode_stages(mid).LT.istage) GOTO 9999
-        
+
         !-----------------------------------------------------------------------
         ! get times and scheme
         !-----------------------------------------------------------------------
@@ -377,7 +377,7 @@
         ELSE
            scheme = ppm_ode_ischeme(mid)
         END IF
-        
+
         IF(ppm_ode_adaptive(mid)) THEN
            !--------------------------------------------------------------------
            ! compute adaptive timestep [TODO]
@@ -387,7 +387,7 @@
 
            GOTO 9999
         END IF
-        
+
         SELECT CASE(scheme)
         CASE(ppm_param_ode_scheme_eulerf)
            !--------------------------------------------------------------------
@@ -400,7 +400,7 @@
            ! call right hand side and do an euler step
            !--------------------------------------------------------------------
 #include "ppm_ode_rhsfunc_macro.h"
-#if      __MODE == __SCA           
+#if      __MODE == __SCA
            DO j=1,npart
               up(j) = up(j) + dt * dup(j)
            END DO
@@ -410,7 +410,7 @@
                  up(i,j) = up(i,j) + dt * dup(i,j)
               END DO
            END DO
-#endif 
+#endif
            t  = t  + dt
 
            IF(ppm_ode_state(mid).EQ.ppm_ode_state_kickoff) THEN
@@ -436,7 +436,7 @@
               !  call right hand side and do an euler step
               !-----------------------------------------------------------------
 #include "ppm_ode_rhsfunc_macro.h"
-#if      __MODE == __SCA           
+#if      __MODE == __SCA
            DO j=1,npart
               up(j) = up(j) + tau * dup(j)
            END DO
@@ -448,13 +448,13 @@
            END DO
 #endif
               t  = t  + tau
-     
+
               IF(ppm_ode_state(mid).EQ.ppm_ode_state_kickoff) THEN
                  ppm_ode_state(mid) = ppm_ode_state_running
               END IF
               ! how much to save of this
               ppm_ode_sent(mid) = 0
-           
+
         CASE(ppm_param_ode_scheme_tvdrk2)
            !--------------------------------------------------------------------
            !============
@@ -473,7 +473,7 @@
                  up(i) = up(i) + dt*dup(i)
               END DO
 #elif    __MODE == __VEC
-              DO i=1,Npart             
+              DO i=1,Npart
                  DO j=1,lda
                     bfr(j,i) = up(j,i)
                     up(j,i) = up(j,i) + dt*dup(j,i)
@@ -481,7 +481,7 @@
               END DO
 #endif
               ppm_ode_sent(mid) = 1
-           CASE(2) 
+           CASE(2)
               !-----------------------------------------------------------------
               ! call rhs, and do another euler step
               !-----------------------------------------------------------------
@@ -505,12 +505,12 @@
                  up(i)   = 0.5_mk * (up(i)   + bfr(1,i)    )
               END DO
 #elif    __MODE == __VEC
-              DO i=1,Npart                 
+              DO i=1,Npart
                  DO j=1,lda
                  up(j,i) = 0.5_mk * (up(j,i) + bfr(j,i))
               END DO
            END DO
-#endif      
+#endif
               t = t + dt
               ppm_ode_sent(mid) = 0
               IF(ppm_ode_state(mid).EQ.ppm_ode_state_kickoff) THEN
@@ -518,7 +518,7 @@
               END IF
 
            END SELECT
-           
+
         CASE(ppm_param_ode_scheme_midrk2)
            !--------------------------------------------------------------------
            !=============
@@ -528,7 +528,7 @@
            SELECT CASE(istage)
            CASE(1)
               !-----------------------------------------------------------------
-              ! 
+              !
               !-----------------------------------------------------------------
 #include "ppm_ode_rhsfunc_macro.h"
 
@@ -539,20 +539,20 @@
               END DO
 #elif    __MODE == __VEC
               DO j=1,lda
-                 DO i=1,Npart           
+                 DO i=1,Npart
                     bfr(j,i) = up(j,i)
                     up(j,i) = up(j,i) + 0.5_mk*dt*dup(j,i)
                  END DO
               END DO
 #endif
               ppm_ode_sent(mid) = 1
-           CASE(2) 
+           CASE(2)
               !-----------------------------------------------------------------
-              ! 
+              !
               !-----------------------------------------------------------------
 #include "ppm_ode_rhsfunc_macro.h"
               !-----------------------------------------------------------------
-              ! 
+              !
               !-----------------------------------------------------------------
 #if      __MODE == __SCA
               DO i=1,Npart
@@ -564,8 +564,8 @@
                     up(j,i) = bfr(j,i) + dt * dup(j,i)
                  END DO
               END DO
-#endif                 
-                 
+#endif
+
 
               t = t + dt
               ppm_ode_sent(mid) = 0
@@ -575,7 +575,7 @@
 
            END SELECT
 
-           
+
         CASE(ppm_param_ode_scheme_rk4)
            !--------------------------------------------------------------------
            !=============
@@ -592,7 +592,7 @@
 #if      __MODE == __SCA
                  bfr(1,i)     =  up(i)
                  bfr(2,i)     = dup(i) ! k1
-#elif    __MODE == __VEC             
+#elif    __MODE == __VEC
                  bfr(1:lda,i) = up(:,i)
                  bfr((lda+1):2*lda,i) = dup(:,i) !k1
 #endif
@@ -604,12 +604,12 @@
                  DO ilda=1,lda
                     up(ilda,i) = up(ilda,i) + 0.5_mk*dt*dup(ilda,i)
                  END DO
-#endif       
+#endif
               END DO
               ppm_ode_sent(mid) = 2
-           CASE(2) 
+           CASE(2)
               !-----------------------------------------------------------------
-              ! 
+              !
               !-----------------------------------------------------------------
 #include "ppm_ode_rhsfunc_macro.h"
               !-----------------------------------------------------------------
@@ -618,25 +618,25 @@
               DO i=1,Npart
 #if      __MODE == __SCA
                  bfr(3,i)     = dup(i) !k2
-#elif    __MODE == __VEC             
+#elif    __MODE == __VEC
                  DO ilda=1,lda
                     bfr((2*lda+ilda),i) = dup(ilda,i) !k2
                  END DO
-#endif                 
+#endif
 
 #if      __MODE == __SCA
                  up(i)   = bfr(1,i) + 0.5_mk* dt * dup(i)
-#elif    __MODE == __VEC                 
+#elif    __MODE == __VEC
                  DO ilda=1,lda
                     up(ilda,i) = bfr(ilda,i) + 0.5_mk*dt * dup(ilda,i)
                  END DO
-#endif                 
-                 
+#endif
+
               END DO
               ppm_ode_sent(mid) = 3
-           CASE(3) 
+           CASE(3)
               !-----------------------------------------------------------------
-              ! 
+              !
               !-----------------------------------------------------------------
 #include "ppm_ode_rhsfunc_macro.h"
               !-----------------------------------------------------------------
@@ -649,21 +649,21 @@
                  DO ilda=1,lda
                     bfr((3*lda+ilda),i) = dup(ilda,i) !k3
                  END DO
-#endif                 
+#endif
 
 #if      __MODE == __SCA
                  up(i)   = bfr(1,i) + dt * dup(i)
-#elif    __MODE == __VEC                 
+#elif    __MODE == __VEC
                  DO ilda=1,lda
                     up(ilda,i) = bfr(ilda,i) + dt * dup(ilda,i)
                  END DO
-#endif                 
-                 
+#endif
+
               END DO
               ppm_ode_sent(mid) = 4
-           CASE(4) 
+           CASE(4)
               !-----------------------------------------------------------------
-              ! 
+              !
               !-----------------------------------------------------------------
 #include "ppm_ode_rhsfunc_macro.h"
               !-----------------------------------------------------------------
@@ -675,11 +675,11 @@
         &                  (bfr(2,i) + 2.0_MK*bfr(3,i) + 2.0_MK*bfr(4,i)+ dup(i))
 #elif    __MODE == __VEC
         DO ilda=1,lda
-           up(ilda,i) = bfr(ilda,i) +  1.0_MK/6.0_MK*dt*                   & 
+           up(ilda,i) = bfr(ilda,i) +  1.0_MK/6.0_MK*dt*                   &
            &                (bfr((lda+ilda),i) + 2.0_MK*bfr((2*lda+ilda),i)  &
            &                             + 2.0_MK*bfr((3*lda+ilda),i)+ dup(ilda,i))
         END DO
-#endif                 
+#endif
 
       END DO
               t = t + dt
@@ -696,15 +696,15 @@
         !-----------------------------------------------------------------------
         time(3) = t
         time(4) = dt
-        
+
         !-----------------------------------------------------------------------
         ! stop ode if were ready
         !-----------------------------------------------------------------------
         IF(time(3).GE.time(2)) THEN
            ppm_ode_state(mid) = ppm_ode_state_finished
         END IF
-        
-9999    CONTINUE        
+
+9999    CONTINUE
         !-----------------------------------------------------------------------
         ! substop
         !-----------------------------------------------------------------------

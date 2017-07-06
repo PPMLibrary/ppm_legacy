@@ -28,7 +28,7 @@
       !  ETH Zentrum, Hirschengraben 84
       !  CH-8092 Zurich, Switzerland
       !-------------------------------------------------------------------------
-     
+
       !-------------------------------------------------------------------------
       !  Define types
       !-------------------------------------------------------------------------
@@ -46,40 +46,40 @@
          !----------------------------------------------------------------------
          !  Work arrays for reallocation.
          !----------------------------------------------------------------------
-         REAL(ppm_kind_single)   , DIMENSION(:        ), POINTER :: work_1ds
-         REAL(ppm_kind_double)   , DIMENSION(:        ), POINTER :: work_1dd
-         COMPLEX(ppm_kind_single), DIMENSION(:        ), POINTER :: work_1dsc
-         COMPLEX(ppm_kind_double), DIMENSION(:        ), POINTER :: work_1ddc
-         INTEGER                 , DIMENSION(:        ), POINTER :: work_1di
-         LOGICAL                 , DIMENSION(:        ), POINTER :: work_1dl
+         REAL(ppm_kind_single)   , DIMENSION(:        ), POINTER :: work_1ds  => NULL()
+         REAL(ppm_kind_double)   , DIMENSION(:        ), POINTER :: work_1dd  => NULL()
+         COMPLEX(ppm_kind_single), DIMENSION(:        ), POINTER :: work_1dsc => NULL()
+         COMPLEX(ppm_kind_double), DIMENSION(:        ), POINTER :: work_1ddc => NULL()
+         INTEGER                 , DIMENSION(:        ), POINTER :: work_1di  => NULL()
+         LOGICAL                 , DIMENSION(:        ), POINTER :: work_1dl  => NULL()
 
-         REAL(ppm_kind_single)   , DIMENSION(:,:      ), POINTER :: work_2ds
-         REAL(ppm_kind_double)   , DIMENSION(:,:      ), POINTER :: work_2dd
-         COMPLEX(ppm_kind_single), DIMENSION(:,:      ), POINTER :: work_2dsc
-         COMPLEX(ppm_kind_double), DIMENSION(:,:      ), POINTER :: work_2ddc
-         INTEGER                 , DIMENSION(:,:      ), POINTER :: work_2di
-         LOGICAL                 , DIMENSION(:,:      ), POINTER :: work_2dl
+         REAL(ppm_kind_single)   , DIMENSION(:,:      ), POINTER :: work_2ds  => NULL()
+         REAL(ppm_kind_double)   , DIMENSION(:,:      ), POINTER :: work_2dd  => NULL()
+         COMPLEX(ppm_kind_single), DIMENSION(:,:      ), POINTER :: work_2dsc => NULL()
+         COMPLEX(ppm_kind_double), DIMENSION(:,:      ), POINTER :: work_2ddc => NULL()
+         INTEGER                 , DIMENSION(:,:      ), POINTER :: work_2di  => NULL()
+         LOGICAL                 , DIMENSION(:,:      ), POINTER :: work_2dl  => NULL()
 
-         REAL(ppm_kind_single)   , DIMENSION(:,:,:    ), POINTER :: work_3ds
-         REAL(ppm_kind_double)   , DIMENSION(:,:,:    ), POINTER :: work_3dd
-         COMPLEX(ppm_kind_single), DIMENSION(:,:,:    ), POINTER :: work_3dsc
-         COMPLEX(ppm_kind_double), DIMENSION(:,:,:    ), POINTER :: work_3ddc
-         INTEGER                 , DIMENSION(:,:,:    ), POINTER :: work_3di
-         LOGICAL                 , DIMENSION(:,:,:    ), POINTER :: work_3dl
+         REAL(ppm_kind_single)   , DIMENSION(:,:,:    ), POINTER :: work_3ds  => NULL()
+         REAL(ppm_kind_double)   , DIMENSION(:,:,:    ), POINTER :: work_3dd  => NULL()
+         COMPLEX(ppm_kind_single), DIMENSION(:,:,:    ), POINTER :: work_3dsc => NULL()
+         COMPLEX(ppm_kind_double), DIMENSION(:,:,:    ), POINTER :: work_3ddc => NULL()
+         INTEGER                 , DIMENSION(:,:,:    ), POINTER :: work_3di  => NULL()
+         LOGICAL                 , DIMENSION(:,:,:    ), POINTER :: work_3dl  => NULL()
 
-         REAL(ppm_kind_single)   , DIMENSION(:,:,:,:  ), POINTER :: work_4ds
-         REAL(ppm_kind_double)   , DIMENSION(:,:,:,:  ), POINTER :: work_4dd
-         COMPLEX(ppm_kind_single), DIMENSION(:,:,:,:  ), POINTER :: work_4dsc
-         COMPLEX(ppm_kind_double), DIMENSION(:,:,:,:  ), POINTER :: work_4ddc
-         INTEGER                 , DIMENSION(:,:,:,:  ), POINTER :: work_4di
-         LOGICAL                 , DIMENSION(:,:,:,:  ), POINTER :: work_4dl
+         REAL(ppm_kind_single)   , DIMENSION(:,:,:,:  ), POINTER :: work_4ds  => NULL()
+         REAL(ppm_kind_double)   , DIMENSION(:,:,:,:  ), POINTER :: work_4dd  => NULL()
+         COMPLEX(ppm_kind_single), DIMENSION(:,:,:,:  ), POINTER :: work_4dsc => NULL()
+         COMPLEX(ppm_kind_double), DIMENSION(:,:,:,:  ), POINTER :: work_4ddc => NULL()
+         INTEGER                 , DIMENSION(:,:,:,:  ), POINTER :: work_4di  => NULL()
+         LOGICAL                 , DIMENSION(:,:,:,:  ), POINTER :: work_4dl  => NULL()
 
-         REAL(ppm_kind_single)   , DIMENSION(:,:,:,:,:), POINTER :: work_5ds
-         REAL(ppm_kind_double)   , DIMENSION(:,:,:,:,:), POINTER :: work_5dd
-         COMPLEX(ppm_kind_single), DIMENSION(:,:,:,:,:), POINTER :: work_5dsc
-         COMPLEX(ppm_kind_double), DIMENSION(:,:,:,:,:), POINTER :: work_5ddc
-         INTEGER                 , DIMENSION(:,:,:,:,:), POINTER :: work_5di
-         LOGICAL                 , DIMENSION(:,:,:,:,:), POINTER :: work_5dl
+         REAL(ppm_kind_single)   , DIMENSION(:,:,:,:,:), POINTER :: work_5ds  => NULL()
+         REAL(ppm_kind_double)   , DIMENSION(:,:,:,:,:), POINTER :: work_5dd  => NULL()
+         COMPLEX(ppm_kind_single), DIMENSION(:,:,:,:,:), POINTER :: work_5dsc => NULL()
+         COMPLEX(ppm_kind_double), DIMENSION(:,:,:,:,:), POINTER :: work_5ddc => NULL()
+         INTEGER                 , DIMENSION(:,:,:,:,:), POINTER :: work_5di  => NULL()
+         LOGICAL                 , DIMENSION(:,:,:,:,:), POINTER :: work_5dl  => NULL()
 
          PRIVATE :: work_1ds,work_1dd,work_1dsc,work_1ddc,work_1di,work_1dl
          PRIVATE :: work_2ds,work_2dd,work_2dsc,work_2ddc,work_2di,work_2dl
@@ -129,7 +129,7 @@
             MODULE PROCEDURE ppm_alloc_3dldc
             MODULE PROCEDURE ppm_alloc_3dli
             MODULE PROCEDURE ppm_alloc_3dll
-            
+
             MODULE PROCEDURE ppm_alloc_4ds
             MODULE PROCEDURE ppm_alloc_4dd
             MODULE PROCEDURE ppm_alloc_4dsc
@@ -158,10 +158,10 @@
          END INTERFACE
 
          !----------------------------------------------------------------------
-         !  include the source 
+         !  include the source
          !----------------------------------------------------------------------
          CONTAINS
- 
+
 #define __KIND __SINGLE_PRECISION
 #include "ppm_alloc_1d.f"
 #include "ppm_alloc_2d.f"

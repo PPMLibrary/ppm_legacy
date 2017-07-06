@@ -1,24 +1,24 @@
       !-------------------------------------------------------------------------
-      !  Subroutine   :                  ppm_fmm_pretraverse 
+      !  Subroutine   :                  ppm_fmm_pretraverse
       !-------------------------------------------------------------------------
       !
       !  Purpose      :    Do a pretraversal for the target points, to determine
-      !                    which particles are needed for the computation. 
+      !                    which particles are needed for the computation.
       !
       !  Input        :    tp(:,:)      (F)  :  position of target points
       !                    Ntp          (I)  :  number of target points
       !                    tolevel      (I)  :  level      onto which particles
       !                                         are mapped to
-      !                    
       !
-      !  Input/Output :  
-      !                     
-      !  Output       :   
+      !
+      !  Input/Output :
+      !
+      !  Output       :
       !                    ccount             (I) : length of coeff_subtop
       !                    part_subtop(:)     (I) : array containing needed
       !                                             particles from other procs
       !                                             1st index: subid
-      !                    pcount             (I) : length of part_subtop      
+      !                    pcount             (I) : length of part_subtop
       !                    info               (I) : return status
       !
       !  Remarks      :
@@ -107,10 +107,10 @@
       &          ccount,part_subtop,pcount,info)
 #endif
 
-      !------------------------------------------------------------------------- 
-      !  Modules 
       !-------------------------------------------------------------------------
-      
+      !  Modules
+      !-------------------------------------------------------------------------
+
       USE ppm_module_alloc
       USE ppm_module_data
       USE ppm_module_data_fmm
@@ -119,7 +119,7 @@
       USE ppm_module_error
       USE ppm_module_write
       IMPLICIT NONE
-      
+
       !-------------------------------------------------------------------------
       !  Includes
       !-------------------------------------------------------------------------
@@ -127,10 +127,10 @@
 #ifdef __MPI
       INCLUDE 'mpif.h'
 #endif
-      
+
       !-------------------------------------------------------------------------
       !  Precision
-      !-------------------------------------------------------------------------      
+      !-------------------------------------------------------------------------
 
 #if   __KIND == __SINGLE_PRECISION
       INTEGER, PARAMETER :: MK = ppm_kind_single
@@ -138,51 +138,51 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments 
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:),     POINTER        :: tp
       INTEGER,                      INTENT(IN   )  :: Ntp
       INTEGER,                      INTENT(IN   )  :: tolevel
       REAL(MK),                     INTENT(IN   )  :: theta
-      INTEGER,                      INTENT(  OUT)  :: ccount      
+      INTEGER,                      INTENT(  OUT)  :: ccount
       INTEGER, DIMENSION(:  ),      POINTER        :: part_subtop
-      INTEGER,                      INTENT(  OUT)  :: pcount    
-      INTEGER,                      INTENT(  OUT)  :: info      
-      
-      
+      INTEGER,                      INTENT(  OUT)  :: pcount
+      INTEGER,                      INTENT(  OUT)  :: info
+
+
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
-      
+
       ! auxiliary variables
       LOGICAL                              :: drct
       LOGICAL,DIMENSION(:),   POINTER      :: flagcoeff,flagpart
       INTEGER                              :: i,j,cnt,level
       INTEGER                              :: root,iopt,istat
-      REAL(MK)                             :: dx,dy,dz,dist,rad,t0 
+      REAL(MK)                             :: dx,dy,dz,dist,rad,t0
       INTEGER                              :: stackpointer,curbox,cursub
       INTEGER,DIMENSION(:),   POINTER      :: stack
       INTEGER,DIMENSION(1)                 :: ldu1
       INTEGER,DIMENSION(2)                 :: ldu2
       CHARACTER(LEN=256)                   :: cbuf
-      
+
       ! parallelisation
       INTEGER                              :: curtopoid,in_topoid
       INTEGER                              :: topoid
       INTEGER,DIMENSION(:),   POINTER      :: lpart_subtop
       INTEGER,DIMENSION(:,:), POINTER      :: lcoeff_subtop
-      
+
       ! fmm
-      REAL(MK),DIMENSION(:),  POINTER      :: radius      
+      REAL(MK),DIMENSION(:),  POINTER      :: radius
       REAL(MK),DIMENSION(:,:),POINTER      :: centerofbox
-        
 
       !-------------------------------------------------------------------------
-      !  Initialize 
+      !  Initialize
       !-------------------------------------------------------------------------
       CALL substart('ppm_fmm_pretraverse',t0,info)
-        
-      
+
+      NULLIFY(flagcoeff,flagpart,stack,lpart_subtop,lcoeff_subtop)
+
       !-------------------------------------------------------------------------
       !  Check precision and pointing to the correct variables
       !-------------------------------------------------------------------------
@@ -193,7 +193,6 @@
       centerofbox => centerofbox_d
       radius      => radius_d
 #endif
-
 
       !-------------------------------------------------------------------------
       ! Find the root of the tree (serial) and
@@ -219,7 +218,7 @@
               ENDIF
            ENDDO
         ENDIF
-      ENDIF      
+      ENDIF
 
 
 #else
@@ -243,32 +242,32 @@
               ENDIF
            ENDDO
         ENDIF
-      ENDIF      
+      ENDIF
 
 #endif
       ccount = 0
       pcount = 0
 
-      
+
       !-------------------------------------------------------------------------
       !  Allocate and initialize local variables
       !-------------------------------------------------------------------------
       iopt  = ppm_param_alloc_fit
       istat = 0
-      
+
       ldu1(1) = nbox
       CALL ppm_alloc(stack,ldu1,iopt,info)
       istat = istat + info
-      
+
       CALL ppm_alloc(lpart_subtop,ldu1,iopt,info)
       istat = istat + info
-      
+
       CALL ppm_alloc(flagcoeff,ldu1,iopt,info)
       istat = istat + info
-      
+
       CALL ppm_alloc(flagpart,ldu1,iopt,info)
       istat = istat + info
-      
+
       ldu2(1) = 2
       ldu2(2) = nbox
       CALL ppm_alloc(lcoeff_subtop,ldu2,iopt,info)
@@ -290,17 +289,17 @@
         flagpart(i)        = .FALSE.
       ENDDO
 
-      
+
       !-------------------------------------------------------------------------
       ! Traverse tree and build list part_subtop and coeff_subtop
       !-------------------------------------------------------------------------
-      DO i=1,Ntp      
+      DO i=1,Ntp
          IF (ppm_nproc .GT. 1) THEN
-           
+
 	   ! initialise stack parallel
            stackpointer = 1
            cnt = 0
- 
+
            !--------------------------------------------------------------------
            ! Collect all boxes at the highest level (doesnt vectorize)
            !--------------------------------------------------------------------
@@ -312,31 +311,31 @@
 	       IF (cnt .EQ. nbpl(level)) THEN
                   EXIT
                ENDIF
-             
+
 	     ENDIF
            ENDDO
          ELSE
-          
+
 	  ! initialise stack serial
           stackpointer = 1
           stack(stackpointer) = root
           stackpointer = stackpointer + 1
-         
+
 	 ENDIF
-         
+
 	 DO WHILE (stackpointer .GT. 1)
-           
+
 	   curbox = stack(stackpointer-1)
 
 	   dx = tp(1,i) - centerofbox(1,curbox)
            dy = tp(2,i) - centerofbox(2,curbox)
            dz = tp(3,i) - centerofbox(3,curbox)
            dist = SQRT(dx*dx + dy*dy + dz*dz)
-	   
+
 	   !pop top box
            stackpointer = stackpointer -1
-           
-	   
+
+
 	   !--------------------------------------------------------------------
            ! Checking Barnes-Hut Criterium
            !--------------------------------------------------------------------
@@ -344,14 +343,14 @@
               !only one particle in box, do direct computation
               drct = .TRUE.
            ENDIF
-           
+
 	   IF ((dist/(2*radius(curbox)) .GT. theta) .AND. (.NOT. drct)) THEN
-              
+
 	      curtopoid = ppm_internal_topoid(topoidlist(blevel(curbox)))
               cursub = ppm_subid(curbox,blevel(curbox))
-              
+
 	      !far enough, compute part-box interaction
-              
+
 	      IF (ppm_rank .NE. ppm_subs2proc(cursub,curtopoid)) THEN
                  ! check if its a duplicate
                  IF (.NOT. flagcoeff(curbox)) THEN
@@ -363,7 +362,7 @@
               ENDIF
               !ELSE : ok, on same processor
            ELSE
-             
+
 	     !not far enough, push childern
              IF (nchld(curbox) .GT. 0) THEN
                DO j=1,nchld(curbox)
@@ -378,32 +377,32 @@
                ENDIF
 
              ELSE
-               cursub = ppm_subid(curbox,tolevel) 
+               cursub = ppm_subid(curbox,tolevel)
                in_topoid = ppm_internal_topoid(topoid)
-               
+
 	       !no children, direct computation
                !particles only needed on the finest topolgy
                IF (ppm_rank .NE. ppm_subs2proc(cursub,in_topoid)) THEN
                  IF (.NOT. flagpart(curbox)) THEN
-                   pcount               = pcount +1               
+                   pcount               = pcount +1
                    lpart_subtop(pcount) = cursub
                    flagpart(curbox)     = .TRUE.
                  ENDIF
                ENDIF
              ENDIF
-           ENDIF       
-	 ENDDO 
-      ENDDO     
-      
-       
+           ENDIF
+	 ENDDO
+      ENDDO
+
+
       !-------------------------------------------------------------------------
-      !  Allocate the correct size of return variables 
+      !  Allocate the correct size of return variables
       !-------------------------------------------------------------------------
       iopt = ppm_param_alloc_fit
-      
+
       ldu1(1) = pcount
       CALL ppm_alloc(part_subtop,ldu1,iopt,info)
-      IF (info .NE. 0) THEN 
+      IF (info .NE. 0) THEN
           info = ppm_error_fatal
           CALL ppm_error(ppm_err_alloc,'ppm_fmm_pretraverse', &
       &        'error allocating part_subtop',__LINE__,info)
@@ -412,7 +411,7 @@
       DO i=1,pcount
          part_subtop(i)  = lpart_subtop(i)
       ENDDO
-      
+
       !-------------------------------------------------------------------------
       !  Deallocating local variables
       !-------------------------------------------------------------------------
@@ -430,7 +429,7 @@
       CALL ppm_alloc(flagpart,ldu2,ppm_param_dealloc,info)
       istat = istat + info
 
-      
+
       IF (istat .NE. 0) THEN
          info = ppm_error_error
          CALL ppm_error(ppm_err_dealloc,'ppm_fmm_expansion', &
@@ -438,9 +437,9 @@
       GOTO 9999
       ENDIF
 
-      
+
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
 9999  CONTINUE
       CALL substop('ppm_fmm_pretraverse',t0,info)

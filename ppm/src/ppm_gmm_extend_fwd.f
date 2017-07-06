@@ -2,18 +2,18 @@
       !  Subroutine   :                ppm_gmm_extend_fwd
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : This routine performs the forward extension 
+      !  Purpose      : This routine performs the forward extension
       !                 step of the GMM. See ppm_gmm_march for details.
       !
       !  Input        : width           (F) Width of the narrow band to
       !                                     be produced on each side of
       !                                     the interface.
       !                 order           (I) Order of the method to be
-      !                                     used. One of 
+      !                                     used. One of
       !                                        ppm_param_order_1
       !                                        ppm_param_order_2
       !                                        ppm_param_order_3
-      !                 npos            (I) Current number of points in the 
+      !                 npos            (I) Current number of points in the
       !                                     close set.
       !                 TM              (F) Current threshold for wave
       !                                     front location.
@@ -45,7 +45,7 @@
       !
       !  Output       : info            (I) return status. 0 on success.
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   : Chopp:2001, Kim:2001b
       !
@@ -81,7 +81,7 @@
 #elif  __KIND == __DOUBLE_PRECISION
       SUBROUTINE ppm_gmm_extend_fwd_2dd(fdta,dta,width,order,npos,TM,    &
      &    rhscst,dxinv,dyinv,dzinv,ghostsize,info,speed,chi)
-#endif 
+#endif
 #elif  __DIM == __3D
 #if    __KIND == __SINGLE_PRECISION
       SUBROUTINE ppm_gmm_extend_fwd_3ds(fdta,dta,width,order,npos,TM,    &
@@ -89,10 +89,10 @@
 #elif  __KIND == __DOUBLE_PRECISION
       SUBROUTINE ppm_gmm_extend_fwd_3dd(fdta,dta,width,order,npos,TM,    &
      &    rhscst,dxinv,dyinv,dzinv,ghostsize,info,speed,chi)
-#endif 
+#endif
 #endif
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_mesh
@@ -117,7 +117,7 @@
       INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
 #if   __DIM == __2D
       REAL(MK), DIMENSION(:,:,:)     , POINTER          :: fdta,dta
@@ -136,7 +136,7 @@
       INTEGER                        , INTENT(INOUT)    :: npos
       INTEGER                        , INTENT(  OUT)    :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER                          :: i,j,k,p,xhi,yhi,zhi,ii,jj,kk
       INTEGER                          :: npos0,jsub,isub,iopt
@@ -155,11 +155,11 @@
       REAL(MK), DIMENSION(ppm_dim)     :: alpha,beta
       REAL(MK), DIMENSION(2)           :: roots
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_gmm_extend_fwd',t0,info)
       phi      = 0.0_MK
@@ -180,7 +180,7 @@
 #if   __DIM == __3D
       dzihalf  = 0.5_MK*dzinv
       dzitwelve  = onetwelfth*dzinv
-#endif 
+#endif
 
       !-------------------------------------------------------------------------
       !  Check arguments
@@ -227,7 +227,7 @@
               !  Compute non-accepted neighbors
               !-----------------------------------------------------------------
               i = ii - 1
-              j = jj 
+              j = jj
               k = kk
               IF (i.GT.0) THEN
                   IF ((gmm_state3d(i,j,k,jsub) .NE.      &
@@ -238,7 +238,7 @@
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
                       IF (valijk .LT. hsave) THEN
-                          dta(i,j,k,jsub) = valijk 
+                          dta(i,j,k,jsub) = valijk
                           !-----------------------------------------------------
                           !  Keep in or add to close set
                           !-----------------------------------------------------
@@ -253,7 +253,7 @@
                   ENDIF
               ENDIF
               i = ii + 1
-              j = jj 
+              j = jj
               k = kk
               IF (i.LE.xhi) THEN
                   IF ((gmm_state3d(i,j,k,jsub) .NE.      &
@@ -264,85 +264,7 @@
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
                       IF (valijk .LT. hsave) THEN
-                          dta(i,j,k,jsub) = valijk 
-                          !-----------------------------------------------------
-                          !  Keep in or add to close set
-                          !-----------------------------------------------------
-                          IF ((gmm_state3d(i,j,k,jsub) .EQ.     &
-     &                        ppm_gmm_param_far) .AND.          &
-     &                        (ABS(fdta(i,j,k,jsub)) .LT. width)) THEN
-                              gmm_state3d(i,j,k,jsub) =         &
-     &                            ppm_gmm_param_close
-#include "ppm_gmm_add_to_list.inc"
-                          ENDIF
-                      ENDIF
-                  ENDIF
-              ENDIF
-              i = ii 
-              j = jj - 1
-              k = kk
-              IF (j.GT.0) THEN
-                  IF ((gmm_state3d(i,j,k,jsub) .NE.      &
-     &                ppm_gmm_param_accepted) .AND.      &
-     &                (ABS(fdta(i,j,k,jsub)).GT.absfdta0)) THEN
-                      !---------------------------------------------------------
-                      !  Update point i,j,k
-                      !---------------------------------------------------------
-#include "ppm_gmm_slvextn.inc"
-                      IF (valijk .LT. hsave) THEN
-                          dta(i,j,k,jsub) = valijk 
-                          !-----------------------------------------------------
-                          !  Keep in or add to close set
-                          !-----------------------------------------------------
-                          IF ((gmm_state3d(i,j,k,jsub) .EQ.     &
-     &                        ppm_gmm_param_far) .AND.          &
-     &                        (ABS(fdta(i,j,k,jsub)) .LT. width)) THEN
-                              gmm_state3d(i,j,k,jsub) =         &
-     &                            ppm_gmm_param_close
-#include "ppm_gmm_add_to_list.inc"
-                          ENDIF
-                      ENDIF
-                  ENDIF
-              ENDIF
-              i = ii 
-              j = jj + 1
-              k = kk
-              IF (j.LE.yhi) THEN
-                  IF ((gmm_state3d(i,j,k,jsub) .NE.      &
-     &                ppm_gmm_param_accepted) .AND.      &
-     &                (ABS(fdta(i,j,k,jsub)).GT.absfdta0)) THEN
-                      !---------------------------------------------------------
-                      !  Update point i,j,k
-                      !---------------------------------------------------------
-#include "ppm_gmm_slvextn.inc"
-                      IF (valijk .LT. hsave) THEN
-                          dta(i,j,k,jsub) = valijk 
-                          !-----------------------------------------------------
-                          !  Keep in or add to close set
-                          !-----------------------------------------------------
-                          IF ((gmm_state3d(i,j,k,jsub) .EQ.     &
-     &                        ppm_gmm_param_far) .AND.          &
-     &                        (ABS(fdta(i,j,k,jsub)) .LT. width)) THEN
-                              gmm_state3d(i,j,k,jsub) =         &
-     &                            ppm_gmm_param_close
-#include "ppm_gmm_add_to_list.inc"
-                          ENDIF
-                      ENDIF
-                  ENDIF
-              ENDIF
-              i = ii 
-              j = jj 
-              k = kk - 1
-              IF (k.GT.0) THEN
-                  IF ((gmm_state3d(i,j,k,jsub) .NE.      &
-     &                ppm_gmm_param_accepted) .AND.      &
-     &                (ABS(fdta(i,j,k,jsub)).GT.absfdta0)) THEN
-                      !---------------------------------------------------------
-                      !  Update point i,j,k
-                      !---------------------------------------------------------
-#include "ppm_gmm_slvextn.inc"
-                      IF (valijk .LT. hsave) THEN
-                          dta(i,j,k,jsub) = valijk 
+                          dta(i,j,k,jsub) = valijk
                           !-----------------------------------------------------
                           !  Keep in or add to close set
                           !-----------------------------------------------------
@@ -357,7 +279,85 @@
                   ENDIF
               ENDIF
               i = ii
-              j = jj 
+              j = jj - 1
+              k = kk
+              IF (j.GT.0) THEN
+                  IF ((gmm_state3d(i,j,k,jsub) .NE.      &
+     &                ppm_gmm_param_accepted) .AND.      &
+     &                (ABS(fdta(i,j,k,jsub)).GT.absfdta0)) THEN
+                      !---------------------------------------------------------
+                      !  Update point i,j,k
+                      !---------------------------------------------------------
+#include "ppm_gmm_slvextn.inc"
+                      IF (valijk .LT. hsave) THEN
+                          dta(i,j,k,jsub) = valijk
+                          !-----------------------------------------------------
+                          !  Keep in or add to close set
+                          !-----------------------------------------------------
+                          IF ((gmm_state3d(i,j,k,jsub) .EQ.     &
+     &                        ppm_gmm_param_far) .AND.          &
+     &                        (ABS(fdta(i,j,k,jsub)) .LT. width)) THEN
+                              gmm_state3d(i,j,k,jsub) =         &
+     &                            ppm_gmm_param_close
+#include "ppm_gmm_add_to_list.inc"
+                          ENDIF
+                      ENDIF
+                  ENDIF
+              ENDIF
+              i = ii
+              j = jj + 1
+              k = kk
+              IF (j.LE.yhi) THEN
+                  IF ((gmm_state3d(i,j,k,jsub) .NE.      &
+     &                ppm_gmm_param_accepted) .AND.      &
+     &                (ABS(fdta(i,j,k,jsub)).GT.absfdta0)) THEN
+                      !---------------------------------------------------------
+                      !  Update point i,j,k
+                      !---------------------------------------------------------
+#include "ppm_gmm_slvextn.inc"
+                      IF (valijk .LT. hsave) THEN
+                          dta(i,j,k,jsub) = valijk
+                          !-----------------------------------------------------
+                          !  Keep in or add to close set
+                          !-----------------------------------------------------
+                          IF ((gmm_state3d(i,j,k,jsub) .EQ.     &
+     &                        ppm_gmm_param_far) .AND.          &
+     &                        (ABS(fdta(i,j,k,jsub)) .LT. width)) THEN
+                              gmm_state3d(i,j,k,jsub) =         &
+     &                            ppm_gmm_param_close
+#include "ppm_gmm_add_to_list.inc"
+                          ENDIF
+                      ENDIF
+                  ENDIF
+              ENDIF
+              i = ii
+              j = jj
+              k = kk - 1
+              IF (k.GT.0) THEN
+                  IF ((gmm_state3d(i,j,k,jsub) .NE.      &
+     &                ppm_gmm_param_accepted) .AND.      &
+     &                (ABS(fdta(i,j,k,jsub)).GT.absfdta0)) THEN
+                      !---------------------------------------------------------
+                      !  Update point i,j,k
+                      !---------------------------------------------------------
+#include "ppm_gmm_slvextn.inc"
+                      IF (valijk .LT. hsave) THEN
+                          dta(i,j,k,jsub) = valijk
+                          !-----------------------------------------------------
+                          !  Keep in or add to close set
+                          !-----------------------------------------------------
+                          IF ((gmm_state3d(i,j,k,jsub) .EQ.     &
+     &                        ppm_gmm_param_far) .AND.          &
+     &                        (ABS(fdta(i,j,k,jsub)) .LT. width)) THEN
+                              gmm_state3d(i,j,k,jsub) =         &
+     &                            ppm_gmm_param_close
+#include "ppm_gmm_add_to_list.inc"
+                          ENDIF
+                      ENDIF
+                  ENDIF
+              ENDIF
+              i = ii
+              j = jj
               k = kk + 1
               IF (k.LE.zhi) THEN
                   IF ((gmm_state3d(i,j,k,jsub) .NE.      &
@@ -368,7 +368,7 @@
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
                       IF (valijk .LT. hsave) THEN
-                          dta(i,j,k,jsub) = valijk 
+                          dta(i,j,k,jsub) = valijk
                           !-----------------------------------------------------
                           !  Keep in or add to close set
                           !-----------------------------------------------------
@@ -416,7 +416,7 @@
       !       CLOSE(40)
 
       !-------------------------------------------------------------------------
-      !  Update ghost layers for both dta AND gmm_state3d 
+      !  Update ghost layers for both dta AND gmm_state3d
       !-------------------------------------------------------------------------
       CALL ppm_map_field_ghost(dta,gmm_topoid,gmm_meshid,ghostsize, &
      &                         ppm_param_map_push,info)
@@ -481,7 +481,7 @@
               !  Compute non-accepted neighbors
               !-----------------------------------------------------------------
               i = ii - 1
-              j = jj 
+              j = jj
               IF (i.GT.0) THEN
                   IF ((gmm_state2d(i,j,jsub) .NE.      &
      &                ppm_gmm_param_accepted) .AND.      &
@@ -491,7 +491,7 @@
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
                       IF (valijk .LT. hsave) THEN
-                          dta(i,j,jsub) = valijk 
+                          dta(i,j,jsub) = valijk
                           !-----------------------------------------------------
                           !  Keep in or add to close set
                           !-----------------------------------------------------
@@ -506,7 +506,7 @@
                   ENDIF
               ENDIF
               i = ii + 1
-              j = jj 
+              j = jj
               IF (i.LE.xhi) THEN
                   IF ((gmm_state2d(i,j,jsub) .NE.      &
      &                ppm_gmm_param_accepted) .AND.      &
@@ -516,7 +516,7 @@
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
                       IF (valijk .LT. hsave) THEN
-                          dta(i,j,jsub) = valijk 
+                          dta(i,j,jsub) = valijk
                           !-----------------------------------------------------
                           !  Keep in or add to close set
                           !-----------------------------------------------------
@@ -530,7 +530,7 @@
                       ENDIF
                   ENDIF
               ENDIF
-              i = ii 
+              i = ii
               j = jj - 1
               IF (j.GT.0) THEN
                   IF ((gmm_state2d(i,j,jsub) .NE.      &
@@ -541,7 +541,7 @@
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
                       IF (valijk .LT. hsave) THEN
-                          dta(i,j,jsub) = valijk 
+                          dta(i,j,jsub) = valijk
                           !-----------------------------------------------------
                           !  Keep in or add to close set
                           !-----------------------------------------------------
@@ -555,7 +555,7 @@
                       ENDIF
                   ENDIF
               ENDIF
-              i = ii 
+              i = ii
               j = jj + 1
               IF (j.LE.yhi) THEN
                   IF ((gmm_state2d(i,j,jsub) .NE.      &
@@ -566,7 +566,7 @@
                       !---------------------------------------------------------
 #include "ppm_gmm_slvextn.inc"
                       IF (valijk .LT. hsave) THEN
-                          dta(i,j,jsub) = valijk 
+                          dta(i,j,jsub) = valijk
                           !-----------------------------------------------------
                           !  Keep in or add to close set
                           !-----------------------------------------------------
@@ -636,10 +636,10 @@
      &        'popping field data failed',__LINE__,info)
           GOTO 9999
       ENDIF
-#endif 
+#endif
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_gmm_extend_fwd',t0,info)
@@ -649,12 +649,12 @@
       END SUBROUTINE ppm_gmm_extend_fwd_2ds
 #elif  __KIND == __DOUBLE_PRECISION
       END SUBROUTINE ppm_gmm_extend_fwd_2dd
-#endif 
+#endif
 
 #elif  __DIM == __3D
 #if    __KIND == __SINGLE_PRECISION
       END SUBROUTINE ppm_gmm_extend_fwd_3ds
 #elif  __KIND == __DOUBLE_PRECISION
       END SUBROUTINE ppm_gmm_extend_fwd_3dd
-#endif 
+#endif
 #endif

@@ -1,13 +1,13 @@
       !------------------------------------------------------------------------!
       !     Subroutine   :                 ppm_interp_p2m
       !------------------------------------------------------------------------!
-      !     
+      !
       !     Purpose      : This routine does particle to mesh
       !                    interpolation. Vector cases for lda.LT.5 are
       !                    explicitly unrolled for the 3D version. All 3D
       !                    versions are explicitly unrolled over the
       !                    kernel, the 2D versions are not.
-      !      
+      !
       !     Input        : xp(:,:)            (F) particle positions
       !                    Np                 (I) number of particles.
       !                    lda                (I) leading dimension of up
@@ -22,11 +22,11 @@
       !
       !     Output       : info               (I) return status
       !                    field_up(:..:)     (F) field from which to interp
-      !      
-      !     Remarks      : 
-      !     
+      !
+      !     Remarks      :
+      !
       !     References   :
-      !     
+      !
       !     Revisions    :
       !------------------------------------------------------------------------!
       !     $Log: ppm_interp_p2m.f,v $
@@ -160,14 +160,14 @@
      &           ghostsize,field_up,info)
 #endif
 #endif
-#endif       
+#endif
 
       !------------------------------------------------------------------------!
       !  INCLUDES
       !------------------------------------------------------------------------!
 
       !------------------------------------------------------------------------!
-      !  Modules 
+      !  Modules
       !------------------------------------------------------------------------!
       USE ppm_module_error
       USE ppm_module_alloc
@@ -181,14 +181,14 @@
       USE ppm_module_check_topoid
       USE ppm_module_check_meshid
       IMPLICIT NONE
-            
+
 #if   __KIND == __SINGLE_PRECISION
       INTEGER, PARAMETER :: MK = ppm_kind_single
 #elif __KIND == __DOUBLE_PRECISION
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
      !-------------------------------------------------------------------------!
-     ! Arguments     
+     ! Arguments
      !-------------------------------------------------------------------------!
 #if   __MODE == __SCA
      REAL(MK) , DIMENSION(:)         , INTENT(IN)     :: up
@@ -204,8 +204,8 @@
      REAL(MK) , DIMENSION(:,:,:,:  ) , POINTER        :: field_up
 #elif __DIME == __3D
      REAL(MK) , DIMENSION(:,:,:,:,:) , POINTER        :: field_up
-#endif     
-#endif     
+#endif
+#endif
      REAL(MK), DIMENSION(:,:)       , INTENT(IN)    :: xp
      INTEGER , DIMENSION(:  )       , INTENT(IN)    :: ghostsize
      INTEGER                        , INTENT(IN   ) :: Np
@@ -213,7 +213,7 @@
      INTEGER                        , INTENT(IN   ) :: kernel
      INTEGER                        , INTENT(  OUT) :: info
      !-------------------------------------------------------------------------!
-     ! Local variables 
+     ! Local variables
      !-------------------------------------------------------------------------!
      INTEGER,  DIMENSION(:,:)     , POINTER :: istart, ndata
      INTEGER,  DIMENSION(:)       , POINTER :: ilist1,ilist2
@@ -316,9 +316,9 @@
      REAL(mk) :: a13a23a32
      REAL(mk) :: a13a23a33
 
-     
+
      !-------------------------------------------------------------------------!
-     !  Initialise 
+     !  Initialise
      !-------------------------------------------------------------------------!
 
      !-------------------------------------------------------------------------!
@@ -326,7 +326,7 @@
      !  ppm_module_data_rmsh module
      !-------------------------------------------------------------------------!
      ppm_rmsh_kernelsize = (/1,2,2,4/)
-     
+
      CALL substart('ppm_interp_p2m',t0,info)
 
      dim = ppm_dim
@@ -335,7 +335,7 @@
      !-------------------------------------------------------------------------!
      !  Check arguments
      !-------------------------------------------------------------------------!
-     IF (ppm_debug .GT. 0) THEN 
+     IF (ppm_debug .GT. 0) THEN
         IF (.NOT. ppm_initialized) THEN
             info = ppm_error_error
             CALL ppm_error(ppm_err_ppm_noinit,'ppm_interp_p2m',  &
@@ -372,7 +372,7 @@
            GOTO 9999
         END IF
         kernel_support = ppm_rmsh_kernelsize(kernel)*2
-        IF(.NOT.((kernel_support.EQ.2).OR.(kernel_support.EQ.4) & 
+        IF(.NOT.((kernel_support.EQ.2).OR.(kernel_support.EQ.4) &
      &               .OR.(kernel_support.EQ.6))) THEN
            info = ppm_error_error
            CALL ppm_error(ppm_err_argument,'ppm_interp_p2m',  &
@@ -381,7 +381,7 @@
         END IF
 
      END IF
-     
+
      !-------------------------------------------------------------------------!
      !  Check meshid and topoid validity
      !-------------------------------------------------------------------------!
@@ -413,24 +413,26 @@
      !  Get the internal meshid
      !-------------------------------------------------------------------------!
      meshid = ppm_meshid(topoid)%internal(mesh_id)
-     
+
      !-------------------------------------------------------------------------!
      !  Get istart
      !-------------------------------------------------------------------------!
      istart => ppm_cart_mesh(meshid,topoid)%istart
-     
+
      !-------------------------------------------------------------------------!
      !  Assignment of the useful arrays/scalar
      !-------------------------------------------------------------------------!
      Nm(1:dim) = ppm_cart_mesh(meshid,topoid)%Nm
      bcdef(1:(2*dim)) = ppm_bcdef(1:(2*dim),topoid)
      nsubs = ppm_nsublist(topoid)
-    
+
      !-------------------------------------------------------------------------!
      !  If there is nothing to do, do nearly nothing
      !-------------------------------------------------------------------------!
-     IF(Np.EQ.0) GOTO 9998
-     
+     IF (Np.EQ.0) GOTO 9998
+
+     NULLIFY(ilist1,ilist2)
+
      !-------------------------------------------------------------------------!
      !  Alloc memory for particle lists
      !  The awesome ppm_alloc will (re)allocate them, so we dont need an init
@@ -473,7 +475,7 @@
      min_phys => ppm_min_physd
      max_phys => ppm_max_physd
 #endif
-     
+
      DO i = 1,dim
         Nc(i)       = Nm(i) - 1
         len_phys(i) = max_phys(i,topoid) - min_phys(i,topoid)
@@ -487,7 +489,7 @@
      IF(dim.EQ.3) dxzi = 1.0_mk/dxz
 
 
-     
+
      !-------------------------------------------------------------------------!
      !  Initialize the particle list
      !-------------------------------------------------------------------------!
@@ -513,10 +515,10 @@
      !  to be empty, we look backwards to reduce the number of elements in
      !  nlist2 as fast as possible)
      !-------------------------------------------------------------------------!
-     DO idom = ppm_nsublist(topoid),1,-1   
+     DO idom = ppm_nsublist(topoid),1,-1
         idoml = ppm_isublist(idom,topoid)
         !----------------------------------------------------------------------!
-        !  Loop over the remaining particles 
+        !  Loop over the remaining particles
         !----------------------------------------------------------------------!
         nlist2 = 0
         npart = 0
@@ -599,7 +601,7 @@
         IF (nlist1.EQ.0) EXIT
      END DO
      !-------------------------------------------------------------------------!
-     !  Check that we sold all the particles 
+     !  Check that we sold all the particles
      !-------------------------------------------------------------------------!
      IF (nlist2.GT.0) THEN
         info = ppm_error_fatal
@@ -607,7 +609,7 @@
      &                    'MAJOR PROBLEM',__LINE__,info)
         GOTO 9999
      ENDIF
-     
+
      max_partnumber = 0
      DO idom=1,ppm_nsublist(topoid)
         IF(store_info(idom).GE.max_partnumber) THEN
@@ -617,7 +619,7 @@
      iopt   = ppm_param_alloc_fit
      ldu(1) = ppm_nsublist(topoid)
      ldu(2) = max_partnumber
-     
+
      CALL ppm_alloc(list_sub,ldu,iopt,info)
      IF(info.NE.0) THEN
         info = ppm_error_fatal
@@ -625,9 +627,9 @@
      &                     'problem in internal allocation',__LINE__,info)
         GOTO 9999
      END IF
-     
+
      list_sub=0
-     
+
      !-------------------------------------------------------------------------!
      !  Initialize the particle list
      !-------------------------------------------------------------------------!
@@ -636,7 +638,7 @@
         nlist1         = nlist1 + 1
         ilist1(nlist1) = ipart
      ENDDO
-     
+
      !-------------------------------------------------------------------------!
      !  Loop over the subdomains (since the first domains are most likely
      !  to be empty, we look backwards to reduce the number of elements in
@@ -645,7 +647,7 @@
      DO idom = ppm_nsublist(topoid),1,-1
         idoml = ppm_isublist(idom,topoid)
         !----------------------------------------------------------------------!
-        !  loop over the remaining particles 
+        !  loop over the remaining particles
         !----------------------------------------------------------------------!
         nlist2 = 0
         npart = 0
@@ -662,7 +664,7 @@
      &                   xp(1,ipart).LE.max_sub(1,idoml,topoid) .AND. &
      &                   xp(2,ipart).LE.max_sub(2,idoml,topoid) .AND. &
      &                   xp(3,ipart).LE.max_sub(3,idoml,topoid) ) ) THEN
-                 
+
                  IF(   (xp(1,ipart).LT.max_sub(1,idoml,topoid) .OR.  &
      &                       (ppm_subs_bc(2,idoml,topoid).EQ.1   .AND.    &
      &                       bcdef(2).NE. ppm_param_bcdef_periodic)).AND.&
@@ -672,8 +674,8 @@
      &                      (xp(3,ipart).LT.max_sub(3,idoml,topoid) .OR.  &
      &                       (ppm_subs_bc(6,idoml,topoid).EQ.1   .AND.    &
      &                       bcdef(6).NE. ppm_param_bcdef_periodic))   ) THEN
-                    
-                    
+
+
                     npart = npart + 1
                     list_sub(idom,npart) = ipart
                  ELSE
@@ -690,14 +692,14 @@
      &                   xp(2,ipart).GE.min_sub(2,idoml,topoid) .AND. &
      &                   xp(1,ipart).LE.max_sub(1,idoml,topoid) .AND. &
      &                   xp(2,ipart).LE.max_sub(2,idoml,topoid) ) ) THEN
-                                    
+
                  IF(   (xp(1,ipart).LT.max_sub(1,idom,topoid) .OR.  &
      &                       (ppm_subs_bc(2,idoml,topoid).EQ.1   .AND.    &
      &                       bcdef(2).NE. ppm_param_bcdef_periodic)).AND.&
      &                      (xp(2,ipart).LT.max_sub(2,idoml,topoid) .OR.  &
      &                       (ppm_subs_bc(4,idoml,topoid).EQ.1   .AND.    &
      &                       bcdef(4).NE. ppm_param_bcdef_periodic))) THEN
-                    
+
                     npart = npart + 1
                     list_sub(idom,npart) = ipart
                  ELSE
@@ -709,7 +711,7 @@
                  ilist2(nlist2) = ipart
               END IF
            END IF
-           
+
         END DO
         !----------------------------------------------------------------------!
         !  Copy the lists (well, only if nlist2 changed - decreased)
@@ -720,7 +722,7 @@
               ilist1(i) = ilist2(i)
            ENDDO
         ENDIF
-        
+
         !----------------------------------------------------------------------!
         !  Exit if the list is empty
         !----------------------------------------------------------------------!
@@ -728,7 +730,7 @@
      END DO
 
      !-------------------------------------------------------------------------!
-     !  Check that we sold all the particles 
+     !  Check that we sold all the particles
      !-------------------------------------------------------------------------!
      IF (nlist2.GT.0) THEN
         info = ppm_error_fatal
@@ -736,14 +738,14 @@
      &                    'MAJOR PROBLEM',__LINE__,info)
         GOTO 9999
      ENDIF
-     
+
      !-------------------------------------------------------------------------!
      !  Allocate and alias the weights if we need them.
      !-------------------------------------------------------------------------!
      max_partnumber = 0
      DO idom = 1,ppm_nsublist(topoid)
         IF(store_info(idom).GE.max_partnumber) THEN
-           max_partnumber = store_info(idom)  
+           max_partnumber = store_info(idom)
         END IF
      END DO
 
@@ -757,7 +759,7 @@
 
      DO isub = 1,ppm_nsublist(topoid)
         isubl = ppm_isublist(isub,topoid)
-        
+
         DO k=1-ghostsize(3),ndata(3,isubl)+ghostsize(3)
 
            DO j=1-ghostsize(2),ndata(2,isubl)+ghostsize(2)
@@ -767,7 +769,7 @@
                  DO ldn=1,lda
                     field_up(ldn,i,j,k,isub) = 0.0_mk
                  END DO
-#else      
+#else
                  field_up(i,j,k,isub) = 0.0_mk
 #endif
               END DO
@@ -775,16 +777,16 @@
         END DO
      END DO
      IF(np.EQ.0) GOTO 9997
-     
+
      SELECT CASE(kernel)
-        
+
      CASE(ppm_param_rmsh_kernel_mp4)
-        
+
         !----------------------------------------------------------------------!
         ! M Prime Four
         !----------------------------------------------------------------------!
         DO isub = 1,ppm_nsublist(topoid)
-           
+
 #if __MODE == __VEC
            !-------------------------------------------------------------------!
            !  Unrolled versions for 4-vectors
@@ -806,7 +808,7 @@
                  ip11 = ip10 + 1
                  ip21 = ip20 + 1
                  ip31 = ip30 + 1
-                 
+
                  ip12 = ip11 + 1
                  ip22 = ip21 + 1
                  ip32 = ip31 + 1
@@ -1891,7 +1893,7 @@
            ELSEIF (lda .EQ. 2) THEN
               isubl = ppm_isublist(isub,topoid)
               DO ip = 1,store_info(isub)
-                 
+
                  iq    = list_sub(isub,ip)
 
                  x01 = (xp(1,iq)-min_sub(1,isubl,topoid))*dxxi
@@ -2278,7 +2280,7 @@
            ELSEIF (lda .EQ. 1) THEN
               isubl = ppm_isublist(isub,topoid)
               DO ip = 1,store_info(isub)
-                 
+
                  iq    = list_sub(isub,ip)
 
                  x01 = (xp(1,iq)-min_sub(1,isubl,topoid))*dxxi
@@ -2538,7 +2540,7 @@
            ELSE
               isubl = ppm_isublist(isub,topoid)
               DO ip = 1,store_info(isub)
-                 
+
                  iq    = list_sub(isub,ip)
 
                  x01 = (xp(1,iq)-min_sub(1,isubl,topoid))*dxxi
@@ -2798,17 +2800,17 @@
 #elif __MODE == __SCA
            isubl = ppm_isublist(isub,topoid)
            DO ip = 1,store_info(isub)
-              
+
               iq    = list_sub(isub,ip)
 
               x01 = (xp(1,iq)-min_sub(1,isubl,topoid))*dxxi
               x02 = (xp(2,iq)-min_sub(2,isubl,topoid))*dxyi
               x03 = (xp(3,iq)-min_sub(3,isubl,topoid))*dxzi
-              
+
               ip10 = INT(x01)
               ip20 = INT(x02)
               ip30 = INT(x03)
-               
+
               ip11 = ip10 + 1
               ip21 = ip20 + 1
               ip31 = ip30 + 1
@@ -3050,14 +3052,14 @@
               field_up(ip13,ip23,ip33,isub)=field_up(ip13,ip23,ip33,isub)+&
      &                   a13a23a33*up(iq)
            ENDDO        ! iq
-#endif     
+#endif
         END DO              ! loop over subs
      CASE(ppm_param_rmsh_kernel_bsp2)
         !----------------------------------------------------------------------!
         !  B-spline 2 (Witch hat)
         !----------------------------------------------------------------------!
         DO isub = 1,ppm_nsublist(topoid)
-           
+
 #if __MODE == __VEC
            !-------------------------------------------------------------------!
            !  Unrolled versions for 4-vectors
@@ -3065,7 +3067,7 @@
            IF(lda.EQ.4) THEN
               isubl = ppm_isublist(isub,topoid)
               DO ip = 1,store_info(isub)
-                 
+
                  iq    = list_sub(isub,ip)
 
                  x01 = (xp(1,iq)-min_sub(1,isubl,topoid))*dxxi
@@ -3082,7 +3084,7 @@
 
                  xp1 = x01-REAL(ip10-1,mk)
                  xp2 = x02-REAL(ip20-1,mk)
-                 xp3 = x03-REAL(ip30-1,mk)                              
+                 xp3 = x03-REAL(ip30-1,mk)
 
                  x10 = xp1
                  x11 = x10 - 1.0_mk
@@ -3176,7 +3178,7 @@
            ELSEIF (lda .EQ. 3) THEN
               isubl = ppm_isublist(isub,topoid)
               DO ip = 1,store_info(isub)
-                 
+
                  iq    = list_sub(isub,ip)
 
                  x01 = (xp(1,iq)-min_sub(1,isubl,topoid))*dxxi
@@ -3193,7 +3195,7 @@
 
                  xp1 = x01-REAL(ip10-1,mk)
                  xp2 = x02-REAL(ip20-1,mk)
-                 xp3 = x03-REAL(ip30-1,mk)                              
+                 xp3 = x03-REAL(ip30-1,mk)
 
                  x10 = xp1
                  x11 = x10 - 1.0_mk
@@ -3212,7 +3214,7 @@
                  a21 = 1.0_mk + x21
                  a31 = 1.0_mk + x31
 
-                 
+
                  a10a20a30 = a10*a20*a30
                  a10a20a31 = a10*a20*a31
                  a10a21a30 = a10*a21*a30
@@ -3221,7 +3223,7 @@
                  a11a20a31 = a11*a20*a31
                  a11a21a30 = a11*a21*a30
                  a11a21a31 = a11*a21*a31
-                                
+
                  field_up(1,ip10,ip20,ip30,isub)=field_up(1,ip10,ip20,ip30,isub)+&
      &                      a10a20a30*up(1,iq)
                  field_up(2,ip10,ip20,ip30,isub)=field_up(2,ip10,ip20,ip30,isub)+&
@@ -3277,13 +3279,13 @@
            ELSEIF (lda .EQ. 2) THEN
               isubl = ppm_isublist(isub,topoid)
               DO ip = 1,store_info(isub)
-                 
+
                  iq    = list_sub(isub,ip)
-                 
+
                  x01 = (xp(1,iq)-min_sub(1,isubl,topoid))*dxxi
                  x02 = (xp(2,iq)-min_sub(2,isubl,topoid))*dxyi
                  x03 = (xp(3,iq)-min_sub(3,isubl,topoid))*dxzi
-                 
+
                  ip10 = INT(x01) + 1
                  ip20 = INT(x02) + 1
                  ip30 = INT(x03) + 1
@@ -3294,7 +3296,7 @@
 
                  xp1 = x01-REAL(ip10-1,mk)
                  xp2 = x02-REAL(ip20-1,mk)
-                 xp3 = x03-REAL(ip30-1,mk)                              
+                 xp3 = x03-REAL(ip30-1,mk)
 
                  x10 = xp1
                  x11 = x10 - 1.0_mk
@@ -3312,7 +3314,7 @@
                  a11 = 1.0_mk + x11
                  a21 = 1.0_mk + x21
                  a31 = 1.0_mk + x31
-                 
+
                  a10a20a30 = a10*a20*a30
                  a10a20a31 = a10*a20*a31
                  a10a21a30 = a10*a21*a30
@@ -3321,7 +3323,7 @@
                  a11a20a31 = a11*a20*a31
                  a11a21a30 = a11*a21*a30
                  a11a21a31 = a11*a21*a31
-                 
+
                  field_up(1,ip10,ip20,ip30,isub)=field_up(1,ip10,ip20,ip30,isub)+&
      &                      a10a20a30*up(1,iq)
                  field_up(2,ip10,ip20,ip30,isub)=field_up(2,ip10,ip20,ip30,isub)+&
@@ -3361,42 +3363,42 @@
            ELSEIF (lda .EQ. 1) THEN
               isubl = ppm_isublist(isub,topoid)
               DO ip = 1,store_info(isub)
-                 
+
                  iq    = list_sub(isub,ip)
-                 
+
                  x01 = (xp(1,iq)-min_sub(1,isubl,topoid))*dxxi
                  x02 = (xp(2,iq)-min_sub(2,isubl,topoid))*dxyi
                  x03 = (xp(3,iq)-min_sub(3,isubl,topoid))*dxzi
-                 
+
                  ip10 = INT(x01) + 1
                  ip20 = INT(x02) + 1
                  ip30 = INT(x03) + 1
-                 
+
                  ip11 = ip10 + 1
                  ip21 = ip20 + 1
                  ip31 = ip30 + 1
-                 
+
                  xp1 = x01-REAL(ip10-1,mk)
                  xp2 = x02-REAL(ip20-1,mk)
-                 xp3 = x03-REAL(ip30-1,mk)                              
-                 
+                 xp3 = x03-REAL(ip30-1,mk)
+
                  x10 = xp1
                  x11 = x10 - 1.0_mk
-                 
+
                  x20 = xp2
                  x21 = x20 - 1.0_mk
-                 
+
                  x30 = xp3
                  x31 = x30 - 1.0_mk
-                 
+
                  a10 = 1.0_mk - x10
                  a20 = 1.0_mk - x20
                  a30 = 1.0_mk - x30
-                 
+
                  a11 = 1.0_mk + x11
                  a21 = 1.0_mk + x21
                  a31 = 1.0_mk + x31
-                 
+
                  a10a20a30 = a10*a20*a30
                  a10a20a31 = a10*a20*a31
                  a10a21a30 = a10*a21*a30
@@ -3405,7 +3407,7 @@
                  a11a20a31 = a11*a20*a31
                  a11a21a30 = a11*a21*a30
                  a11a21a31 = a11*a21*a31
-                 
+
                  field_up(1,ip10,ip20,ip30,isub)=field_up(1,ip10,ip20,ip30,isub)+&
      &                      a10a20a30*up(1,iq)
                  field_up(1,ip11,ip20,ip30,isub)=field_up(1,ip11,ip20,ip30,isub)+&
@@ -3430,9 +3432,9 @@
            ELSE
               isubl = ppm_isublist(isub,topoid)
               DO ip = 1,store_info(isub)
-                 
+
                  iq    = list_sub(isub,ip)
-                 
+
                  x01 = (xp(1,iq)-min_sub(1,isubl,topoid))*dxxi
                  x02 = (xp(2,iq)-min_sub(2,isubl,topoid))*dxyi
                  x03 = (xp(3,iq)-min_sub(3,isubl,topoid))*dxzi
@@ -3447,7 +3449,7 @@
 
                  xp1 = x01-REAL(ip10-1,mk)
                  xp2 = x02-REAL(ip20-1,mk)
-                 xp3 = x03-REAL(ip30-1,mk)                              
+                 xp3 = x03-REAL(ip30-1,mk)
 
                  x10 = xp1
                  x11 = x10 - 1.0_mk
@@ -3475,7 +3477,7 @@
                  a11a21a30 = a11*a21*a30
                  a11a21a31 = a11*a21*a31
                  DO ldn=1,lda
-                    
+
                     field_up(ldn,ip10,ip20,ip30,isub)=field_up(ldn,ip10,ip20,ip30,isub)+&
      &                         a10a20a30*up(ldn,iq)
                     field_up(ldn,ip11,ip20,ip30,isub)=field_up(ldn,ip11,ip20,ip30,isub)+&
@@ -3498,9 +3500,9 @@
 #elif __MODE == __SCA
            isubl = ppm_isublist(isub,topoid)
            DO ip = 1,store_info(isub)
-              
+
               iq    = list_sub(isub,ip)
-              
+
               x01 = (xp(1,iq)-min_sub(1,isubl,topoid))*dxxi
               x02 = (xp(2,iq)-min_sub(2,isubl,topoid))*dxyi
               x03 = (xp(3,iq)-min_sub(3,isubl,topoid))*dxzi
@@ -3515,7 +3517,7 @@
 
               xp1 = x01-REAL(ip10-1,mk)
               xp2 = x02-REAL(ip20-1,mk)
-              xp3 = x03-REAL(ip30-1,mk)                         
+              xp3 = x03-REAL(ip30-1,mk)
 
               x10 = xp1
               x11 = x10 - 1.0_mk
@@ -3533,7 +3535,7 @@
               a11 = 1.0_mk + x11
               a21 = 1.0_mk + x21
               a31 = 1.0_mk + x31
-              
+
               a10a20a30 = a10*a20*a30
               a10a20a31 = a10*a20*a31
               a10a21a30 = a10*a21*a30
@@ -3543,7 +3545,7 @@
               a11a21a30 = a11*a21*a30
               a11a21a31 = a11*a21*a31
 
-              
+
               field_up(ip10,ip20,ip30,isub)=field_up(ip10,ip20,ip30,isub)+&
      &                   a10a20a30*up(iq)
               field_up(ip11,ip20,ip30,isub)=field_up(ip11,ip20,ip30,isub)+&
@@ -3571,22 +3573,22 @@
      END SELECT         ! kernel type
 #else
      !-------------------------------------------------------------------------!
-     !  --- 2D --- 
+     !  --- 2D ---
      !-------------------------------------------------------------------------!
      !  loop over subs
      ndata => ppm_cart_mesh(meshid,topoid)%nnodes
-     
+
      DO isub = 1,ppm_nsublist(topoid)
         isubl = ppm_isublist(isub,topoid)
-        
+
         DO j=1-ghostsize(2),ndata(2,isubl)+ghostsize(2)
-           
+
            DO i=1-ghostsize(1),ndata(1,isubl)+ghostsize(1)
 #if __MODE == __VEC
               DO ldn=1,lda
                  field_up(ldn,i,j,isub) = 0.0_mk
               END DO
-#else      
+#else
               field_up(i,j,isub) = 0.0_mk
 #endif
            END DO
@@ -3595,41 +3597,41 @@
      IF(np.EQ.0) GOTO 9997
      SELECT CASE(kernel)
      CASE(ppm_param_rmsh_kernel_mp4)
-        
+
         !----------------------------------------------------------------------!
         ! M Prime Four
         !----------------------------------------------------------------------!
         DO isub = 1,ppm_nsublist(topoid)
-           
+
            DO ip = 1,store_info(isub)
-              
+
               isubl = ppm_isublist(isub,topoid)
               iq    = list_sub(isub,ip)
-              
+
               x01 = (xp(1,iq)-min_sub(1,isubl,topoid))*dxxi
               x02 = (xp(2,iq)-min_sub(2,isubl,topoid))*dxyi
-              
+
               ip1 = INT(x01)+1
               ip2 = INT(x02)+1
-              
+
               xp1 = x01-AINT(x01)
               xp2 = x02-AINT(x02)
-              
+
               DO jj = -1,2
-                 
+
                  x2 = ABS(xp2 - REAL(jj,mk))
-                 
+
                  IF(x2.LT.1.0_mk) THEN
                     wx2 = 1.0_mk - x2**2*(2.5_mk-1.5_mk*x2)
                  ELSE
                     wx2 = 2.0_mk + (-4.0_mk + &
      &                         (2.5_mk - 0.5_mk * x2)*x2)*x2
                  END IF
-                 
+
                  DO ii    = - 1,2
-                    
+
                     x1 = ABS(xp1 - REAL(ii,mk))
-                    
+
                     IF(x1.LT.1.0_MK) THEN
                        wx1 =  1.0_mk - x1**2*(2.5_mk - &
      &                             1.5_mk*x1)
@@ -3637,7 +3639,7 @@
                        wx1 =  2.0_mk + (-4.0_mk + &
      &                             (2.5_mk - 0.5_mk*x1)*x1)*x1
                     END IF
-#if __MODE == __SCA                    
+#if __MODE == __SCA
                     field_up(ii+ip1,jj+ip2,isub) &
      &                         = field_up(ii+ip1,jj+ip2,isub) &
      &                                          + wx1*wx2*up(iq)
@@ -3647,7 +3649,7 @@
      &                            = field_up(ldn,ii+ip1,jj+ip2,isub) &
      &                                             + wx1*wx2*up(ldn,iq)
                     ENDDO
-#endif                    
+#endif
                  END DO
               END DO
            END DO
@@ -3666,52 +3668,52 @@
      !  the subdomains.
      !-------------------------------------------------------------------------!
      maptype = ppm_param_map_init
-#if   __MODE == __SCA     
+#if   __MODE == __SCA
      CALL ppm_map_field_ghost(field_up,topo_id,mesh_id,ghostsize,maptype, &
      &           info)
-#elif __MODE == __VEC     
+#elif __MODE == __VEC
      CALL ppm_map_field_ghost(field_up,lda,topo_id,mesh_id,ghostsize,maptype, &
      &           info)
-#endif     
+#endif
      IF (info .NE. 0) GOTO 9999
      maptype = ppm_param_map_ghost_put
-#if   __MODE == __SCA     
+#if   __MODE == __SCA
      CALL ppm_map_field_ghost(field_up,topo_id,mesh_id,ghostsize,maptype, &
      &           info)
-#elif __MODE == __VEC     
+#elif __MODE == __VEC
      CALL ppm_map_field_ghost(field_up,lda,topo_id,mesh_id,ghostsize,maptype, &
      &           info)
-#endif     
+#endif
 
      IF (info .NE. 0) GOTO 9999
      maptype = ppm_param_map_push
-#if   __MODE == __SCA     
+#if   __MODE == __SCA
      CALL ppm_map_field_ghost(field_up,topo_id,mesh_id,ghostsize,maptype, &
      &           info)
-#elif __MODE == __VEC     
+#elif __MODE == __VEC
      CALL ppm_map_field_ghost(field_up,lda,topo_id,mesh_id,ghostsize,maptype, &
      &           info)
-#endif     
+#endif
 
      IF (info .NE. 0) GOTO 9999
      maptype = ppm_param_map_send
-#if   __MODE == __SCA     
+#if   __MODE == __SCA
      CALL ppm_map_field_ghost(field_up,topo_id,mesh_id,ghostsize,maptype, &
      &           info)
-#elif __MODE == __VEC     
+#elif __MODE == __VEC
      CALL ppm_map_field_ghost(field_up,lda,topo_id,mesh_id,ghostsize,maptype, &
      &           info)
-#endif     
+#endif
 
      IF (info .NE. 0) GOTO 9999
      maptype = ppm_param_map_pop
-#if   __MODE == __SCA     
+#if   __MODE == __SCA
      CALL ppm_map_field_ghost(field_up,topo_id,mesh_id,ghostsize,maptype, &
      &           info)
-#elif __MODE == __VEC     
+#elif __MODE == __VEC
      CALL ppm_map_field_ghost(field_up,lda,topo_id,mesh_id,ghostsize,maptype, &
      &           info)
-#endif     
+#endif
 
      IF (info .NE. 0) GOTO 9999
      IF(np.EQ.0) GOTO 9999
@@ -3754,12 +3756,12 @@
      END IF
 
      !-------------------------------------------------------------------------!
-     !  Return 
+     !  Return
      !-------------------------------------------------------------------------!
 9999 CONTINUE
      CALL substop('ppm_interp_p2m',t0,info)
      RETURN
-     
+
 #if   __DIME == __2D
 #if   __MODE == __SCA
 #if   __KIND == __SINGLE_PRECISION
@@ -3788,5 +3790,5 @@
      END SUBROUTINE ppm_interp_p2m_dv_3d
 #endif
 #endif
-#endif       
+#endif
 

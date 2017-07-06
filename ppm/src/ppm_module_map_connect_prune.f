@@ -3,7 +3,7 @@
       !-------------------------------------------------------------------------
       !
       !  Purpose      : This module includes the source code for the mapping
-      !                 routines. 
+      !                 routines.
       !
       !  Remarks      :
       !
@@ -28,14 +28,15 @@
       !  ETH Zentrum, Hirschengraben 84
       !  CH-8092 Zurich, Switzerland
       !-------------------------------------------------------------------------
-     
+
       MODULE ppm_module_map_connect_prune
 
          !----------------------------------------------------------------------
          !  Work lists
          !----------------------------------------------------------------------
-         INTEGER, DIMENSION(:)  , POINTER :: id_temp,id_inv
-         INTEGER, DIMENSION(:,:), POINTER :: cd_local
+         INTEGER, DIMENSION(:)  , POINTER :: id_temp  => NULL()
+         INTEGER, DIMENSION(:)  , POINTER :: id_inv   => NULL()
+         INTEGER, DIMENSION(:,:), POINTER :: cd_local => NULL()
 
          PRIVATE :: id_temp,id_inv,cd_local
 
@@ -47,7 +48,7 @@
          END INTERFACE
 
          !----------------------------------------------------------------------
-         !  include the source 
+         !  include the source
          !----------------------------------------------------------------------
          CONTAINS
 

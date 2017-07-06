@@ -54,7 +54,7 @@
       !                                     method of Chopp. Points far
       !                                     from the interface will have
       !                                     the value HUGE.
-      !                 npts            (I) ON input: if .LT. 0 the level 
+      !                 npts            (I) ON input: if .LT. 0 the level
       !                                     is not recomputed and
       !                                     remains untouched. Only the
       !                                     closest points are returned.
@@ -66,7 +66,7 @@
       !  Output       : info            (I) return status. 0 on success.
       !                 ipts(:,:)       (I) indices of mesh points
       !                                     adjacent to the interface.
-      !                                     1st index: i,j,(k),jsub (local 
+      !                                     1st index: i,j,(k),jsub (local
       !                                     sub ID); 2nd:
       !                                     1..npts. OPTIONAL has to be
       !                                     present if closest is
@@ -101,7 +101,7 @@
       !                 assignment at the end of the routine to a
       !                 physical copy operation.
       !
-      !  References   : D.L. Chopp. Some improvements on the fast marching 
+      !  References   : D.L. Chopp. Some improvements on the fast marching
       !                 method. SIAM J. Sci. Comput. 23(1):230-244, 2001.
       !
       !  Revisions    :
@@ -176,7 +176,7 @@
 #elif  __KIND == __DOUBLE_PRECISION
       SUBROUTINE ppm_gmm_kickoff_2dd(fdata,tol,thresh,info,       &
      &    npts,ipts,closest,chi)
-#endif 
+#endif
 
 #elif  __DIM == __3D
 #if    __KIND == __SINGLE_PRECISION
@@ -185,7 +185,7 @@
 #elif  __KIND == __DOUBLE_PRECISION
       SUBROUTINE ppm_gmm_kickoff_3dd(fdata,tol,thresh,info,        &
      &    npts,ipts,closest,chi)
-#endif 
+#endif
 #endif
       !-------------------------------------------------------------------------
       !  Includes
@@ -193,7 +193,7 @@
 #include "ppm_define.h"
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_mesh
@@ -210,7 +210,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
 #if   __DIM == __2D
       REAL(MK), DIMENSION(:,:,:)       , POINTER              :: fdata
@@ -225,7 +225,7 @@
       INTEGER                          , INTENT(INOUT), OPTIONAL :: npts
       INTEGER                          , INTENT(  OUT)        :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER                     :: i,j,k,xhi,yhi,zhi,ip1,jp1,kp1,npos
       INTEGER                     :: isub,jsub,sneg,nit,ind,f,iopt,ii
@@ -284,9 +284,9 @@
       !-------------------------------------------------------------------------
 #include "ppm_gmm_2dpermut_data.inc"
 #endif
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_gmm_kickoff',t0,info)
       ntotal = 0
@@ -397,7 +397,7 @@
       phi => gmm_phis
 #elif  __KIND == __DOUBLE_PRECISION
       phi => gmm_phid
-#endif 
+#endif
 
       !-------------------------------------------------------------------------
       !  Set constants
@@ -463,7 +463,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Loop over all mesh blocks 
+      !  Loop over all mesh blocks
       !-------------------------------------------------------------------------
       DO jsub=1,ppm_nsublist(gmm_topoid)
           npos= 0
@@ -735,7 +735,7 @@
 
                           !-----------------------------------------------------
                           !  Solve for polynomial coefficients. coef will
-                          !  contain the result. 
+                          !  contain the result.
                           !-----------------------------------------------------
 #include "ppm_gmm_lubksb.inc"
 ! CHECK SOLUTION
@@ -846,7 +846,7 @@
                                   ENDIF
                               ENDIF
                           ENDIF
-                  
+
                           !-----------------------------------------------------
                           !  Newton iteration for each point bounding
                           !  the mesh cell to find the new level
@@ -1103,7 +1103,7 @@
                           !-----------------------------------------------------
                       ENDIF          ! cell near interface
                   ENDDO       ! mesh cell i
-              ENDDO       ! mesh cell j 
+              ENDDO       ! mesh cell j
           ENDDO       ! mesh cell k
 #elif __DIM == __2D
           !---------------------------------------------------------------------
@@ -1201,7 +1201,7 @@
 
                       !---------------------------------------------------------
                       !  Solve for polynomial coefficients. coef will
-                      !  contain the result. 
+                      !  contain the result.
                       !---------------------------------------------------------
 #include "ppm_gmm_lubksb.inc"
 ! CHECK SOLUTION
@@ -1251,7 +1251,7 @@
 !                     WRITE(30,'(2E20.8)') coef(13:14)
 !                     WRITE(30,'(2E20.8)') coef(15:16)
 !                     CLOSE(30)
-             
+
                       !---------------------------------------------------------
                       !  Check that sparse structure has at least 4
                       !  spaces to hold the new data
@@ -1296,7 +1296,7 @@
                               ENDIF
                           ENDIF
                       ENDIF
-                  
+
                       !---------------------------------------------------------
                       !  Newton iteration for each point bounding
                       !  the mesh cell to find the new level
@@ -1467,7 +1467,7 @@
               ENDDO
 #endif
           ENDIF
-          
+
           !---------------------------------------------------------------------
           !  Pass stuff back out if requested
           !---------------------------------------------------------------------
@@ -1524,11 +1524,11 @@
       gmm_phis => phi
 #elif  __KIND == __DOUBLE_PRECISION
       gmm_phid => phi
-#endif 
+#endif
       NULLIFY(phi)
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_gmm_kickoff',t0,info)
@@ -1538,12 +1538,12 @@
       END SUBROUTINE ppm_gmm_kickoff_2ds
 #elif  __KIND == __DOUBLE_PRECISION
       END SUBROUTINE ppm_gmm_kickoff_2dd
-#endif 
+#endif
 
 #elif  __DIM == __3D
 #if    __KIND == __SINGLE_PRECISION
       END SUBROUTINE ppm_gmm_kickoff_3ds
 #elif  __KIND == __DOUBLE_PRECISION
       END SUBROUTINE ppm_gmm_kickoff_3dd
-#endif 
+#endif
 #endif

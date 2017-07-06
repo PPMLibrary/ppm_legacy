@@ -3,11 +3,11 @@
       !-------------------------------------------------------------------------
       !
       ! Purpose       : multigrid allocation  module
-      !               
+      !
       !
       ! Remarks       :
       !
-      ! References    : 
+      ! References    :
       !
       ! Revisions     :
       !-------------------------------------------------------------------------
@@ -34,7 +34,7 @@
 #define __SFIELD           9
 #define __VFIELD          10
 
-MODULE ppm_module_mg_alloc   
+MODULE ppm_module_mg_alloc
   !--------------------------------------------------------------------------
   !Modules
   !-----------------------------------------------------------------------------
@@ -69,25 +69,25 @@ CONTAINS
 #define __DIM __SFIELD
 #define __MESH_DIM __2D
 #define __KIND __SINGLE_PRECISION
-#include "ppm_mg_alloc_field.f"
-#include "ppm_mg_alloc_bc.f"
+#include "vectorized_mg/ppm_mg_alloc_field.f"
+#include "vectorized_mg/ppm_mg_alloc_bc.f"
 #undef __KIND
 
 #define __KIND __DOUBLE_PRECISION
-#include "ppm_mg_alloc_field.f"
-#include "ppm_mg_alloc_bc.f"
+#include "vectorized_mg/ppm_mg_alloc_field.f"
+#include "vectorized_mg/ppm_mg_alloc_bc.f"
 #undef __KIND
 #undef __MESH_DIM
 
 #define __MESH_DIM __3D
 #define __KIND __SINGLE_PRECISION
-#include "ppm_mg_alloc_field.f"
-#include "ppm_mg_alloc_bc.f"
+#include "vectorized_mg/ppm_mg_alloc_field.f"
+#include "vectorized_mg/ppm_mg_alloc_bc.f"
 #undef __KIND
 
 #define __KIND __DOUBLE_PRECISION
-#include "ppm_mg_alloc_field.f"
-#include "ppm_mg_alloc_bc.f"
+#include "vectorized_mg/ppm_mg_alloc_field.f"
+#include "vectorized_mg/ppm_mg_alloc_bc.f"
 #undef __KIND
 #undef __MESH_DIM
 #undef __DIM
@@ -95,25 +95,25 @@ CONTAINS
 #define __DIM __VFIELD
 #define __MESH_DIM __2D
 #define __KIND __SINGLE_PRECISION
-#include "ppm_mg_alloc_field.f"
-#include "ppm_mg_alloc_bc.f"
+#include "vectorized_mg/ppm_mg_alloc_field.f"
+#include "vectorized_mg/ppm_mg_alloc_bc.f"
 #undef __KIND
 
 #define __KIND __DOUBLE_PRECISION
-#include "ppm_mg_alloc_field.f"
-#include "ppm_mg_alloc_bc.f"
+#include "vectorized_mg/ppm_mg_alloc_field.f"
+#include "vectorized_mg/ppm_mg_alloc_bc.f"
 #undef __KIND
 #undef __MESH_DIM
 
 #define __MESH_DIM __3D
 #define __KIND __SINGLE_PRECISION
-#include "ppm_mg_alloc_field.f"
-#include "ppm_mg_alloc_bc.f"
+#include "vectorized_mg/ppm_mg_alloc_field.f"
+#include "vectorized_mg/ppm_mg_alloc_bc.f"
 #undef __KIND
 
 #define __KIND __DOUBLE_PRECISION
-#include "ppm_mg_alloc_field.f"
-#include "ppm_mg_alloc_bc.f"
+#include "vectorized_mg/ppm_mg_alloc_field.f"
+#include "vectorized_mg/ppm_mg_alloc_bc.f"
 #undef __KIND
 #undef __MESH_DIM
 #undef __DIM

@@ -2,27 +2,27 @@
       !  Subroutine   :                 ppm_decomp_boxsplit
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : This routine splits a (parent) box in its 4 or 8 
-      !                 children for two and three-dimensional problems. 
-      !                 The particles contained within the parent box is sorted 
+      !  Purpose      : This routine splits a (parent) box in its 4 or 8
+      !                 children for two and three-dimensional problems.
+      !                 The particles contained within the parent box is sorted
       !                 into the respective child boxes.
       !
       !  Input        : kbox         (I) : the id of the parent box
       !
       !  Input/output : xp(:,:)      (F) : the particle coordinates
-      !                 min_box(:,:) (F) : the smallest extremum of the 
+      !                 min_box(:,:) (F) : the smallest extremum of the
       !                                    sub-domains
-      !                 max_box(:,:) (F) : largest extremum of the 
+      !                 max_box(:,:) (F) : largest extremum of the
       !                                    sub-domains
-      !                 ppb(:)       (I) : ppb(ibox) returns the first index of 
+      !                 ppb(:)       (I) : ppb(ibox) returns the first index of
       !                                    the particle in the box of index ibox
-      !                 npbx(:)      (I) : npbx(ibox) returns the number of 
+      !                 npbx(:)      (I) : npbx(ibox) returns the number of
       !                                    particles in the box of index ibox
       !                 nbox         (I) : current number of boxes
-      !                
+      !
       !  Output       : info         (I) : return status (zero on success)
-      !                
-      !  Remarks      : 
+      !
+      !  Remarks      :
       !
       !  References   :
       !
@@ -57,7 +57,7 @@
       !  Bug fix: call to ppm_util_sort is now correct.
       !
       !  Revision 1.3  2004/01/06 12:42:39  ivos
-      !  Changed npbx_temp from DIMENSION(8) to POINTER since this is now 
+      !  Changed npbx_temp from DIMENSION(8) to POINTER since this is now
       !  allocated within the sort subroutines.
       !
       !  Revision 1.2  2003/12/09 12:27:27  walther
@@ -81,7 +81,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -103,7 +103,7 @@
       INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       INTEGER                 , INTENT(IN   ) :: kbox
       REAL(MK), DIMENSION(:,:), INTENT(INOUT) :: xp
@@ -113,7 +113,7 @@
       INTEGER                 , INTENT(INOUT) :: nbox
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK)                        :: t0
       REAL(MK), DIMENSION(ppm_dim)    :: cen_box
@@ -122,11 +122,11 @@
       INTEGER                         :: idx,jdx,k,iopt
       INTEGER , DIMENSION(1)          :: lda ! dummy for ppm_alloc
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_decomp_boxsplit',t0,info)
 
@@ -142,6 +142,8 @@
          ENDIF
       ENDIF
 
+      NULLIFY(npbx_temp)
+
       !-------------------------------------------------------------------------
       !  Compute the centre of the current kbox
       !-------------------------------------------------------------------------
@@ -156,7 +158,7 @@
       idx = ppb(kbox)
 
       !-------------------------------------------------------------------------
-      !  Sort the particle in two dimensions 
+      !  Sort the particle in two dimensions
       !-------------------------------------------------------------------------
 !      IF (ppm_dim.EQ.2) THEN
          !----------------------------------------------------------------------
@@ -228,7 +230,7 @@
          ppb(nbox+1)  = ppb(kbox)
          npbx(nbox+1) = npbx_temp(1)
          DO k=2,8
-            ppb(k+nbox)  = ppb(k-1+nbox) + npbx_temp(k-1) 
+            ppb(k+nbox)  = ppb(k-1+nbox) + npbx_temp(k-1)
             npbx(nbox+k) = npbx_temp(k)
          ENDDO
 
@@ -295,7 +297,7 @@
          !  Update the box count
          !----------------------------------------------------------------------
          nbox = nbox + 8
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Deallocate local arrays
@@ -303,9 +305,9 @@
       iopt   = ppm_param_dealloc
       lda(1) = 0 ! dummy
       CALL ppm_alloc(npbx_temp,lda,iopt,info)
- 
+
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_decomp_boxsplit',t0,info)

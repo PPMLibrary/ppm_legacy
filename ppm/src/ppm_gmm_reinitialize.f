@@ -18,9 +18,9 @@
       !                                     the interface.
       !                 order           (I) Desired order of the method.
       !                                     One of:
-      !                                           ppm_param_order_1 
+      !                                           ppm_param_order_1
       !                                           ppm_param_order_2
-      !                                           ppm_param_order_3 
+      !                                           ppm_param_order_3
       !                 thresh          (F) OPTIONAL. Threshold for
       !                                     interface detection. If this is
       !                                     not specified, it is set to
@@ -36,7 +36,7 @@
       !                                     maximum number of allowed
       !                                     iterations. This can be useful
       !                                     since a cyclic dependency in the
-      !                                     GMM algorithms could cause 
+      !                                     GMM algorithms could cause
       !                                     infinite loops. In each iteration
       !                                     at least one point is computed.
       !
@@ -60,7 +60,7 @@
       !
       !  Output       : info            (I) return status. 0 on success.
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   : S. Kim. An O(N) level set method for Eikonal equations.
       !                 SIAM J. Sci. Comput. 22(6):2178-2193, 2001.
@@ -116,7 +116,7 @@
 #elif  __KIND == __DOUBLE_PRECISION
       SUBROUTINE ppm_gmm_reinitialize_2dd(fdata,tol,width,   &
      &    order,info,thresh,chi,MaxIter)
-#endif 
+#endif
 
 #elif  __DIM == __3D
 #if    __KIND == __SINGLE_PRECISION
@@ -125,7 +125,7 @@
 #elif  __KIND == __DOUBLE_PRECISION
       SUBROUTINE ppm_gmm_reinitialize_3dd(fdata,tol,width,   &
      &    order,info,thresh,chi,MaxIter)
-#endif 
+#endif
 #endif
       !-------------------------------------------------------------------------
       !  Includes
@@ -133,7 +133,7 @@
 #include "ppm_define.h"
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_mesh
@@ -152,7 +152,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
 #if   __DIM == __2D
       REAL(MK), DIMENSION(:,:,:  )   , POINTER             :: fdata
@@ -167,14 +167,14 @@
       REAL(MK) , OPTIONAL            , INTENT(IN   )       :: thresh
       INTEGER  , OPTIONAL            , INTENT(IN   )       :: MaxIter
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER                     :: xhi,i,isub,Nminit,MaxIt
       REAL(MK)                    :: t0,th
       LOGICAL                     :: lok
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_gmm_reinitialize',t0,info)
 
@@ -293,7 +293,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_gmm_reinitialize',t0,info)
@@ -303,12 +303,12 @@
       END SUBROUTINE ppm_gmm_reinitialize_2ds
 #elif  __KIND == __DOUBLE_PRECISION
       END SUBROUTINE ppm_gmm_reinitialize_2dd
-#endif 
+#endif
 
 #elif  __DIM == __3D
 #if    __KIND == __SINGLE_PRECISION
       END SUBROUTINE ppm_gmm_reinitialize_3ds
 #elif  __KIND == __DOUBLE_PRECISION
       END SUBROUTINE ppm_gmm_reinitialize_3dd
-#endif 
+#endif
 #endif

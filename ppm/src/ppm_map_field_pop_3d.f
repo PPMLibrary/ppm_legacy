@@ -182,7 +182,7 @@
       SUBROUTINE ppm_map_field_pop_3d_sca_d(fdata,lda,tomesh,ghostsize,rtype, &
      &    info,mask)
 #elif  __KIND == __SINGLE_PRECISION_COMPLEX
-      SUBROUTINE ppm_map_field_pop_3d_sca_sc(fdata,lda,tomesh,ghostsize,rtype,& 
+      SUBROUTINE ppm_map_field_pop_3d_sca_sc(fdata,lda,tomesh,ghostsize,rtype,&
      &    info,mask)
 #elif  __KIND == __DOUBLE_PRECISION_COMPLEX
       SUBROUTINE ppm_map_field_pop_3d_sca_dc(fdata,lda,tomesh,ghostsize,rtype,&
@@ -193,7 +193,7 @@
 #elif  __KIND == __LOGICAL
       SUBROUTINE ppm_map_field_pop_3d_sca_l(fdata,lda,tomesh,ghostsize,rtype, &
      &    info,mask)
-#endif 
+#endif
 
 #elif  __DIM == __VFIELD
 #if    __KIND == __SINGLE_PRECISION
@@ -214,7 +214,7 @@
 #elif  __KIND == __LOGICAL
       SUBROUTINE ppm_map_field_pop_3d_vec_l(fdata,lda,tomesh,ghostsize,rtype, &
      &    info,mask)
-#endif 
+#endif
 #endif
       !-------------------------------------------------------------------------
       !  Includes
@@ -222,7 +222,7 @@
 #include "ppm_define.h"
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_mesh
@@ -240,7 +240,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
 #if   __DIM == __SFIELD
 #if   __KIND == __INTEGER
@@ -269,7 +269,7 @@
       INTEGER, DIMENSION(:)            , INTENT(IN   ) :: ghostsize
       INTEGER                          , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER, DIMENSION(3)   :: mofs
       INTEGER, DIMENSION(5)   :: ldu,ldl
@@ -280,11 +280,11 @@
       LOGICAL                 :: ldo
       CHARACTER(LEN=ppm_char) :: mesg
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_map_field_pop_3d',t0,info)
       totopo = ppm_field_topoid
@@ -405,14 +405,14 @@
          CALL ppm_error(ppm_err_wrong_dim,'ppm_map_field_pop_3d',    &
      &       'leading dimension LDA is in error',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 #elif __DIM == __SFIELD
       IF (edim.NE.1) THEN
          info = ppm_error_error
          CALL ppm_error(ppm_err_wrong_dim,'ppm_map_field_pop_3d',    &
      &       'buffer does not contain 1d data!',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 #endif
 
       !-------------------------------------------------------------------------
@@ -560,7 +560,7 @@
  !     IF (PRESENT(mask)) THEN
  !        DO i=1,ppm_nrecvlist
  !           !-------------------------------------------------------------------
- !           !  access mesh blocks belonging to the i-th processor in the 
+ !           !  access mesh blocks belonging to the i-th processor in the
  !           !  recvlist
  !           !-------------------------------------------------------------------
  !           DO j=ppm_precvbuffer(i),ppm_precvbuffer(i+1)-1
@@ -593,7 +593,7 @@
  !     ELSE
          DO i=1,ppm_nrecvlist
             !-------------------------------------------------------------------
-            !  access mesh blocks belonging to the i-th processor in the 
+            !  access mesh blocks belonging to the i-th processor in the
             !  recvlist
             !-------------------------------------------------------------------
             DO j=ppm_precvbuffer(i),ppm_precvbuffer(i+1)-1
@@ -627,7 +627,7 @@
       ENDIF
       ppm_nrecvbuffer = ppm_nrecvbuffer - Mdata*bdim
 
-      ibuffer = ppm_nrecvbuffer 
+      ibuffer = ppm_nrecvbuffer
       IF (ppm_debug .GT. 1) THEN
           WRITE(mesg,'(A,I9)') 'ibuffer = ',ibuffer
           CALL ppm_write(ppm_rank,'ppm_map_field_pop_3d',mesg,info)
@@ -640,7 +640,7 @@
       Mdata = 0
       DO i=1,ppm_nsendlist
          !----------------------------------------------------------------------
-         !  access mesh blocks belonging to the i-th processor in the 
+         !  access mesh blocks belonging to the i-th processor in the
          !  sendlist
          !----------------------------------------------------------------------
          DO j=ppm_psendbuffer(i),ppm_psendbuffer(i+1)-1
@@ -773,7 +773,7 @@
                                  fdata(1,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -817,7 +817,7 @@
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) =    &
      &                            (fdata(1,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -876,14 +876,14 @@
                                  fdata(1,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
                                  fdata(1,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -949,7 +949,7 @@
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) =    &
      &                            (fdata(1,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
@@ -958,7 +958,7 @@
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) =    &
      &                            (fdata(2,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -1034,21 +1034,21 @@
                                  fdata(1,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
                                  fdata(2,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
                                  fdata(3,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(3,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -1136,7 +1136,7 @@
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) =    &
      &                            (fdata(1,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
@@ -1145,7 +1145,7 @@
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) =    &
      &                            (fdata(2,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
@@ -1154,7 +1154,7 @@
                               ELSE
                                  fdata(3,imesh,jmesh,kmesh,isub) =    &
      &                            (fdata(3,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -1247,28 +1247,28 @@
                                  fdata(1,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
                                  fdata(2,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
                                  fdata(3,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(3,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
                                  fdata(4,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(4,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -1378,7 +1378,7 @@
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) =    &
      &                            (fdata(1,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
@@ -1387,7 +1387,7 @@
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) =    &
      &                            (fdata(2,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
@@ -1396,7 +1396,7 @@
                               ELSE
                                  fdata(3,imesh,jmesh,kmesh,isub) =    &
      &                            (fdata(3,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
@@ -1405,7 +1405,7 @@
                               ELSE
                                  fdata(4,imesh,jmesh,kmesh,isub) =    &
      &                            (fdata(4,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -1515,35 +1515,35 @@
                                  fdata(1,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
                                  fdata(2,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
                                  fdata(3,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(3,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
                                  fdata(4,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(4,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
                                  fdata(5,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(5,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -1675,7 +1675,7 @@
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) =    &
      &                            (fdata(1,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
@@ -1684,7 +1684,7 @@
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) =    &
      &                            (fdata(2,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
@@ -1693,7 +1693,7 @@
                               ELSE
                                  fdata(3,imesh,jmesh,kmesh,isub) =    &
      &                            (fdata(3,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
@@ -1702,7 +1702,7 @@
                               ELSE
                                  fdata(4,imesh,jmesh,kmesh,isub) =    &
      &                            (fdata(4,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbufferd(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_double-ppm_myepsd)) THEN
@@ -1711,7 +1711,7 @@
                               ELSE
                                  fdata(5,imesh,jmesh,kmesh,isub) =    &
      &                            (fdata(5,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -1754,7 +1754,7 @@
                                     fdata(k,imesh,jmesh,kmesh,isub) = .TRUE.
                                  ELSE
                                     fdata(k,imesh,jmesh,kmesh,isub) = .FALSE.
-                                 ENDIF 
+                                 ENDIF
 #endif
                               ENDDO
                             ENDDO
@@ -1800,7 +1800,7 @@
                                  ELSE
                                     fdata(k,imesh,jmesh,kmesh,isub) =    &
      &                                 (fdata(k,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                                 ENDIF 
+                                 ENDIF
 #endif
                               ENDDO
                             ENDDO
@@ -1846,7 +1846,7 @@
                                     fdata(k,imesh,jmesh,kmesh,isub) = .TRUE.
                                  ELSE
                                     fdata(k,imesh,jmesh,kmesh,isub) = .FALSE.
-                                 ENDIF 
+                                 ENDIF
 #endif
                               ELSEIF (rtype .EQ. ppm_param_pop_add) THEN
 #if    __KIND == __SINGLE_PRECISION
@@ -1881,7 +1881,7 @@
                                     fdata(k,imesh,jmesh,kmesh,isub) =    &
      &                                 (fdata(k,imesh,jmesh,kmesh,isub).AND. &
      &                                 .FALSE.)
-                                 ENDIF 
+                                 ENDIF
 #endif
                               ENDIF
                            ENDDO
@@ -1933,7 +1933,7 @@
                               fdata(imesh,jmesh,kmesh,isub) = .TRUE.
                            ELSE
                               fdata(imesh,jmesh,kmesh,isub) = .FALSE.
-                           ENDIF 
+                           ENDIF
 #endif
                         ENDDO
                        ENDDO
@@ -1952,7 +1952,7 @@
      &                        fdata(imesh,jmesh,kmesh,isub)+   &
      &                        REAL(ppm_recvbufferd(ibuffer),ppm_kind_single)
 #elif  __KIND == __DOUBLE_PRECISION
-                           fdata(imesh,jmesh,kmesh,isub) =     &   
+                           fdata(imesh,jmesh,kmesh,isub) =     &
      &                         fdata(imesh,jmesh,kmesh,isub)+  &
      &                         ppm_recvbufferd(ibuffer)
 #elif  __KIND == __SINGLE_PRECISION_COMPLEX
@@ -1977,7 +1977,7 @@
                            ELSE
                               fdata(imesh,jmesh,kmesh,isub) =    &
      &                           (fdata(imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                           ENDIF 
+                           ENDIF
 #endif
                         ENDDO
                        ENDDO
@@ -1998,7 +1998,7 @@
                               fdata(imesh,jmesh,kmesh,isub) =     &
      &                           REAL(ppm_recvbufferd(ibuffer),ppm_kind_single)
 #elif  __KIND == __DOUBLE_PRECISION
-                              fdata(imesh,jmesh,kmesh,isub) =     & 
+                              fdata(imesh,jmesh,kmesh,isub) =     &
      &                            ppm_recvbufferd(ibuffer)
 #elif  __KIND == __SINGLE_PRECISION_COMPLEX
                               fdata(imesh,jmesh,kmesh,isub) =     &
@@ -2017,7 +2017,7 @@
                                  fdata(imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
 #endif
                            ELSEIF (rtype .EQ. ppm_param_pop_add) THEN
 #if    __KIND == __SINGLE_PRECISION
@@ -2050,7 +2050,7 @@
                               ELSE
                                  fdata(imesh,jmesh,kmesh,isub) =    &
      &                              (fdata(imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDIF
                         ELSE
@@ -2174,7 +2174,7 @@
                                  fdata(1,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -2218,7 +2218,7 @@
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) =        &
      &                            (fdata(1,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -2277,14 +2277,14 @@
                                  fdata(1,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
                                  fdata(2,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -2350,7 +2350,7 @@
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) =        &
      &                            (fdata(1,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
@@ -2359,7 +2359,7 @@
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) =        &
      &                            (fdata(2,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -2435,21 +2435,21 @@
                                  fdata(1,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
                                  fdata(2,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
                                  fdata(3,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(3,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -2537,7 +2537,7 @@
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) =        &
      &                            (fdata(1,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
@@ -2546,7 +2546,7 @@
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) =        &
      &                            (fdata(2,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
@@ -2555,7 +2555,7 @@
                               ELSE
                                  fdata(3,imesh,jmesh,kmesh,isub) =        &
      &                            (fdata(3,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -2648,28 +2648,28 @@
                                  fdata(1,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
                                  fdata(2,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
                                  fdata(3,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(3,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
                                  fdata(4,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(4,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -2779,7 +2779,7 @@
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) =        &
      &                            (fdata(1,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
@@ -2788,7 +2788,7 @@
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) =        &
      &                            (fdata(2,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
@@ -2797,7 +2797,7 @@
                               ELSE
                                  fdata(3,imesh,jmesh,kmesh,isub) =        &
      &                            (fdata(3,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
@@ -2806,7 +2806,7 @@
                               ELSE
                                  fdata(4,imesh,jmesh,kmesh,isub) =        &
      &                            (fdata(4,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -2916,35 +2916,35 @@
                                  fdata(1,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
                                  fdata(2,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
                                  fdata(3,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(3,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
                                  fdata(4,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(4,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
                                  fdata(5,imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(5,imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -3076,7 +3076,7 @@
                               ELSE
                                  fdata(1,imesh,jmesh,kmesh,isub) =        &
      &                            (fdata(1,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
@@ -3085,7 +3085,7 @@
                               ELSE
                                  fdata(2,imesh,jmesh,kmesh,isub) =        &
      &                            (fdata(2,imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
@@ -3094,7 +3094,7 @@
                               ELSE
                                  fdata(3,imesh,jmesh,kmesh,isub) =        &
      &                             (fdata(3,imesh,jmesh,kmesh,isub).AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
@@ -3103,7 +3103,7 @@
                               ELSE
                                  fdata(4,imesh,jmesh,kmesh,isub) =        &
      &                             (fdata(4,imesh,jmesh,kmesh,isub).AND..FALSE.)
-                              ENDIF 
+                              ENDIF
                               ibuffer = ibuffer + 1
                               IF (ppm_recvbuffers(ibuffer) .GT.     &
      &                           (1.0_ppm_kind_single-ppm_myepss)) THEN
@@ -3112,7 +3112,7 @@
                               ELSE
                                  fdata(5,imesh,jmesh,kmesh,isub) =        &
      &                             (fdata(5,imesh,jmesh,kmesh,isub).AND..FALSE.)
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDDO
                           ENDDO
@@ -3155,7 +3155,7 @@
                                     fdata(k,imesh,jmesh,kmesh,isub) = .TRUE.
                                  ELSE
                                     fdata(k,imesh,jmesh,kmesh,isub) = .FALSE.
-                                 ENDIF 
+                                 ENDIF
 #endif
                               ENDDO
                            ENDDO
@@ -3203,7 +3203,7 @@
                                     fdata(k,imesh,jmesh,kmesh,isub) =        &
      &                                  (fdata(k,imesh,jmesh,kmesh,isub).AND.&
      &                                  .FALSE.)
-                                 ENDIF 
+                                 ENDIF
 #endif
                               ENDDO
                            ENDDO
@@ -3249,7 +3249,7 @@
                                     fdata(k,imesh,jmesh,kmesh,isub) = .TRUE.
                                  ELSE
                                     fdata(k,imesh,jmesh,kmesh,isub) = .FALSE.
-                                 ENDIF 
+                                 ENDIF
 #endif
                               ELSEIF (rtype .EQ. ppm_param_pop_add) THEN
 #if    __KIND == __DOUBLE_PRECISION
@@ -3284,7 +3284,7 @@
                                     fdata(k,imesh,jmesh,kmesh,isub) =        &
      &                                  (fdata(k,imesh,jmesh,kmesh,isub).AND.&
      &                                  .FALSE.)
-                                 ENDIF 
+                                 ENDIF
 #endif
                               ENDIF
                            ENDDO
@@ -3336,7 +3336,7 @@
                               fdata(imesh,jmesh,kmesh,isub) = .TRUE.
                            ELSE
                               fdata(imesh,jmesh,kmesh,isub) = .FALSE.
-                           ENDIF 
+                           ENDIF
 #endif
                         ENDDO
                        ENDDO
@@ -3380,7 +3380,7 @@
                            ELSE
                               fdata(imesh,jmesh,kmesh,isub) =        &
      &                            (fdata(imesh,jmesh,kmesh,isub) .AND..FALSE.)
-                           ENDIF 
+                           ENDIF
 #endif
                         ENDDO
                        ENDDO
@@ -3420,7 +3420,7 @@
                                  fdata(imesh,jmesh,kmesh,isub) = .TRUE.
                               ELSE
                                  fdata(imesh,jmesh,kmesh,isub) = .FALSE.
-                              ENDIF 
+                              ENDIF
 #endif
                            ELSEIF (rtype .EQ. ppm_param_pop_add) THEN
 #if    __KIND == __DOUBLE_PRECISION
@@ -3453,7 +3453,7 @@
                               ELSE
                                  fdata(imesh,jmesh,kmesh,isub) =        &
      &                             (fdata(imesh,jmesh,kmesh,isub).AND..FALSE.)
-                              ENDIF 
+                              ENDIF
 #endif
                            ENDIF
                         ELSE
@@ -3478,7 +3478,7 @@
       !-------------------------------------------------------------------------
       !  Decrement the set counter
       !-------------------------------------------------------------------------
-      ppm_buffer_set = ppm_buffer_set - 1  
+      ppm_buffer_set = ppm_buffer_set - 1
 
       !-------------------------------------------------------------------------
       !  Deallocate the receive buffer if all sets have been poped
@@ -3509,7 +3509,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_map_field_pop_3d',t0,info)

@@ -7,29 +7,29 @@
       !  Input        : inlist     (P) original list
       !
       !  Output       : outlist    (P) permutation list
-      !                 info       (I) return status. 
+      !                 info       (I) return status.
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   : From Leonard J. Moss of SLAC:
       !                 Here is a hybrid QuickSort I wrote a number of i
       !                 years ago.
-      !                 It is based on suggestions in Knuth, Volume 3, and 
+      !                 It is based on suggestions in Knuth, Volume 3, and
       !                 performs much better than a pure QuickSort on short
       !                 or partially ordered input arrays.
-      !                 SORTRX uses a hybrid QuickSort algorithm, based on 
-      !                 several suggestions in Knuth, Volume 3, Section 5.2.2.  
-      !                 In particular, the pivot key [my term] for dividing 
+      !                 SORTRX uses a hybrid QuickSort algorithm, based on
+      !                 several suggestions in Knuth, Volume 3, Section 5.2.2.
+      !                 In particular, the pivot key [my term] for dividing
       !                 each subsequence is chosen to be the median of the i
       !                 first,
-      !                 last, and middle values of the subsequence; and the 
-      !                 QuickSort is cut off when a subsequence has 9 or fewer 
-      !                 elements, and a straight insertion sort of the 
+      !                 last, and middle values of the subsequence; and the
+      !                 QuickSort is cut off when a subsequence has 9 or fewer
+      !                 elements, and a straight insertion sort of the
       !                 entire array
       !                 is done at the end. The result is comparable to a pure
-      !                 insertion sort for very short arrays, and very fast for 
-      !                 very large arrays (of order 12 micro-sec/element on the 
-      !                 3081K for arrays of 10K elements).  It is also not 
+      !                 insertion sort for very short arrays, and very fast for
+      !                 very large arrays (of order 12 micro-sec/element on the
+      !                 3081K for arrays of 10K elements).  It is also not
       !                 subject to the poor performance of the pure QuickSort on
       !                 partially ordered data.
       !
@@ -89,7 +89,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       ! list to be sorted
 #if   __KIND == __INTEGER
@@ -103,7 +103,7 @@
       ! return status
       INTEGER               , INTENT(OUT)   :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(ppm_kind_double)                 :: t0
       INTEGER, DIMENSION(1)                 :: ldl,ldu
@@ -122,17 +122,17 @@
       INTEGER                               :: datap
 #else
       REAL(MK)                              :: datap
-#endif      
-      
+#endif
+
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
       !  Initialization
       !-------------------------------------------------------------------------
       CALL substart('ppm_util_qsort',t0,info)
-      
+
       !-------------------------------------------------------------------------
       !  Check arguments
       !-------------------------------------------------------------------------
@@ -143,8 +143,10 @@
      &            'inlist must be associated/allocated',__LINE__,info)
               GOTO 9999
           ENDIF
-      ENDIF  
-      
+      ENDIF
+
+      NULLIFY(lstk,rstk)
+
       inlistl = LBOUND(inlist,1)
       inlistu = UBOUND(inlist,1)
       n = inlistu-inlistl+1
@@ -158,11 +160,11 @@
      &        'indices list OUTLIST',__LINE__,info)
           GOTO 9999
       ENDIF
-      
+
       DO i = inlistl,inlistu
          outlist(i) = i
       ENDDO
-     
+
       !-------------------------------------------------------------------------
       ! Compute the log of the list length, it is in fact a bound for the length
       ! of the stack of intervals
@@ -172,7 +174,7 @@
       DO
           IF (dn.EQ.0) EXIT
           dn = ISHFT(dn,-1)
-          stklength = stklength + 1       
+          stklength = stklength + 1
       ENDDO
       stklength = 2*stklength
 
@@ -196,57 +198,57 @@
      &        'right indices list RSTK',__LINE__,info)
           GOTO 9999
       ENDIF
-      
+
       ! If array is short, skip QuickSort and go directly to
       ! the straight insertion sort.
- 
+
       IF (n.LE.m) GOTO 900
 
-      !-------------------------------------------------------------------------      
+      !-------------------------------------------------------------------------
       !     QuickSort
       !
       !     The Qn:s correspond roughly to steps in Algorithm Q,
       !     Knuth, V.3, PP.116-117, modified to select the median
       !     of the first, last, and middle elements as the pivot
       !     key (in Knuths notation, K).  Also modified to leave
-      !     data in place and produce an outlist array (here:OUTLIST).  To 
+      !     data in place and produce an outlist array (here:OUTLIST).  To
       !     simplify comments, let INLIST[I]=INLIST(outlist(I)).
-      
-      ! Q1 : Initialize 
+
+      ! Q1 : Initialize
       istk = 0
       l = inlistl
       r = inlistu
-      
+
   200 CONTINUE
-  
+
       ! Q2: Sort the subsequence INLIST[L]..INLIST[R].
       !
       !     At this point, INLIST[l] <= INLIST[m] <= INLIST[r] for all l < L,
       !     r > R, and L <= m <= R.  (First time through, there is no
       !     DATA for l < L or r > R.)
- 
+
       i=l
-      j=r             
-      
+      j=r
+
       ! Q2.5: Select pivot key
       !
       !     Let the pivot, P, be the midpoint of this subsequence,
       !     P=(L+R)/2; then rearrange outlist(L), outlist(P), and outlist(R)
       !     so the corresponding INLIST values are in increasing order.
       !     The pivot key, DATAP, is then DATA[P].
- 
+
       p=(l+r)/2
 
       indexp=outlist(p)
       datap=inlist(indexp)
- 
+
       IF (inlist(outlist(l)) .GT. datap) THEN
          outlist(p)=outlist(l)
          outlist(l)=indexp
          indexp=outlist(p)
          datap=inlist(indexp)
       ENDIF
- 
+
       IF (datap .GT. inlist(outlist(r))) THEN
          IF (inlist(outlist(l)) .GT. inlist(outlist(r))) THEN
             outlist(p)=outlist(l)
@@ -258,41 +260,41 @@
          indexp=outlist(p)
          datap=inlist(indexp)
       ENDIF
- 
+
       !     Now we swap values between the right and left sides and/or
       !     move DATAP until all smaller values are on the left and all
       !     larger values are on the right.  Neither the left or right
       !     side will be internally ordered yet; however, DATAP will be
       !     in its final position.
- 
+
   300 CONTINUE
-      
+
       ! Q3: Search for datum on left >= DATAP
       !
       !     At this point, DATA[L] <= DATAP.  We can therefore start scanning
       !     up from L, looking for a value >= DATAP (this scan is guaranteed
       !     to terminate since we initially placed DATAP near the middle of
       !     the subsequence).
- 
+
          i=i+1
          IF (inlist(outlist(i)).LT.datap) GOTO 300
- 
+
   400 CONTINUE
- 
+
       ! Q4: Search for datum on right <= DATAP
       !
       !     At this point, DATA[R] >= DATAP.  We can therefore start scanning
       !     down from R, looking for a value <= DATAP (this scan is guaranteed
       !     to terminate since we initially placed DATAP near the middle of
       !     the subsequence).
- 
+
          j=j-1
          IF (inlist(outlist(j)).GT.datap) GOTO 400
-         
+
       ! Q5: Have the two scans collided?
- 
+
       IF (i.LT.j) THEN
- 
+
       ! Q6: No, interchange DATA[I] <--> DATA[J] and continue
          !PRINT *, ' Interchange '
          indext=outlist(i)
@@ -300,7 +302,7 @@
          outlist(j)=indext
          GOTO 300
       ELSE
- 
+
       ! Q7: Yes, select next subsequence to sort
       !
       !     At this point, I >= J and DATA[l] <= DATA[I] == DATAP <= DATA[r],
@@ -347,13 +349,13 @@
          ENDIF
          GOTO 200
       ENDIF
- 
+
   900 CONTINUE
-  
+
       !-------------------------------------------------------------------------
       !
       ! Q9: Straight Insertion sort
- 
+
       DO i=inlistl+1,inlistu
          IF (inlist(outlist(i-1)) .GT. inlist(outlist(i))) THEN
             indexp=outlist(i)
@@ -368,7 +370,7 @@
             outlist(p+1) = indexp
          ENDIF
        ENDDO
- 
+
       !-------------------------------------------------------------------------
       ! Deallocate the stack of intervals
       !-------------------------------------------------------------------------
@@ -385,7 +387,7 @@
           CALL ppm_error(ppm_err_dealloc,'ppm_util_qsort',        &
      &        'right indices list RSTK',__LINE__,info)
       ENDIF
-      
+
       !===================================================================
       !
       !     All done
@@ -403,4 +405,4 @@
       END SUBROUTINE ppm_util_qsort_d
 #elif __KIND == __INTEGER
       END SUBROUTINE ppm_util_qsort_i
-#endif    
+#endif

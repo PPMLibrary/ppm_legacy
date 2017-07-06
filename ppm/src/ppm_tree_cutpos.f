@@ -1,20 +1,20 @@
       !-------------------------------------------------------------------------
       !  Subroutine   :                ppm_tree_cutpos.f
       !-------------------------------------------------------------------------
-      !  Purpose      : This routine finds the best cuting positions for 
+      !  Purpose      : This routine finds the best cuting positions for
       !                 the given cut directions.
-      !  Input        : xp(:,:)      (F) the positions of the particles  
-      !                 Npart        (I) the number of particles 
+      !  Input        : xp(:,:)      (F) the positions of the particles
+      !                 Npart        (I) the number of particles
       !                 weights(3)   (F) weights for the tree cost
       !                                  contributions: particles, mesh,
       !                                  geometry for finding the cut
       !                 min_box(:,:) (F) the minimum coordinate of the
       !                                  boxes
-      !                 max_box(:,:) (F) the maximum coordinate of the 
+      !                 max_box(:,:) (F) the maximum coordinate of the
       !                                  boxes
       !                 cutbox       (I) ID of box to be cut
       !                 ncut         (I) number of cut directions
-      !                 minboxsize(:)(F) minimum box size required in all 
+      !                 minboxsize(:)(F) minimum box size required in all
       !                                  spatial directions
       !                 icut(:)      (I) cut directions
       !                 pcost(:)     (F) OPTIONAL argument of length
@@ -22,13 +22,13 @@
       !                                  computational cost of each
       !                                  particle.
       !
-      !  Input/output :                  
+      !  Input/output :
       !  Output       : cpos(:)       (F) positions of best cuts. index:
       !                                  1..ncut.
       !                 info          (I) return status
       !  Remarks      : The cost of a particle is counted as pcost (if
       !                given) or 1. For meshes, the cost is 1 per mesh
-      !                point. For the geometry part, the cost of a 
+      !                point. For the geometry part, the cost of a
       !                box is given by its volume. Use weights(3) to
       !                adjust this if needed.
       !  References   :
@@ -114,7 +114,7 @@
       IF (ppm_debug .GT. 0) THEN
          IF (cutbox .LE. 0) THEN
             info = ppm_error_error
-            CALL ppm_error(ppm_err_argument,'ppm_tree_cutpos',      & 
+            CALL ppm_error(ppm_err_argument,'ppm_tree_cutpos',      &
                  'cutbox must be > 0 !',__LINE__,info)
             GOTO 9999
          ENDIF
@@ -194,7 +194,7 @@
           ! replace this by something more clever in the future. Try counting
           ! in a way that avoids the division here
           pc(ncp1) = pc(ncp1)/REAL(ncut,MK)
-#else    
+#else
           DO j=tree_lhbx(1,cutbox),tree_lhbx(2,cutbox)
               ip = tree_lpdx(j)
               dm = 1.0_MK
@@ -205,8 +205,8 @@
               ENDDO
               pc(ncp1) = pc(ncp1) + dm
           ENDDO
-#endif   
-         
+#endif
+
 #ifdef __MPI
           !---------------------------------------------------------------------
           ! Allreduce of particles sums
@@ -229,7 +229,7 @@
       meshtotal = 0.0_MK
       IF (ppm_dim .EQ. 2) THEN
          IF (have_mesh .AND. weights(2) .NE. 0) THEN
-             meshtotal = REAL(Nm_box(1,cutbox),MK)*REAL(Nm_box(2,cutbox),MK) 
+             meshtotal = REAL(Nm_box(1,cutbox),MK)*REAL(Nm_box(2,cutbox),MK)
          ENDIF
          geomtotal = len_box(1)*len_box(2)
       ELSE
@@ -258,7 +258,7 @@
       ! The optimal cut position is in the weighted center of mass
       !------------------------------------------------------------------------
       DO i=1,ncut
-          cutdir = icut(i)         
+          cutdir = icut(i)
           IF (have_particles .AND. weights(1) .NE. 0.0_MK) THEN
              partpos = pc(i)/pc(ncp1)
           ELSE
@@ -278,7 +278,7 @@
               cpos(i) = max_box(cutdir,cutbox)-minboxsize(cutdir)
           ENDIF
       ENDDO
-         
+
       !------------------------------------------------------------------------
       ! Return
       !------------------------------------------------------------------------
@@ -289,5 +289,5 @@
       END SUBROUTINE ppm_tree_cutpos_s
 #elif __KIND == __DOUBLE_PRECISION
       END SUBROUTINE ppm_tree_cutpos_d
-#endif 
+#endif
 

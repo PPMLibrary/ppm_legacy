@@ -27,16 +27,16 @@
       !                                (F) OPTIONAL. A slave field for
       !                                    which to create particles as
       !                                    well where field_up is within
-      !                                    cutoff.  
+      !                                    cutoff.
       !                 lda2           (I) lda of the slave field. OPTIONAL
-      !                                    has to be present if field_wp is 
+      !                                    has to be present if field_wp is
       !                                    and if it is a vector field.
       !
       !  Output       : np             (I) new number of particles
       !                 up([:,]:)      (F) new master particle values
       !                 wp([:,]:)      (F) new slave particle values.
-      !                                    OPTIONAL. Has to be present 
-      !                                    if field_wp is. 
+      !                                    OPTIONAL. Has to be present
+      !                                    if field_wp is.
       !                 info           (I) RETURN status
       !
       !  Remarks      : should take square cutoff for comparison
@@ -128,7 +128,7 @@
 #endif
 #endif
 
-#elif __KIND == __DOUBLE_PRECISION          
+#elif __KIND == __DOUBLE_PRECISION
 #if   __DIME == __2D
 #if   __MODE == __SCA
 #if   __MODE2 == __SCA
@@ -168,7 +168,7 @@
 #endif
 #endif
 #endif
-#endif          
+#endif
 
       !-------------------------------------------------------------------------
       !  Includes
@@ -182,7 +182,7 @@
       USE ppm_module_data
       USE ppm_module_check_topoid
       USE ppm_module_check_meshid
-      
+
       IMPLICIT NONE
 
 
@@ -213,8 +213,8 @@
       REAL(MK) , DIMENSION(:,:,:,:  ) , POINTER        :: field_up
 #elif __DIME == __3D
       REAL(MK) , DIMENSION(:,:,:,:,:) , POINTER        :: field_up
-#endif     
-#endif     
+#endif
+#endif
       INTEGER                        ,  INTENT(IN   )  :: topo_id, mesh_id
       REAL(mk), DIMENSION(2)         ,  INTENT(in   )  :: cutoff
       INTEGER                        ,  INTENT(  OUT)  :: info
@@ -236,9 +236,9 @@
       REAL(MK) , DIMENSION(:,:,:,:  ) , POINTER        :: field_wp
 #elif __DIME == __3D
       REAL(MK) , DIMENSION(:,:,:,:,:) , POINTER        :: field_wp
-#endif     
-#endif     
-      
+#endif
+#endif
+
       !-------------------------------------------------------------------------
       !  Locals
       !-------------------------------------------------------------------------
@@ -261,12 +261,12 @@
       LOGICAL                                          :: lok,lslave
 #if  __MODE == __VEC
       LOGICAL                                          :: with_weighting
-#endif      
+#endif
       CALL substart('ppm_rmsh_create_part',t0,info)
 
       dim = ppm_dim
 
-      
+
       !-------------------------------------------------------------------------
       !  Check Arguments
       !-------------------------------------------------------------------------
@@ -328,7 +328,7 @@
             GOTO 9999
          ENDIF
       END IF
-      
+
       !-------------------------------------------------------------------------
       !  Get the internal topoid
       !-------------------------------------------------------------------------
@@ -347,11 +347,12 @@
          ENDIF
       END IF
 
+
       !-------------------------------------------------------------------------
       !  Get the internal meshid
       !-------------------------------------------------------------------------
       meshid = ppm_meshid(topoid)%internal(mesh_id)
-      
+
       !-------------------------------------------------------------------------
       !  Get istart
       !-------------------------------------------------------------------------
@@ -399,7 +400,7 @@
          END IF
       END IF
 #endif
-      
+
       !-------------------------------------------------------------------------
       !  check whether to reset the positions
       !-------------------------------------------------------------------------
@@ -453,7 +454,7 @@
 #elif __DIME == __2D
          nnz = 1
 #endif
-         
+
 #if   __DIME == __3D
          DO k=1,nnz
             DO j=1,nny
@@ -562,8 +563,8 @@
             GOTO 9999
          END IF
       END IF
-      
-      
+
+
       inp = 0
       !-------------------------------------------------------------------------
       !  loop over subs again and create particles
@@ -596,7 +597,7 @@
 #elif __DIME == __2D
          nnz = 1
 #endif
-         
+
 #if   __DIME == __3D
          DO k=1,nnz
             DO j=1,nny
@@ -685,7 +686,7 @@
 9999  CONTINUE
       CALL substop('ppm_rmsh_create_part',t0,info)
       RETURN
-      
+
 #if   __KIND == __SINGLE_PRECISION
 #if   __DIME == __2D
 #if   __MODE == __SCA
@@ -716,7 +717,7 @@
 #endif
 #endif
 #endif
-#elif __KIND == __DOUBLE_PRECISION          
+#elif __KIND == __DOUBLE_PRECISION
 #if   __DIME == __2D
 #if   __MODE == __SCA
 #if   __MODE2 == __SCA
@@ -746,4 +747,4 @@
 #endif
 #endif
 #endif
-#endif          
+#endif

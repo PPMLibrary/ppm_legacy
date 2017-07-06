@@ -3,8 +3,8 @@
       !-------------------------------------------------------------------------
       !
       !  Purpose      : This routine can be used to find duplicate entries
-      !                 in a 2d array of leading dimension 2 or 3. 
-      !                 The comparison is done up to the precision specified 
+      !                 in a 2d array of leading dimension 2 or 3.
+      !                 The comparison is done up to the precision specified
       !                 to ppm_init. Fast o(N) search using cell lists is
       !                 used.
       !
@@ -18,7 +18,7 @@
       !                 Ndata          (I) number of data items (second
       !                                    dimension of the array).
       !
-      !  Input/output : 
+      !  Input/output :
       !
       !  Output       : nident        (I) number of identities found
       !                 ident(:,:)    (I) indices of identical data
@@ -46,9 +46,9 @@
       !  initialization of Ngl.
       !
       !  Revision 1.7  2004/10/28 12:38:19  davidch
-      !  Fixed numerical bug in cell lists that resulted in real 
+      !  Fixed numerical bug in cell lists that resulted in real
       !  particles being treated as ghosts
-      !  and vice versa. The new ranking and cell list routines are 
+      !  and vice versa. The new ranking and cell list routines are
       !  supposed to be exact. All
       !  epsilons that were added to the domains in order to prevent i
       !  the mentioned problems were
@@ -113,14 +113,14 @@
       !-------------------------------------------------------------------------
 #include "ppm_define.h"
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: adata
       INTEGER                 , INTENT(IN   ) :: lda,Ndata
       INTEGER                 , INTENT(  OUT) :: nident,info
       INTEGER , DIMENSION(:,:), POINTER       :: ident
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK)                                   :: t0,lmyeps,bsum,split
       REAL(MK), DIMENSION(3)                     :: xmin,xmax,bsize,aspct
@@ -132,9 +132,9 @@
       INTEGER                                    :: iend,isize,iopt
       CHARACTER(LEN=ppm_char)                    :: mesg
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
       !  Initialise
       !-------------------------------------------------------------------------
@@ -183,6 +183,8 @@
              GOTO 9999
           ENDIF
       ENDIF
+
+      NULLIFY(lpdx,lhbx)
 
       !-------------------------------------------------------------------------
       !  If there are less than 2 points, we are done
@@ -391,7 +393,7 @@
                               !-------------------------------------------------
                               iopt   = ppm_param_alloc_grow_preserve
                               ldc(1) = 2
-                              ldc(2) = nident 
+                              ldc(2) = nident
                               CALL ppm_alloc(ident,ldc,iopt,info)
                               IF (info .NE. 0) THEN
                                   info = ppm_error_fatal
@@ -441,7 +443,7 @@
                               !-------------------------------------------------
                               iopt   = ppm_param_alloc_grow_preserve
                               ldc(1) = 2
-                              ldc(2) = nident 
+                              ldc(2) = nident
                               CALL ppm_alloc(ident,ldc,iopt,info)
                               IF (info .NE. 0) THEN
                                   info = ppm_error_fatal

@@ -5,7 +5,7 @@
       !  Purpose      : Creates the index offset list of cell interactions.
       !                 The interaction for the cell with itself is always
       !                 included as the first entry.
-      !                  
+      !
       !  Input        : lsymm    (L) : T for using symmetry, F for full
       !                                list
       !
@@ -14,7 +14,7 @@
       !                                (x,y,[z]) index shift. Second index:
       !                                interaction number 1...nnd.
       !                 jnd(:,:) (I) : Second interaction partner (box which
-      !                                IS INTERACTED WITH). 
+      !                                IS INTERACTED WITH).
       !                                First index: 1...3
       !                                (x,y,[z]) index shift. Second index:
       !                                interaction number 1...nnd.
@@ -107,26 +107,26 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       LOGICAL                , INTENT(IN   ) :: lsymm
       INTEGER, DIMENSION(:,:), POINTER       :: ind,jnd
       INTEGER                , INTENT(  OUT) :: nnd
       INTEGER                , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER                              :: i,j,k,l,ibox,jbox,nz,idm
       REAL(MK)                             :: t0
       ! alloc
       INTEGER, DIMENSION(2)                :: lda
       INTEGER                              :: iopt
-    
+
       !-------------------------------------------------------------------------
       !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_neighlist_MkNeighIdx',t0,info)
-    
+
       !-------------------------------------------------------------------------
       !  Check arguments
       !-------------------------------------------------------------------------
@@ -190,7 +190,7 @@
       IF (ppm_dim .EQ. 3) THEN
           nz = 1
       ENDIF
-    
+
       !---------------------------------------------------------------------
       !  Compute neighbour indices
       !---------------------------------------------------------------------
@@ -209,7 +209,7 @@
 
          ind(1,5) = 1     ! interaction   1 -- 3
          jnd(2,5) = 1
-          
+
          IF (ppm_dim .GT. 2) THEN
              jnd(3,5)   = 1   ! interaction   0 -- 9
              ind(1,5)   = 0   ! reset to zero (1-3 will be further down)

@@ -6,7 +6,7 @@
       !                 one by refining or coarsening the grid cells by a
       !                 certain factor. For coarsening the number of cells
       !                 in the original mesh needs to be divisible by that
-      !                 factor on every sub in every direction. 
+      !                 factor on every sub in every direction.
       !
       !  Input        : topoid       (I) topology ID for which mesh has
       !                                  been created (internal numbering)
@@ -17,21 +17,21 @@
       !                                     ppm_param_mesh_refine
       !                                     ppm_param_mesh_coarsen
       !                 factor(:)    (I) factor by which to refine/coarsen
-      !                                  the mesh in each direction. 
+      !                                  the mesh in each direction.
       !                                  For coarsening the
       !                                  number of mesh points on the old
       !                                  mesh must be divisible by this
       !                                  factor in every direction.
       !
       !  Input/output : mesh_id      (I) user (not ppm internal!) mesh
-      !                                  ID of the new, derived mesh. 
-      !                                  If .LE. 0 on input, the 
-      !                                  routine will create an automatic 
+      !                                  ID of the new, derived mesh.
+      !                                  If .LE. 0 on input, the
+      !                                  routine will create an automatic
       !                                  one and return it here.
       !
       !  Output       : info         (I) return status. 0 upon success.
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   :
       !
@@ -78,7 +78,7 @@
       SUBROUTINE ppm_mesh_derive(topoid,meshid,act,factor,mesh_id,info)
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_mesh
@@ -95,14 +95,14 @@
       !-------------------------------------------------------------------------
 
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       INTEGER                 , INTENT(IN   ) :: topoid,meshid,act
       INTEGER , DIMENSION(:  ), INTENT(IN   ) :: factor
       INTEGER                 , INTENT(INOUT) :: mesh_id
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(ppm_kind_double)  :: t0
       INTEGER                :: nsubs,i,j,iopt
@@ -112,11 +112,11 @@
       CHARACTER(LEN=ppm_char) :: mesg
       LOGICAL                 :: valid
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_mesh_derive',t0,info)
 
@@ -160,6 +160,9 @@
               ENDIF
           ENDDO
       ENDIF
+
+
+      NULLIFY(nno,ist)
 
       !-------------------------------------------------------------------------
       !  Allocate memory for existing mesh data
@@ -273,7 +276,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_mesh_derive',t0,info)

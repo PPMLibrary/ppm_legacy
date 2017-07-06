@@ -3,7 +3,7 @@
       !-------------------------------------------------------------------------
       !
       !  Purpose      : This routine performs parallel I/O (read or write)
-      !                 of scalars and 1d - 5d arrays on a distributed 
+      !                 of scalars and 1d - 5d arrays on a distributed
       !                 or centralized unit opened with ppm_io_open.
       !
       !  Input        : iUnit          (I) I/O unit (as returned by
@@ -13,7 +13,7 @@
       !                                       ppm_param_io_write
       !                                    If not specified, default is
       !                                    ppm_param_io_read
-      !                 dist           (I) I/O distribution. OPTIONAL. 
+      !                 dist           (I) I/O distribution. OPTIONAL.
       !                                    For read one of:
       !                                       ppm_param_io_same
       !                                       ppm_param_io_split
@@ -226,7 +226,7 @@
 #include "ppm_define.h"
 
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       INTEGER                              , INTENT(IN   ) :: iUnit
 #if   __DIM == 0
@@ -301,7 +301,7 @@
       CHARACTER(LEN=*), OPTIONAL, INTENT(IN   ) :: iofmt
       INTEGER         , OPTIONAL, INTENT(  OUT) :: stat
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK)                         :: t0
       INTEGER                          :: info,iactn,idist,iprec
@@ -322,9 +322,9 @@
       LOGICAL    , DIMENSION(:), POINTER :: abuf
 #endif
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
       !  Initialise
       !-------------------------------------------------------------------------
@@ -398,13 +398,13 @@
           info = ppm_error_error
           CALL ppm_error(ppm_err_argument,subname,    &
      &     'Split distribution not possible for characters.',__LINE__,info)
-          GOTO 9999 
+          GOTO 9999
       ENDIF
       IF (idist .EQ. ppm_param_io_sum) THEN
           info = ppm_error_error
           CALL ppm_error(ppm_err_argument,subname,    &
      &     'Sum reduction not possible for characters.',__LINE__,info)
-          GOTO 9999 
+          GOTO 9999
       ENDIF
 #endif
 
@@ -429,11 +429,11 @@
       !-------------------------------------------------------------------------
       !  Point to proper work storage
       !-------------------------------------------------------------------------
-#if   __KIND == __SINGLE_PRECISION 
+#if   __KIND == __SINGLE_PRECISION
       abuf => abuf_s
 #elif __KIND == __DOUBLE_PRECISION
       abuf => abuf_d
-#elif __KIND == __SINGLE_PRECISION_COMPLEX 
+#elif __KIND == __SINGLE_PRECISION_COMPLEX
       abuf => abuf_sc
 #elif __KIND == __DOUBLE_PRECISION_COMPLEX
       abuf => abuf_dc
@@ -516,7 +516,7 @@
 #else
 
           !---------------------------------------------------------------------
-          !  On scalar machines use DO loops since RESHAPE operates on the 
+          !  On scalar machines use DO loops since RESHAPE operates on the
           !  stack and we easily run into the limit. DO loops avoid this.
           !---------------------------------------------------------------------
 #if   __DIM == 2
@@ -583,7 +583,7 @@
       !  Convert to character string
       !-------------------------------------------------------------------------
       IF (iactn .EQ. ppm_param_io_read) THEN
-          ishift = IACHAR('a') 
+          ishift = IACHAR('a')
           DO i=1,ndata
               adata(i:i) = CHAR(abuf(i)+ishift)
           ENDDO
@@ -624,7 +624,7 @@
 #else
 
           !---------------------------------------------------------------------
-          !  On scalar machines use DO loops since RESHAPE operates on the 
+          !  On scalar machines use DO loops since RESHAPE operates on the
           !  stack and we easily run into the limit. DO loops avoid this.
           !---------------------------------------------------------------------
 #if   __DIM == 2

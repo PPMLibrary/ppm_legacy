@@ -1,20 +1,20 @@
       !-------------------------------------------------------------------------
       !     Subroutine   :            ppm_hamjac_reinit_step_2d
       !-------------------------------------------------------------------------
-      !     
+      !
       !     Purpose      : Solve Hamilton-Jacobi for Gowas reinit
-      !      
-      !     Input        : 
-      !                    
-      !     Input/Output : 
-      !                    
-      !     Output       : 
-      !      
-      !     Remarks      : 
-      !                    
-      !     
+      !
+      !     Input        :
+      !
+      !     Input/Output :
+      !
+      !     Output       :
+      !
+      !     Remarks      :
+      !
+      !
       !     References   :
-      !     
+      !
       !     Revisions    :
       !-------------------------------------------------------------------------
       !     $Log: ppm_hamjac_reinit_step_2d.f,v $
@@ -40,7 +40,7 @@
       SUBROUTINE ppm_hamjac_reinit_step_2dd (phi, tphi, trgt, res, topo_id, mesh_id, ghostsize, info)
 #endif
 #elif __MODE == __VEC
-#error VECTOR NOT IMPLEMENTED       
+#error VECTOR NOT IMPLEMENTED
 #endif
 
         USE ppm_module_data
@@ -48,12 +48,12 @@
         USE ppm_module_error
         USE ppm_module_substart
         USE ppm_module_substop
-        
+
         IMPLICIT NONE
-        
+
 #if    __KIND == __SINGLE_PRECISION
         INTEGER, PARAMETER :: MK = ppm_kind_single
-#elif  __KIND == __DOUBLE_PRECISION       
+#elif  __KIND == __DOUBLE_PRECISION
         INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
 
@@ -75,7 +75,7 @@
         INTEGER, DIMENSION(:,:), POINTER      :: ndata
         INTEGER                               :: topoid, meshid
         REAL(mk), DIMENSION(:,:), POINTER     :: min_phys, max_phys
-        
+
         !-----------------------------------------------------
         !  standard stuff
         !-----------------------------------------------------
@@ -92,9 +92,9 @@
              & = RESHAPE((/2,1,0,1,0,-1,0,-1,-2/),(/3,3/))
         REAL(mk) :: t0
 
-        
+
         CALL substart('ppm_hamjac_reinit_step_2d',t0,info)
-        
+
         !-----------------------------------------------------
         !  Get the mesh data
         !-----------------------------------------------------
@@ -107,7 +107,7 @@
 #if    __KIND == __SINGLE_PRECISION
         min_phys => ppm_min_physs
         max_phys => ppm_max_physs
-#elif  __KIND == __DOUBLE_PRECISION       
+#elif  __KIND == __DOUBLE_PRECISION
         min_phys => ppm_min_physd
         max_phys => ppm_max_physd
 #endif
@@ -127,7 +127,7 @@
            isubl = isublist(isub)
            DO j=1,ndata(2,isubl)
               DO i=1,ndata(1,isubl)
-                 
+
                  !DO ilap=1,3
                  !   laps(2-ilap,1) = phi(i+offs(1,ilap),j,isub)   &
                  !        & -2.0_mk * phi(i+offs(2,ilap),j,isub) &
@@ -154,8 +154,8 @@
                  laps(-1,2) = phi(i,j,isub)   &
                       & -2.0_mk * phi(i,j-1,isub) &
                       &       + phi(i,j-2,isub)
-                 
-                 
+
+
 
                  rpos(1) = (wenoeps + laps( 1,1)**2)/(wenoeps + laps(0,1)**2)
                  rneg(1) = (wenoeps + laps(-1,1)**2)/(wenoeps + laps(0,1)**2)
@@ -206,17 +206,17 @@
                     pbs = 0.0_mk
                  END IF
                  dphi_dt =  pbs * phi(i,j,isub) / &
-                      & SQRT(phi(i,j,isub)**2+0.25_mk*SUM(phimid**2)) 
+                      & SQRT(phi(i,j,isub)**2+0.25_mk*SUM(phimid**2))
                  tphi(i,j,isub) = phi(i,j,isub) - wenotau * dphi_dt
 
                  rms = MAX(rms,ABS(dphi_dt))
 
               END DO
-              
+
            END DO
-           
+
         END DO
-           
+
 
 
         res = rms
@@ -224,22 +224,22 @@
         CALL substop('ppm_hamjac_reinit_step_2d',t0,info)
 
 #if   __KIND == __SINGLE_PRECISION
-      END SUBROUTINE ppm_hamjac_reinit_step_2ds 
+      END SUBROUTINE ppm_hamjac_reinit_step_2ds
 #elif __KIND == __DOUBLE_PRECISION
-      END SUBROUTINE ppm_hamjac_reinit_step_2dd 
+      END SUBROUTINE ppm_hamjac_reinit_step_2dd
 #endif
 
-      
-                    
-
-
-                    
-           
-           
 
 
 
-        
-        
-        
-        
+
+
+
+
+
+
+
+
+
+
+

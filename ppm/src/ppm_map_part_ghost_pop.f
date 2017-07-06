@@ -2,7 +2,7 @@
       !  Subroutine   :               ppm_map_part_ghost_pop
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : This routine pops the contents of the receive buffer 
+      !  Purpose      : This routine pops the contents of the receive buffer
       !                 when sending the ghosts back. Notice the value popped
       !                 will be ADDED to array passed to the routine.
       !
@@ -14,16 +14,16 @@
       !                 lda         (I) the leading dimension of pdata.
       !                                 In the case of pdata being a 1d
       !                                 array use lda=1.
-      !                 Npart       (I) the number of real particles 
+      !                 Npart       (I) the number of real particles
       !                                 (on the processor)
-      !                 Mpart       (I) the number of real + ghost particles 
+      !                 Mpart       (I) the number of real + ghost particles
       !                                 (on the processor)
       !
       !  Input/output :
       !
       !  Output       : info        (I) return status. 0 upon success.
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   :
       !
@@ -62,7 +62,7 @@
       SUBROUTINE ppm_map_part_ghost_pop_1di(pdata,lda,Npart,Mpart,info)
 #elif  __KIND == __LOGICAL
       SUBROUTINE ppm_map_part_ghost_pop_1dl(pdata,lda,Npart,Mpart,info)
-#endif 
+#endif
 
 #elif  __DIM == 2
 #if    __KIND == __SINGLE_PRECISION
@@ -77,7 +77,7 @@
       SUBROUTINE ppm_map_part_ghost_pop_2di(pdata,lda,Npart,Mpart,info)
 #elif  __KIND == __LOGICAL
       SUBROUTINE ppm_map_part_ghost_pop_2dl(pdata,lda,Npart,Mpart,info)
-#endif 
+#endif
 #endif
       !-------------------------------------------------------------------------
       !  Includes
@@ -85,7 +85,7 @@
 #include "ppm_define.h"
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -100,7 +100,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
 #if   __DIM == 1
 #if   __KIND == __INTEGER
@@ -127,7 +127,7 @@
       INTEGER                 , INTENT(IN   ) :: lda,Npart,Mpart
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER, DIMENSION(3) :: ldu
       INTEGER               :: k,ipart,bdim,ibuffer,btype
@@ -135,11 +135,11 @@
       CHARACTER(ppm_char)   :: mesg
       REAL(MK)              :: t0
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
 
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_map_part_ghost_pop',t0,info)
 
@@ -202,14 +202,14 @@
          CALL ppm_error(ppm_err_wrong_dim,'ppm_map_part_ghost_pop',    &
      &       'leading dimension LDA is in error',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 #elif __DIM == 1
       IF (edim.NE.1) THEN
          info = ppm_error_error
          CALL ppm_error(ppm_err_wrong_dim,'ppm_map_part_ghost_pop',    &
      &       'buffer does not contain 1d data!',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 #endif
 
       !-------------------------------------------------------------------------
@@ -262,7 +262,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Decrement the pointer into the receive buffer - this should be the 
+      !  Decrement the pointer into the receive buffer - this should be the
       !  total amount of particle send off to any processor time the size
       !  (dimension) of the data; see ppm_map_part_ghost_put for the contents
       !  of the ppm_ghosthack array
@@ -271,7 +271,7 @@
       DO k=1,ppm_nsendlist ! or ppm_ncommseq(topoid) or ppm_nrecvlist
          i = i + ppm_ghosthack(1,k)
       ENDDO
-      ppm_nrecvbuffer = ppm_nrecvbuffer - i*bdim 
+      ppm_nrecvbuffer = ppm_nrecvbuffer - i*bdim
 
       !-------------------------------------------------------------------------
       !  Decrement the pointer into the send buffer to allow reuse by
@@ -283,10 +283,10 @@
      &    (ppm_psendbuffer(ppm_nsendlist+1)-1)
 
       !-------------------------------------------------------------------------
-      !  loop over the processors in the ppm_isendlist() 
+      !  loop over the processors in the ppm_isendlist()
       !-------------------------------------------------------------------------
 #ifdef __MPI
-      ibuffer = ppm_nrecvbuffer 
+      ibuffer = ppm_nrecvbuffer
 
       IF (ppm_debug .GT. 1) THEN
           WRITE(mesg,'(A,I9)') 'ibuffer = ',ibuffer
@@ -303,7 +303,7 @@
          !----------------------------------------------------------------------
          IF (edim .EQ. 1) THEN
             !-------------------------------------------------------------------
-            !  now empty the receive buffer: 
+            !  now empty the receive buffer:
             !-------------------------------------------------------------------
             DO k=1,ppm_nsendlist ! or ppm_nrecvlist or ppm_ncommseq(topoid)
                DO j=1,ppm_ghosthack(1,k)
@@ -337,7 +337,7 @@
                      pdata(1,ipart) = .TRUE.
                   ELSE
                      pdata(1,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
 #endif
                ENDDO
             ENDDO
@@ -387,14 +387,14 @@
                      pdata(1,ipart) = .TRUE.
                   ELSE
                      pdata(1,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbufferd(ibuffer) .GT.     &
      &               (1.0_ppm_kind_double-ppm_myepsd)) THEN
                      pdata(2,ipart) = .TRUE.
                   ELSE
                      pdata(2,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
 #endif
                ENDDO
             ENDDO
@@ -463,21 +463,21 @@
                      pdata(1,ipart) = .TRUE.
                   ELSE
                      pdata(1,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbufferd(ibuffer) .GT.     &
      &               (1.0_ppm_kind_double-ppm_myepsd)) THEN
                      pdata(2,ipart) = .TRUE.
                   ELSE
                      pdata(2,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbufferd(ibuffer) .GT.     &
      &               (1.0_ppm_kind_double-ppm_myepsd)) THEN
                      pdata(3,ipart) = .TRUE.
                   ELSE
                      pdata(3,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
 #endif
                ENDDO
             ENDDO
@@ -551,28 +551,28 @@
                      pdata(1,ipart) = .TRUE.
                   ELSE
                      pdata(1,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbufferd(ibuffer) .GT.     &
      &               (1.0_ppm_kind_double-ppm_myepsd)) THEN
                      pdata(2,ipart) = .TRUE.
                   ELSE
                      pdata(2,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbufferd(ibuffer) .GT.     &
      &               (1.0_ppm_kind_double-ppm_myepsd)) THEN
                      pdata(3,ipart) = .TRUE.
                   ELSE
                      pdata(3,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbufferd(ibuffer) .GT.     &
      &               (1.0_ppm_kind_double-ppm_myepsd)) THEN
                      pdata(4,ipart) = .TRUE.
                   ELSE
                      pdata(4,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
 #endif
                ENDDO
             ENDDO
@@ -658,35 +658,35 @@
                      pdata(1,ipart) = .TRUE.
                   ELSE
                      pdata(1,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbufferd(ibuffer) .GT.     &
      &               (1.0_ppm_kind_double-ppm_myepsd)) THEN
                      pdata(2,ipart) = .TRUE.
                   ELSE
                      pdata(2,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbufferd(ibuffer) .GT.     &
      &               (1.0_ppm_kind_double-ppm_myepsd)) THEN
                      pdata(3,ipart) = .TRUE.
                   ELSE
                      pdata(3,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbufferd(ibuffer) .GT.     &
      &               (1.0_ppm_kind_double-ppm_myepsd)) THEN
                      pdata(4,ipart) = .TRUE.
                   ELSE
                      pdata(4,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbufferd(ibuffer) .GT.     &
      &               (1.0_ppm_kind_double-ppm_myepsd)) THEN
                      pdata(5,ipart) = .TRUE.
                   ELSE
                      pdata(5,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
 #endif
                ENDDO
             ENDDO
@@ -726,7 +726,7 @@
                         pdata(i,ipart) = .TRUE.
                      ELSE
                         pdata(i,ipart) = .FALSE.
-                     ENDIF 
+                     ENDIF
 #endif
                   ENDDO
                ENDDO
@@ -766,7 +766,7 @@
                   pdata(ipart) = .TRUE.
                ELSE
                   pdata(ipart) = .FALSE.
-               ENDIF 
+               ENDIF
 #endif
             ENDDO
          ENDDO
@@ -810,7 +810,7 @@
                      pdata(1,ipart) = .TRUE.
                   ELSE
                      pdata(1,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
 #endif
                ENDDO
             ENDDO
@@ -860,14 +860,14 @@
                      pdata(1,ipart) = .TRUE.
                   ELSE
                      pdata(1,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbuffers(ibuffer) .GT.      &
      &               (1.0_ppm_kind_single-ppm_myepss)) THEN
                      pdata(2,ipart) = .TRUE.
                   ELSE
                      pdata(2,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
 #endif
                ENDDO
             ENDDO
@@ -929,21 +929,21 @@
                      pdata(1,ipart) = .TRUE.
                   ELSE
                      pdata(1,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                IF (ppm_recvbuffers(ibuffer) .GT.      &
      &               (1.0_ppm_kind_single-ppm_myepss)) THEN
                      pdata(2,ipart) = .TRUE.
                   ELSE
                      pdata(2,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbuffers(ibuffer) .GT.      &
      &               (1.0_ppm_kind_single-ppm_myepss)) THEN
                      pdata(3,ipart) = .TRUE.
                   ELSE
                      pdata(3,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
 #endif
                ENDDO
             ENDDO
@@ -1017,28 +1017,28 @@
                      pdata(1,ipart) = .TRUE.
                   ELSE
                      pdata(1,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbuffers(ibuffer) .GT.      &
      &               (1.0_ppm_kind_single-ppm_myepss)) THEN
                      pdata(2,ipart) = .TRUE.
                   ELSE
                      pdata(2,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbuffers(ibuffer) .GT.      &
      &               (1.0_ppm_kind_single-ppm_myepss)) THEN
                      pdata(3,ipart) = .TRUE.
                   ELSE
                      pdata(3,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbuffers(ibuffer) .GT.      &
      &               (1.0_ppm_kind_single-ppm_myepss)) THEN
                      pdata(4,ipart) = .TRUE.
                   ELSE
                      pdata(4,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
 #endif
                ENDDO
             ENDDO
@@ -1124,35 +1124,35 @@
                      pdata(1,ipart) = .TRUE.
                   ELSE
                      pdata(1,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbuffers(ibuffer) .GT.      &
      &               (1.0_ppm_kind_single-ppm_myepss)) THEN
                      pdata(2,ipart) = .TRUE.
                   ELSE
                      pdata(2,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbuffers(ibuffer) .GT.      &
      &               (1.0_ppm_kind_single-ppm_myepss)) THEN
                      pdata(3,ipart) = .TRUE.
                   ELSE
                      pdata(3,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbuffers(ibuffer) .GT.      &
      &               (1.0_ppm_kind_single-ppm_myepss)) THEN
                      pdata(4,ipart) = .TRUE.
                   ELSE
                      pdata(4,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
                   ibuffer = ibuffer + 1
                   IF (ppm_recvbuffers(ibuffer) .GT.      &
      &               (1.0_ppm_kind_single-ppm_myepss)) THEN
                      pdata(5,ipart) = .TRUE.
                   ELSE
                      pdata(5,ipart) = .FALSE.
-                  ENDIF 
+                  ENDIF
 #endif
                ENDDO
             ENDDO
@@ -1192,7 +1192,7 @@
                         pdata(i,ipart) = .TRUE.
                      ELSE
                         pdata(i,ipart) = .FALSE.
-                     ENDIF 
+                     ENDIF
 #endif
                   ENDDO
                ENDDO
@@ -1232,7 +1232,7 @@
                   pdata(ipart) = .TRUE.
                ELSE
                   pdata(ipart) = .FALSE.
-               ENDIF 
+               ENDIF
 #endif
             ENDDO
          ENDDO
@@ -1243,7 +1243,7 @@
       !-------------------------------------------------------------------------
       !  Decrement the set counter
       !-------------------------------------------------------------------------
-      ppm_buffer_set = ppm_buffer_set - 1  
+      ppm_buffer_set = ppm_buffer_set - 1
 
       !-------------------------------------------------------------------------
       !  Deallocate the receive buffer if all sets have been poped
@@ -1263,7 +1263,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_map_part_ghost_pop',t0,info)

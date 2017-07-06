@@ -90,7 +90,7 @@
       SUBROUTINE ppm_map_connect_distrib(cd,lda,Ncon,id,Npart,info)
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -108,7 +108,7 @@
       INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       INTEGER, DIMENSION(:,:), POINTER       :: cd
       INTEGER                , INTENT(IN   ) :: lda
@@ -131,9 +131,9 @@
       !-------------------------------------------------------------------------
       !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_map_connect_distrib',t0,info)
 
@@ -232,9 +232,9 @@
                    !------------------------------------------------------------
                    !  Store this connection in the array and go to the next one
                    !------------------------------------------------------------
-                   DO ilda=1,lda  
+                   DO ilda=1,lda
                     cd_local(ilda,ncons_local) = cd(ilda,j)
-                   ENDDO  
+                   ENDDO
                    EXIT
                 ENDIF
             ENDIF
@@ -456,7 +456,7 @@
              Ncon = Ncon + 1
              DO ilda=1,lda
               cd(ilda,Ncon) = cd_local(ilda,j)
-             ENDDO  
+             ENDDO
          ENDIF
       ENDDO
 

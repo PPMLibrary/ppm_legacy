@@ -77,25 +77,25 @@
       USE ppm_module_error
       IMPLICIT NONE
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       INTEGER                 , DIMENSION(:), INTENT(IN   ) :: lda
       INTEGER                               , INTENT(IN   ) :: iopt
       TYPE(ppm_type_mesh_list), DIMENSION(:), POINTER :: mesh_list
       INTEGER                               , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER            :: i,ldc
       REAL(ppm_kind_double) :: t0
       TYPE(ppm_type_mesh_list), DIMENSION(:), POINTER :: work_list
       LOGICAL            :: lcopy,lalloc,lrealloc,ldealloc
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_mesh_alloc_list',t0,info)
 
@@ -190,7 +190,7 @@
               ldealloc = .TRUE.
           ENDIF
       ENDIF
-              
+
       !-------------------------------------------------------------------------
       !  Perform the actual alloc action
       !-------------------------------------------------------------------------
@@ -268,7 +268,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_mesh_alloc_list',t0,info)

@@ -2,35 +2,35 @@
       !  Subroutine   :                  ppm_decomp_tree
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : This routine performs a tree-like decomposition. 
+      !  Purpose      : This routine performs a tree-like decomposition.
       !                 It subdivides space until the number of leaves in the
       !                 tree exceeds the number of processors AND until the
       !                 variance of the number of particles in the leaves is
       !                 below a certain tolerance.
       !
       !  Input        : xp(:,:)      (F) the position of the particles
-      !                 Npart        (I) the number of particles 
-      !                 min_phys(:)  (F) the minimum coordinate of the 
-      !                                  physical/computational domain 
-      !                 max_phys(:)  (F) the maximum coordinate of the 
-      !                                  physical/computational domain 
-      !                 minboxsize   (F) the miminum box size 
-      !                 tolerance    (F) the maximum relative variance of the 
-      !                                  box cost allowed before terminating 
+      !                 Npart        (I) the number of particles
+      !                 min_phys(:)  (F) the minimum coordinate of the
+      !                                  physical/computational domain
+      !                 max_phys(:)  (F) the maximum coordinate of the
+      !                                  physical/computational domain
+      !                 minboxsize   (F) the miminum box size
+      !                 tolerance    (F) the maximum relative variance of the
+      !                                  box cost allowed before terminating
       !                                  the tree; tolerance >= 0
       !                 pcost(:)     (F) OPTIONAL argument of length
       !                                  Npart, specifying the
       !                                  computational cost of each
       !                                  particle.
       !
-      !  Input/output :                                            
+      !  Input/output :
       !
       !  Output       : min_sub(:,:) (F) the min. extent of the subdomain
       !                 max_sub(:,:) (F) the max. extent of the subdomain
       !                 nsubs        (I) the total number of subdomains
       !                 info         (I) return status
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   :
       !
@@ -109,7 +109,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -132,7 +132,7 @@
       INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
       REAL(MK), DIMENSION(:)  , INTENT(IN   ) :: min_phys,max_phys
@@ -143,7 +143,7 @@
       INTEGER                 , INTENT(  OUT) :: nsubs
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(ppm_dim) :: len_phys
       REAL(MK), DIMENSION(2)       :: vector_in,vector_out
@@ -158,11 +158,11 @@
       LOGICAL :: lcontinue
       CHARACTER(ppm_char) :: mesg
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_decomp_tree',t0,info)
 
@@ -175,25 +175,28 @@
             CALL ppm_error(ppm_err_argument,'ppm_decomp_tree',     &
      &          'the minimum box size must be > 0 !',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
          IF (Npart .LT. 0) THEN
             info = ppm_error_error
             CALL ppm_error(ppm_err_argument,'ppm_decomp_tree',     &
      &          'the number of particles must be >= 0 !',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
          DO i=1,ppm_dim
             IF (min_phys(i) .GT. max_phys(i)) THEN
                info = ppm_error_error
                CALL ppm_error(ppm_err_argument,'ppm_decomp_tree',     &
      &             'min_phys must be <= max_phys !',__LINE__,info)
                 GOTO 9999
-            ENDIF 
+            ENDIF
          ENDDO
-      ENDIF 
+      ENDIF
 
+
+      NULLIFY(min_box,max_box,work)
+      NULLIFY(npbx,npbxg,ppb)
       !-------------------------------------------------------------------------
-      !  Allocate memory for a copy of the particles (the copy is needed since 
+      !  Allocate memory for a copy of the particles (the copy is needed since
       !  the particles will be rearranged in the process of creating the tree)
       !-------------------------------------------------------------------------
       iopt   = ppm_param_alloc_fit
@@ -205,7 +208,7 @@
          CALL ppm_error(ppm_err_alloc,'ppm_decomp_tree',               &
      &                  'alloc of work array failed!',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Make a copy of the particles (since they will be rearranged in the
@@ -222,7 +225,7 @@
             work(2,ipart) = xp(2,ipart)
             work(3,ipart) = xp(3,ipart)
          ENDDO
-      ENDIF 
+      ENDIF
 
 #ifdef __MPI
       !-------------------------------------------------------------------------
@@ -231,7 +234,7 @@
       CALL MPI_AllReduce(Npart,Npartg,1,MPI_INTEGER,MPI_SUM,ppm_comm,info)
 #else
       Npartg = Npart
-#endif 
+#endif
 
       !-------------------------------------------------------------------------
       !  Allocate some memory for the tree
@@ -246,7 +249,7 @@
          CALL ppm_error(ppm_err_alloc,'ppm_decomp_tree',               &
      &                  'alloc of min_box failed!',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 
       CALL ppm_alloc(max_box,ldc,iopt,info)
       IF (info.NE.0) THEN
@@ -254,7 +257,7 @@
          CALL ppm_error(ppm_err_alloc,'ppm_decomp_tree',               &
      &                  'alloc of max_box failed!',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 
       CALL ppm_alloc(min_sub,ldc,iopt,info)
       IF (info.NE.0) THEN
@@ -262,7 +265,7 @@
          CALL ppm_error(ppm_err_alloc,'ppm_decomp_tree',               &
      &                  'alloc of min_sub failed!',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 
       CALL ppm_alloc(max_sub,ldc,iopt,info)
       IF (info.NE.0) THEN
@@ -270,7 +273,7 @@
          CALL ppm_error(ppm_err_alloc,'ppm_decomp_tree',               &
      &                  'alloc of max_sub failed!',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 
       ldc(1) = ldc(2)
       CALL ppm_alloc(ppb  ,ldc,iopt,info)
@@ -279,7 +282,7 @@
          CALL ppm_error(ppm_err_alloc,'ppm_decomp_tree',               &
      &                  'alloc of ppb failed!',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 
       CALL ppm_alloc(npbx ,ldc,iopt,info)
       IF (info.NE.0) THEN
@@ -287,7 +290,7 @@
          CALL ppm_error(ppm_err_alloc,'ppm_decomp_tree',               &
      &                  'alloc of npbx failed!',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 
 !--------------------------------------------------
 !       CALL ppm_alloc(cost ,ldc,iopt,info)
@@ -296,7 +299,7 @@
 !          CALL ppm_error(ppm_err_alloc,'ppm_decomp_tree',               &
 !      &                  'alloc of cost failed!',__LINE__,info)
 !          GOTO 9999
-!       ENDIF 
+!       ENDIF
 !--------------------------------------------------
 
       CALL ppm_alloc(npbxg,ldc,iopt,info)
@@ -305,7 +308,7 @@
          CALL ppm_error(ppm_err_alloc,'ppm_decomp_tree',               &
      &                  'alloc of npbxg failed!',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Initialise the first box
@@ -321,7 +324,7 @@
       npbxg(fbox) = Npart
 
       !-------------------------------------------------------------------------
-      !  Compute the maximum number of levels 
+      !  Compute the maximum number of levels
       !-------------------------------------------------------------------------
       nlevel = INT(LOG(MINVAL(len_phys)/minboxsize)/LOG(2.0_MK)) + 1
 
@@ -352,7 +355,7 @@
             ELSE
                !----------------------------------------------------------------
                !  if empty save it as a subdomain ie increment the sub counter
-               !  and check for memory 
+               !  and check for memory
                !----------------------------------------------------------------
                nsubs = nsubs + 1
                IF (nsubs.GT.SIZE(min_sub,2)) THEN
@@ -366,7 +369,7 @@
                   ldc(1) = ldc(2)
            !       CALL ppm_alloc(cost,ldc,iopt,info)
            !       IF (info.NE.0) GOTO 200
-               ENDIF 
+               ENDIF
 
                !----------------------------------------------------------------
                !  save the subdomain
@@ -376,7 +379,7 @@
                   max_sub(k,nsubs) = max_box(k,kbox)
                ENDDO
            !    cost(nsubs) = 0
-            ENDIF 
+            ENDIF
          ENDDO
 
          !----------------------------------------------------------------------
@@ -415,7 +418,7 @@
             CALL ppm_error(ppm_err_alloc,'ppm_decomp_tree',                  &
      &                     'reallocating the tree failed (1)!',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
 
          !----------------------------------------------------------------------
          !  Update the level counter and boxes ie. consider now the new boxes
@@ -441,7 +444,7 @@
 #endif
 
          !----------------------------------------------------------------------
-         !  Check if to continue to the next level 
+         !  Check if to continue to the next level
          !  (A) if we reached the finest level we exit
          !----------------------------------------------------------------------
          IF (ilevel.EQ.nlevel) lcontinue = .FALSE.
@@ -456,16 +459,16 @@
             !  Compute the mean and variance of the particle in the boxes at
             !  the next level
             !-------------------------------------------------------------------
-             var_npbx = 0.0_MK 
-            mean_npbx = 0.0_MK 
-            IF (PRESENT(pcost)) THEN 
+             var_npbx = 0.0_MK
+            mean_npbx = 0.0_MK
+            IF (PRESENT(pcost)) THEN
                !----------------------------------------------------------------
                !  If the pcost is present take this into account
                !----------------------------------------------------------------
                DO kbox=fbox,lbox
                   DO k=ppb(kbox),ppb(kbox)+npbx(kbox)-1
-                     mean_npbx = mean_npbx + pcost(k)    
-                      var_npbx =  var_npbx + pcost(k)**2 
+                     mean_npbx = mean_npbx + pcost(k)
+                      var_npbx =  var_npbx + pcost(k)**2
                   ENDDO
                ENDDO
 
@@ -482,8 +485,8 @@
                CALL MPI_AllReduce(vector_in,vector_out,2,MPI_DOUBLE_PRECISION, &
      &                            MPI_SUM,ppm_comm,info)
 #endif
-               mean_npbx = vector_out(1) 
-                var_npbx = vector_out(2) 
+               mean_npbx = vector_out(1)
+                var_npbx = vector_out(2)
 #endif
             ELSE
                !----------------------------------------------------------------
@@ -502,13 +505,13 @@
              var_npbx = var_npbx/REAL(lbox - fbox + 1,MK) - mean_npbx**2
 
             !-------------------------------------------------------------------
-            !  If the variance is acceptable ie less than the tolerance times 
-            !  the mean number of particles, then stop 
+            !  If the variance is acceptable ie less than the tolerance times
+            !  the mean number of particles, then stop
             !-------------------------------------------------------------------
             IF (var_npbx.LT.tolerance*mean_npbx) THEN
                lcontinue = .FALSE.
-            ENDIF 
-         ENDIF 
+            ENDIF
+         ENDIF
 
          !----------------------------------------------------------------------
          !  Compute the required amount of memory at the next level
@@ -518,7 +521,7 @@
          !----------------------------------------------------------------------
          !  Check if we have enough memory
          !----------------------------------------------------------------------
-         IF (lcontinue.AND.SIZE(npbx).LT.mem_req) THEN 
+         IF (lcontinue.AND.SIZE(npbx).LT.mem_req) THEN
             iopt   = ppm_param_alloc_fit_preserve
             ldc(1) = ppm_dim
             ldc(2) = mem_req
@@ -541,7 +544,7 @@
 #ifdef __MPI
             IF (ppm_debug.GT.0) THEN
                !----------------------------------------------------------------
-               !  MPI AllReduce is expensive so we only do this in debugging 
+               !  MPI AllReduce is expensive so we only do this in debugging
                !----------------------------------------------------------------
                CALL MPI_AllReduce(info,i,1,MPI_INTEGER,MPI_SUM,ppm_comm,info)
                info = i
@@ -552,19 +555,19 @@
                CALL ppm_error(ppm_err_alloc,'ppm_decomp_tree',                 &
      &                        'reallocating the tree failed (2)!',__LINE__,info)
                GOTO 9999
-            ENDIF 
+            ENDIF
          ENDIF
- 
+
       ENDDO ! end of main DO WHILE loop
 
       !-------------------------------------------------------------------------
       !  Now use the boxes as our domains (including empty boxes, since we dont
-      !  want void space which would/could cause particles moving into empty 
+      !  want void space which would/could cause particles moving into empty
       !  space ... well this could be ok: would need an immediate rebuild of
       !  the decomposition  - but then again - perhaps this would happen quite
       !  frequently.
       !-------------------------------------------------------------------------
-      mem_req = nsubs + (lbox + 1 - fbox) 
+      mem_req = nsubs + (lbox + 1 - fbox)
       IF (mem_req.GT.SIZE(min_sub,2)) THEN
          iopt   = ppm_param_alloc_fit_preserve
          ldc(1) = ppm_dim
@@ -580,8 +583,8 @@
             CALL ppm_error(ppm_err_alloc,'ppm_decomp_tree',                  &
      &                     'reallocating the subs failed!',__LINE__,info)
             GOTO 9999
-         ENDIF 
-      ENDIF 
+         ENDIF
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Perform the copy
@@ -615,7 +618,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Debugging: write out the tree 
+      !  Debugging: write out the tree
       !-------------------------------------------------------------------------
       IF (ppm_debug.GT.0) THEN
          IF (ppm_rank.EQ.0) THEN
@@ -632,7 +635,7 @@
             ENDDO
             CLOSE(10)
          ENDIF
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Free the memory again
@@ -644,11 +647,11 @@
       IF (info.NE.0) GOTO 500
       CALL ppm_alloc(npbxg  ,ldc,iopt,info)
       IF (info.NE.0) GOTO 500
-      CALL ppm_alloc(min_box,ldc,iopt,info) 
+      CALL ppm_alloc(min_box,ldc,iopt,info)
       IF (info.NE.0) GOTO 500
-      CALL ppm_alloc(max_box,ldc,iopt,info) 
+      CALL ppm_alloc(max_box,ldc,iopt,info)
       IF (info.NE.0) GOTO 500
-      CALL ppm_alloc(work   ,ldc,iopt,info) 
+      CALL ppm_alloc(work   ,ldc,iopt,info)
       IF (info.NE.0) GOTO 500
   500 CONTINUE
       IF (info.NE.0) THEN
@@ -656,10 +659,10 @@
          CALL ppm_error(ppm_err_alloc,'ppm_decomp_tree',                  &
      &                  'deallocating work arrays failed!',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_decomp_tree',t0,info)

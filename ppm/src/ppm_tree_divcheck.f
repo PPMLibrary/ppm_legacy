@@ -16,7 +16,7 @@
       !                                  fixed (i.e. must not be divided).
       !                 boxcost(:)   (F) costs associated with boxes
       !
-      !  Input/output :                                            
+      !  Input/output :
       !
       !  Output       : ndiv(:)      (I) number of divisible directions of
       !                                  each box (1..nbox).
@@ -74,7 +74,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -92,7 +92,7 @@
       !-------------------------------------------------------------------------
 #include "ppm_define.h"
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: min_box,max_box
       INTEGER                 , INTENT(IN   ) :: nbox
@@ -101,18 +101,18 @@
       INTEGER , DIMENSION(:  ), POINTER       :: ndiv
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK)                                :: t0,lmyeps,boxlen
       REAL(MK), DIMENSION(ppm_dim)            :: ms2
       INTEGER                                 :: iopt,i,j
       INTEGER, DIMENSION(2)                   :: ldc
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_tree_divcheck',t0,info)
 #if   __KIND == __SINGLE_PRECISION
@@ -130,24 +130,24 @@
             CALL ppm_error(ppm_err_argument,'ppm_tree_divcheck',     &
      &          'Number of boxes must be >= 0',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
          DO i=1,ppm_dim
             IF (minboxsize(i) .LT. 0.0_MK) THEN
                info = ppm_error_error
                CALL ppm_error(ppm_err_argument,'ppm_tree_divcheck',     &
      &             'the minimum box size must be > 0 !',__LINE__,info)
                GOTO 9999
-            ENDIF 
+            ENDIF
             DO j=1,nbox
                IF (min_box(i,j) .GT. max_box(i,j)) THEN
                   info = ppm_error_error
                   CALL ppm_error(ppm_err_argument,'ppm_tree_divcheck',   &
      &                'min_box must be <= max_box !',__LINE__,info)
                   GOTO 9999
-               ENDIF 
+               ENDIF
             ENDDO
          ENDDO
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  If there are no boxes to check, we quit
@@ -178,7 +178,7 @@
       ENDDO
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_tree_divcheck',t0,info)

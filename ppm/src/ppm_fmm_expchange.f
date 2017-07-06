@@ -4,18 +4,18 @@
       !
       !  Purpose      : This routine exchanges the expansion coefficents,
       !                 the radius and the centerofboxes between all processores
-      !                 by all to all communication    
-      !                
+      !                 by all to all communication
       !
-      !  Input        : 
+      !
+      !  Input        :
       !                 prec         (F) : dummy to determine precision
       !                 lda          (I) leading dimension of vector case
-      !                                    
+      !
       !  Output       : info         (I) : return status, 0 on success
       !
       !  Remarks      : This routine has 3 separate sendrecv, ie. the data is
       !                        not packed before  sending
-      !                       (no pack data -send - unpack data ) 
+      !                       (no pack data -send - unpack data )
       !
       !  References   :
       !
@@ -88,7 +88,7 @@
 
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_fmm
@@ -97,7 +97,7 @@
       USE ppm_module_error
       USE ppm_module_alloc
       IMPLICIT NONE
-     
+
       !-------------------------------------------------------------------------
       !  Includes
       !-------------------------------------------------------------------------
@@ -108,7 +108,7 @@
 
       !-------------------------------------------------------------------------
       !  Precision
-      !------------------------------------------------------------------------- 
+      !-------------------------------------------------------------------------
 #if    __KIND == __SINGLE_PRECISION
       INTEGER, PARAMETER :: MK = ppm_kind_single
 #else
@@ -116,15 +116,15 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
 #if   __DIM == __VFIELD
       INTEGER                 , INTENT(IN   ) :: lda
-#endif      
+#endif
       REAL(MK)                , INTENT(IN   ) :: prec
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       ! auxiliary variables
       INTEGER                              :: i,j,k,isub,m,n,l
@@ -138,34 +138,34 @@
       INTEGER, DIMENSION(1)                :: ldu1
       INTEGER, DIMENSION(2)                :: ldu2
       INTEGER, DIMENSION(3)                :: ldu3
-      INTEGER, DIMENSION(4)                :: ldu4      
+      INTEGER, DIMENSION(4)                :: ldu4
       REAL(MK)                             :: t0
-      
+
       ! parallelisation
 #ifdef __MPI
       INTEGER, DIMENSION(MPI_STATUS_SIZE)  :: status
 #endif
-      
-      ! fmm      
-      REAL(MK),DIMENSION(:  ),     POINTER :: radius,recvrad,sendrad
-      REAL(MK),DIMENSION(:,:),     POINTER :: recvcen,sendcen,centerofbox 
 
-#if   __DIM == __SFIELD       
+      ! fmm
+      REAL(MK),DIMENSION(:  ),     POINTER :: radius,recvrad,sendrad
+      REAL(MK),DIMENSION(:,:),     POINTER :: recvcen,sendcen,centerofbox
+
+#if   __DIM == __SFIELD
       COMPLEX(MK),DIMENSION(:,:,:),POINTER :: expansion,recvexp,sendexp
 #else
       COMPLEX(MK),DIMENSION(:,:,:,:),POINTER :: expansion,recvexp,sendexp
 #endif
 
-      
+
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_fmm_expchange',t0,info)
-      
+
       !-------------------------------------------------------------------------
       !  pointing to correct variables (single/double)
       !-------------------------------------------------------------------------
@@ -174,7 +174,7 @@
 #if   __DIM == __SFIELD
       expansion   => expansion_s_sf
 #else
-      expansion   => expansion_s_vf     
+      expansion   => expansion_s_vf
 #endif
       centerofbox => centerofbox_s
       radius      => radius_s
@@ -182,12 +182,13 @@
 #if   __DIM == __SFIELD
       expansion   => expansion_d_sf
 #else
-      expansion   => expansion_d_vf     
+      expansion   => expansion_d_vf
 #endif
       centerofbox => centerofbox_d
       radius      => radius_d
 #endif
 
+      NULLIFY(recvrad,sendrad,recvexp,sendexp)
 
       !-------------------------------------------------------------------------
       !  Allocate memory for the sendlist
@@ -195,7 +196,7 @@
       iopt = ppm_param_alloc_fit
       ppm_nsendlist = ppm_nproc
       ppm_nrecvlist = ppm_nproc
-      
+
       ldu1(1)        = ppm_nsendlist
       CALL ppm_alloc(ppm_isendlist,ldu1,iopt,info)
       IF (info .NE. 0) THEN
@@ -204,7 +205,7 @@
           &    'send list PPM_ISENDLIST',__LINE__,info)
           GOTO 9999
       ENDIF
-      
+
       CALL ppm_alloc(ppm_irecvlist,ldu1,iopt,info)
       IF (info .NE. 0) THEN
           info = ppm_error_fatal
@@ -215,7 +216,7 @@
 
       tag2   = 200
 
-      
+
       !-------------------------------------------------------------------------
       !  compute top level topology
       !-------------------------------------------------------------------------
@@ -235,7 +236,7 @@
       ENDDO
 #endif
 
-      
+
       !-------------------------------------------------------------------------
       !   Compute nsendexp,nsendcen,nsendrad (nr of exp.,cen.,rad. to be sent)
       !-------------------------------------------------------------------------
@@ -254,7 +255,7 @@
       !   Set up own lists for sending to other processors
       !-------------------------------------------------------------------------
       ! expansion
-#if   __DIM == __SFIELD      
+#if   __DIM == __SFIELD
       ldu3(1) = nsendexp
       ldu3(2) = order+1
       ldu3(3) = 2*order+1
@@ -265,13 +266,13 @@
       ldu4(3) = order+1
       ldu4(4) = 2*order+1
       CALL ppm_alloc(sendexp,ldu4,iopt,info)
-#endif 
+#endif
       IF (info .NE. 0) THEN
          info = ppm_error_fatal
          CALL ppm_error(ppm_err_alloc,'ppm_fmm_expchange', &
       &       'error allocating sendexp',__LINE__,info)
       GOTO 9999
-      ENDIF 
+      ENDIF
 
       ! centerofbox
       ldu2(1) = 3
@@ -282,20 +283,20 @@
          CALL ppm_error(ppm_err_alloc,'ppm_fmm_expchange', &
       &       'error allocating sendcen',__LINE__,info)
       GOTO 9999
-      ENDIF 
+      ENDIF
 
       ! radius
       ldu1(1) = nsendrad
       CALL ppm_alloc(sendrad,ldu1,iopt,info)
-      
+
       IF (info .NE. 0) THEN
          info = ppm_error_fatal
          CALL ppm_error(ppm_err_alloc,'ppm_fmm_expchange', &
       &       'error allocating sendrad',__LINE__,info)
       GOTO 9999
-      ENDIF 
-      
-      
+      ENDIF
+
+
       !-------------------------------------------------------------------------
       !  loop over levels of tree
       !-------------------------------------------------------------------------
@@ -309,23 +310,23 @@
          !----------------------------------------------------------------------
          !   loop over local subs and store in sendexp,sendcen,sendrad
          !----------------------------------------------------------------------
-         
+
 	 DO j=1,ppm_nsublist(curtopoid)
-            
+
 	    box = ppm_boxid(ppm_isublist(j,curtopoid),i)
             cnt = cnt + 1
 
 #if         __DIM == __SFIELD
 	    DO n=1,ldu3(2)
                DO m=1,ldu3(3)
-                  sendexp(cnt,n,m) = expansion(box,n-1,m-order-1)       
+                  sendexp(cnt,n,m) = expansion(box,n-1,m-order-1)
                ENDDO
             ENDDO
 #else
             DO n=1,ldu4(2)
                DO m=1,ldu4(3)
                   DO l=1,ldu4(1)
-                     sendexp(l,cnt,n,m) = expansion(l,box,n-1,m-order-1)       
+                     sendexp(l,cnt,n,m) = expansion(l,box,n-1,m-order-1)
                   ENDDO
                ENDDO
             ENDDO
@@ -336,8 +337,8 @@
             sendrad(cnt)     = radius(box)
          ENDDO
       ENDDO
-      
-      
+
+
       !-------------------------------------------------------------------------
       !   Initialize sendrank, recvrank, ppm_nsendlist, ppm_nrecvlist
       !-------------------------------------------------------------------------
@@ -364,32 +365,32 @@
          !  compute the next processor
          !----------------------------------------------------------------------
 	 sendrank = sendrank + 1
-         IF (sendrank.GT.ppm_nproc-1) sendrank = sendrank - ppm_nproc 
+         IF (sendrank.GT.ppm_nproc-1) sendrank = sendrank - ppm_nproc
          recvrank = recvrank - 1
-         IF (recvrank.LT.          0) recvrank = recvrank + ppm_nproc 
+         IF (recvrank.LT.          0) recvrank = recvrank + ppm_nproc
 
 	 !----------------------------------------------------------------------
          !  Store the processor to which we will send to
          !----------------------------------------------------------------------
-	 ppm_nsendlist                = ppm_nsendlist + 1 
+	 ppm_nsendlist                = ppm_nsendlist + 1
          ppm_isendlist(ppm_nsendlist) = sendrank
 
          !----------------------------------------------------------------------
          !  Store the processor to which we will recv from
          !----------------------------------------------------------------------
-	 ppm_nrecvlist                = ppm_nrecvlist + 1 
+	 ppm_nrecvlist                = ppm_nrecvlist + 1
          ppm_irecvlist(ppm_nrecvlist) = recvrank
-  
-         
+
+
 	 !----------------------------------------------------------------------
          !  reset counter for nr of exp.coeff.,rad,centers to be received
          !----------------------------------------------------------------------
 	 nrecvexp                     = 0
          nrecvcen                     = 0
          nrecvrad                     = 0
-         
+
 	 !----------------------------------------------------------------------
-         !  loop over all topologies and check all subs 
+         !  loop over all topologies and check all subs
          !----------------------------------------------------------------------
          DO j=level,nlevel
             topoid = topoidlist(j)
@@ -399,7 +400,7 @@
             curtopoid = ppm_internal_topoid(topoid)
             DO isub=1,ppm_nsubs(curtopoid)
               !-----------------------------------------------------------------
-              !  Check if they belong to the processor from where we will 
+              !  Check if they belong to the processor from where we will
               !  receive data
               !-----------------------------------------------------------------
               IF (ppm_subs2proc(isub,curtopoid) .EQ. recvrank) THEN
@@ -413,11 +414,11 @@
                  !--------------------------------------------------------------
                  !  will be exchanged in another round
                  !--------------------------------------------------------------
-              ENDIF 
+              ENDIF
            ENDDO
          ENDDO
-         
-	 
+
+
 	 !----------------------------------------------------------------------
          !  Allocate our recv-arrays, exp.,rad., centers to be received
          !----------------------------------------------------------------------
@@ -459,7 +460,7 @@
 	 ! radius
          ldu1(1) = nrecvrad
          CALL ppm_alloc(recvrad,ldu1,iopt,info)
- 
+
          IF (info .NE. 0) THEN
             info = ppm_error_fatal
             CALL ppm_error(ppm_err_alloc,'ppm_fmm_expchange', &
@@ -467,7 +468,7 @@
          GOTO 9999
          ENDIF
 
-	 
+
          !----------------------------------------------------------------------
          !  receive the expansions
          !----------------------------------------------------------------------
@@ -496,7 +497,7 @@
 #endif
          !----------------------------------------------------------------------
          !  receive the radius
-         !---------------------------------------------------------------------- 
+         !----------------------------------------------------------------------
 	 nsend = nsendrad
          nrecv = nrecvrad
 #ifdef __MPI
@@ -517,7 +518,7 @@
             curtopoid = ppm_internal_topoid(topoid)
             DO isub=1,ppm_nsubs(curtopoid)
               !-----------------------------------------------------------------
-              !  Check if the sub belongs to the processor from where we 
+              !  Check if the sub belongs to the processor from where we
               !  received data
               !-----------------------------------------------------------------
 	      IF (ppm_subs2proc(isub,curtopoid) .EQ. recvrank) THEN
@@ -551,7 +552,7 @@
          ENDDO
       ENDDO ! end loop over nproc
 
-      
+
       !-------------------------------------------------------------------------
       !  Deallocate the memory for the lists
       !-------------------------------------------------------------------------
@@ -585,9 +586,9 @@
          CALL ppm_error(ppm_err_dealloc,'ppm_fmm_expchange',     &
          &    'sendexp',__LINE__,info)
       ENDIF
-      
+
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_fmm_expchange',t0,info)

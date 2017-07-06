@@ -49,7 +49,7 @@
       !                 considered. This could lead to a too large
       !                 sendbuffer being allocated in the last push and
       !                 could be optimized later.
-      !                 
+      !
       !  References   :
       !
       !  Revisions    :
@@ -121,7 +121,7 @@
       !  Added debug output in several places.
       !
       !  Revision 1.2  2004/02/23 08:56:39  ivos
-      !  bugfix: necessary size of data array (for argument check) was 
+      !  bugfix: necessary size of data array (for argument check) was
       !  determined using global data instead of on-processor data. fixed.
       !
       !  Revision 1.1  2004/02/17 16:12:30  ivos
@@ -149,7 +149,7 @@
       SUBROUTINE ppm_map_field_push_2d_sca_i(fdata,lda,frommesh,info,mask)
 #elif  __KIND == __LOGICAL
       SUBROUTINE ppm_map_field_push_2d_sca_l(fdata,lda,frommesh,info,mask)
-#endif 
+#endif
 
 #elif  __DIM == __VFIELD
 #if    __KIND == __SINGLE_PRECISION
@@ -164,15 +164,15 @@
       SUBROUTINE ppm_map_field_push_2d_vec_i(fdata,lda,frommesh,info,mask)
 #elif  __KIND == __LOGICAL
       SUBROUTINE ppm_map_field_push_2d_vec_l(fdata,lda,frommesh,info,mask)
-#endif 
-#endif 
+#endif
+#endif
       !-------------------------------------------------------------------------
       !  Includes
       !-------------------------------------------------------------------------
 #include "ppm_define.h"
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_mesh
@@ -190,7 +190,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
 #if   __DIM == __SFIELD
 #if   __KIND == __INTEGER
@@ -218,7 +218,7 @@
       INTEGER                        , INTENT(IN   ) :: lda,frommesh
       INTEGER                        , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER, DIMENSION(2)   :: ldu,mofs
       INTEGER                 :: i,j,k,ibuffer,isub,imesh,jmesh,jsub
@@ -227,11 +227,11 @@
       LOGICAL                 :: ldo
       CHARACTER(LEN=ppm_char) :: mesg
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_map_field_push_2d',t0,info)
       fromtopo = ppm_field_topoid
@@ -344,7 +344,7 @@
       Ndata = 0
       DO i=1,ppm_nsendlist
          !----------------------------------------------------------------------
-         !  access mesh blocks belonging to the i-th processor in the 
+         !  access mesh blocks belonging to the i-th processor in the
          !  sendlist
          !----------------------------------------------------------------------
          DO j=ppm_psendbuffer(i),ppm_psendbuffer(i+1)-1
@@ -368,7 +368,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Increment the buffer set 
+      !  Increment the buffer set
       !-------------------------------------------------------------------------
       ppm_buffer_set = ppm_buffer_set + 1
 
@@ -400,7 +400,7 @@
       ldb = 2*lda
 #else
       ldb = lda
-#endif 
+#endif
 
       !-------------------------------------------------------------------------
       !  Store the dimension and type
@@ -444,7 +444,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  loop over the processors in the ppm_isendlist() 
+      !  loop over the processors in the ppm_isendlist()
       !-------------------------------------------------------------------------
       ibuffer = ppm_nsendbuffer
       !-------------------------------------------------------------------------
@@ -452,7 +452,7 @@
       !-------------------------------------------------------------------------
       IF (ppm_kind.EQ.ppm_kind_double) THEN
          !----------------------------------------------------------------------
-         !  (Re)allocate memory for the buffer 
+         !  (Re)allocate memory for the buffer
          !----------------------------------------------------------------------
          iopt   = ppm_param_alloc_grow_preserve
          ldu(1) = ppm_nsendbuffer + ldb*Ndata
@@ -466,7 +466,7 @@
 
          DO i=1,ppm_nsendlist
             !-------------------------------------------------------------------
-            !  access mesh blocks belonging to the i-th processor in the 
+            !  access mesh blocks belonging to the i-th processor in the
             !  sendlist
             !-------------------------------------------------------------------
             DO j=ppm_psendbuffer(i),ppm_psendbuffer(i+1)-1
@@ -1072,7 +1072,7 @@
       !-------------------------------------------------------------------------
       ELSE
          !----------------------------------------------------------------------
-         !  (Re)allocate memory for the buffer 
+         !  (Re)allocate memory for the buffer
          !----------------------------------------------------------------------
          iopt   = ppm_param_alloc_grow_preserve
          ldu(1) = ppm_nsendbuffer + ldb*Ndata
@@ -1086,7 +1086,7 @@
 
          DO i=1,ppm_nsendlist
             !-------------------------------------------------------------------
-            !  access mesh blocks belonging to the i-th processor in the 
+            !  access mesh blocks belonging to the i-th processor in the
             !  sendlist
             !-------------------------------------------------------------------
             DO j=ppm_psendbuffer(i),ppm_psendbuffer(i+1)-1
@@ -1705,7 +1705,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_map_field_push_2d',t0,info)

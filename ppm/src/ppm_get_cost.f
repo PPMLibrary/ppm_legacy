@@ -22,7 +22,7 @@
       !                                  not present, a cost of 1 per
       !                                  particle is assumed.
       !
-      !  Input/output : 
+      !  Input/output :
       !
       !  Output       : cost(:)      (F) Aggregate cost for each subdomain
       !                 proc_cost(:) (F) Aggregate cost for each processor
@@ -83,7 +83,7 @@
       SUBROUTINE ppm_get_cost_d(xp,Np,topo_id,mesh_id,cost,proc_cost,info,pcost)
 #endif
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_mesh, ONLY: ppm_cart_mesh, ppm_meshid
@@ -109,7 +109,7 @@
        INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
       REAL(MK), DIMENSION(:  ), POINTER       :: cost
@@ -118,7 +118,7 @@
       INTEGER                 , INTENT(IN   ) :: Np,topo_id,mesh_id
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK)                          :: t0,mincost,maxcost
       INTEGER, DIMENSION(ppm_dim)       :: ldl,ldu
@@ -132,11 +132,11 @@
       REAL(MK), DIMENSION(:), POINTER   :: sendcost, proccost
 #endif
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_get_cost',t0,info)
 
@@ -186,6 +186,10 @@
               GOTO 9999
           ENDIF
       ENDIF
+
+#ifdef __MPI
+      NULLIFY(sendcost,proccost)
+#endif
 
       !-------------------------------------------------------------------------
       !  Translate topo_id to internal numbering
@@ -372,7 +376,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_get_cost',t0,info)

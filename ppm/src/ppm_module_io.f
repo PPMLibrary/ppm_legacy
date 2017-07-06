@@ -6,8 +6,8 @@
       !                 definitions that are PRIVATE to the IO routines.
       !                 It also included those routines and provides
       !                 INTERFACEs.
-      !                
-      !  Remarks      : 
+      !
+      !  Remarks      :
       !
       !  References   :
       !
@@ -79,12 +79,12 @@
          !----------------------------------------------------------------------
          !  Work arrays
          !----------------------------------------------------------------------
-         REAL(ppm_kind_single)   , DIMENSION(:), POINTER :: abuf_s
-         REAL(ppm_kind_double)   , DIMENSION(:), POINTER :: abuf_d
-         COMPLEX(ppm_kind_single), DIMENSION(:), POINTER :: abuf_sc
-         COMPLEX(ppm_kind_double), DIMENSION(:), POINTER :: abuf_dc
-         INTEGER                 , DIMENSION(:), POINTER :: abuf_i
-         LOGICAL                 , DIMENSION(:), POINTER :: abuf_l
+         REAL(ppm_kind_single)   , DIMENSION(:), POINTER :: abuf_s  => NULL()
+         REAL(ppm_kind_double)   , DIMENSION(:), POINTER :: abuf_d  => NULL()
+         COMPLEX(ppm_kind_single), DIMENSION(:), POINTER :: abuf_sc => NULL()
+         COMPLEX(ppm_kind_double), DIMENSION(:), POINTER :: abuf_dc => NULL()
+         INTEGER                 , DIMENSION(:), POINTER :: abuf_i  => NULL()
+         LOGICAL                 , DIMENSION(:), POINTER :: abuf_l  => NULL()
 
          !----------------------------------------------------------------------
          !  Define interface to ppm_io
@@ -204,7 +204,7 @@
 #include "ppm_io.f"
 #undef __KIND
 #undef __DIM
-         
+
 #define __DIM 3
 #define __KIND __SINGLE_PRECISION
 #include "ppm_io.f"
@@ -225,7 +225,7 @@
 #include "ppm_io.f"
 #undef __KIND
 #undef __DIM
-         
+
 #define __DIM 4
 #define __KIND __SINGLE_PRECISION
 #include "ppm_io.f"
@@ -246,7 +246,7 @@
 #include "ppm_io.f"
 #undef __KIND
 #undef __DIM
-         
+
 #define __DIM 5
 #define __KIND __SINGLE_PRECISION
 #include "ppm_io.f"
@@ -266,6 +266,6 @@
 #define __KIND __DOUBLE_PRECISION_COMPLEX
 #include "ppm_io.f"
 #undef __KIND
-#undef __DIM 
+#undef __DIM
 
       END MODULE ppm_module_io

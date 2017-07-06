@@ -2,16 +2,16 @@
       !  Subroutine   :                   ppm_mg_finalize
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : This routine deallocates all the arrays 
-      !                 
+      !  Purpose      : This routine deallocates all the arrays
+      !
       !
       !  Input        :
       !
-      !  Input/output : 
+      !  Input/output :
       !
       !  Output       : info    (I) 0 on success.
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   :
       !
@@ -84,7 +84,7 @@
       !-------------------------------------------------------------------------
 #include "ppm_define.h"
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_mg
@@ -100,17 +100,17 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       INTEGER, INTENT(INOUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
-      INTEGER, DIMENSION(1) :: lda1 
-      INTEGER, DIMENSION(2) :: lda2 
-      INTEGER, DIMENSION(3) :: lda3 
-      INTEGER, DIMENSION(4) :: lda4 
-      INTEGER, DIMENSION(5) :: lda5 
+      INTEGER, DIMENSION(1) :: lda1
+      INTEGER, DIMENSION(2) :: lda2
+      INTEGER, DIMENSION(3) :: lda3
+      INTEGER, DIMENSION(4) :: lda4
+      INTEGER, DIMENSION(5) :: lda5
       INTEGER               :: iopt,i
       INTEGER               :: istat,j
       REAL(MK)              :: t0
@@ -146,11 +146,11 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_mg_finalize',t0,info)
       lda1(1)=0
@@ -198,43 +198,43 @@
       !-------------------------------------------------------------------------
       istat = 0
       iopt = ppm_param_dealloc
-      
+
       !DO i=1,nsubs
       ! DO j=1,maxlev
       ! CALL ppm_mg_alloc(mgfield(i,j)%bcvalue,lda1,iopt,info)
-      ! istat=istat+info  
+      ! istat=istat+info
       ! ENDDO
       !ENDDO
        CALL ppm_alloc(start,lda3,iopt,info)
-       istat=istat+info  
+       istat=istat+info
        CALL ppm_alloc(stop,lda3,iopt,info)
-       istat=istat+info  
+       istat=istat+info
        CALL ppm_alloc(lboundary,lda2,iopt,info)
-       istat=istat+info  
+       istat=istat+info
        CALL ppm_alloc(max_node,lda2,iopt,info)
-       istat=istat+info  
+       istat=istat+info
 #if __DIM == __SFIELD
        CALL ppm_alloc(bcdef_sca,lda1,iopt,info)
-       istat=istat+info  
+       istat=istat+info
 #elif __DIM == __VFIELD
        CALL ppm_alloc(bcdef_vec,lda1,iopt,info)
        istat=istat+info
 #endif
        CALL ppm_alloc(ghostsize,lda1,iopt,info)
-       istat=istat+info  
+       istat=istat+info
        CALL ppm_alloc(factor,lda1,iopt,info)
-       istat=istat+info  
+       istat=istat+info
        CALL ppm_alloc(mesh_id_g,lda1,iopt,info)
-       istat=istat+info  
+       istat=istat+info
        CALL ppm_alloc(meshid_g,lda1,iopt,info)
-       istat=istat+info  
+       istat=istat+info
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
        CALL ppm_alloc(mask_dummy_2d,lda3,iopt,info)
-       istat=istat+info  
+       istat=istat+info
 #elif __MESH_DIM == __3D
        CALL ppm_alloc(mask_dummy_3d,lda4,iopt,info)
-       istat=istat+info  
+       istat=istat+info
 #endif
 #endif
        CALL ppm_mg_alloc(mgfield,lda2,iopt,info)
@@ -251,7 +251,7 @@
 
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_mg_finalize',t0,info)

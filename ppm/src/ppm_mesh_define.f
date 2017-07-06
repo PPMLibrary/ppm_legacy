@@ -20,9 +20,9 @@
       !                                  domain
       !
       !  Input/output : mesh_id      (I) mesh ID of the new meshi (user
-      !                                  numbering). 
-      !                                  If .LE. 0 on input, the 
-      !                                  routine will create an automatic 
+      !                                  numbering).
+      !                                  If .LE. 0 on input, the
+      !                                  routine will create an automatic
       !                                  one and return it here.
       !
       !  Output       : istart(:,:)  (I) start indices of all subs meshes
@@ -31,7 +31,7 @@
       !                                  direction on each sub mesh
       !                 info         (I) return status. 0 upon success.
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   :
       !
@@ -81,7 +81,7 @@
      &                             istart,ndata,info)
 #endif
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_error
@@ -102,7 +102,7 @@
       !-------------------------------------------------------------------------
 
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       INTEGER                 , INTENT(IN   ) :: topo_id
       INTEGER , DIMENSION(:  ), INTENT(IN   ) :: Nm
@@ -111,17 +111,17 @@
       INTEGER                 , INTENT(  OUT) :: info
       INTEGER , DIMENSION(:,:), POINTER       :: istart,ndata
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK)               :: t0
       INTEGER                :: topoid
       LOGICAL                :: valid
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_mesh_define',t0,info)
 
@@ -176,7 +176,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_mesh_define',t0,info)

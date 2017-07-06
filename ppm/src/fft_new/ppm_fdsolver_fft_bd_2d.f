@@ -2,11 +2,11 @@
       !  Subroutine   :               ppm_fdsolver_fft_bd_2d
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : This routine performs inverse Fast Fourier Transform 
-      !                 using FFTW in the first (x) dimension. This is the 
+      !  Purpose      : This routine performs inverse Fast Fourier Transform
+      !                 using FFTW in the first (x) dimension. This is the
       !                 stand-alone version of the fieldsolver.
       !
-      !  Input        : data_in(:,:)   (F) 2d data array to be transformed 
+      !  Input        : data_in(:,:)   (F) 2d data array to be transformed
       !
       !  Input/output : lda(:)         (I) size of data array
       !
@@ -56,8 +56,8 @@
       !  Bugfix: arguments are now checked BEFORE they are assigned to Nx_in...
       !
       !  Revision 1.2  2004/02/11 10:13:23  hiebers
-      !  changed arguments, included test on info , included ppm_define.h, 
-      !  shortened lines to 80 characters, excluded module_mesh, 
+      !  changed arguments, included test on info , included ppm_define.h,
+      !  shortened lines to 80 characters, excluded module_mesh,
       !  included fftw3.f
       !
       !-------------------------------------------------------------------------
@@ -90,9 +90,9 @@
       USE ppm_module_error
       USE ppm_module_alloc
       IMPLICIT NONE
-#if   __KIND == __SINGLE_PRECISION | __KIND ==__SINGLE_PRECISION_COMPLEX 
+#if   __KIND == __SINGLE_PRECISION | __KIND ==__SINGLE_PRECISION_COMPLEX
       INTEGER, PARAMETER :: MK = ppm_kind_single
-#elif __KIND == __DOUBLE_PRECISION | __KIND ==__DOUBLE_PRECISION_COMPLEX 
+#elif __KIND == __DOUBLE_PRECISION | __KIND ==__DOUBLE_PRECISION_COMPLEX
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
@@ -102,7 +102,7 @@
       INCLUDE "fftw3.f"
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       ! input data
       COMPLEX(MK), DIMENSION(:,:)       , INTENT(IN   ) :: data_in
@@ -112,26 +112,26 @@
 #if   __KIND == __SINGLE_PRECISION        | __KIND == __DOUBLE_PRECISION
       REAL(MK), DIMENSION(:,:)      , POINTER       :: data_out
 #elif __KIND == __SINGLE_PRECISION_COMPLEX| __KIND == __DOUBLE_PRECISION_COMPLEX
-      COMPLEX(MK), DIMENSION(:,:)   , POINTER       :: data_out 
+      COMPLEX(MK), DIMENSION(:,:)   , POINTER       :: data_out
 #endif
       INTEGER                       , INTENT(  OUT) :: info
 
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       ! timer
       REAL(MK)                                :: t0
       ! counters
       INTEGER                                 :: i,j,iopt
-      ! size of the data_in 
+      ! size of the data_in
       INTEGER                                 :: Nx_in, Ny_in
-      ! size of the data_out 
+      ! size of the data_out
       INTEGER                                 :: Nx_out, Ny_out
 
 #ifdef __FFTW
       ! FFTW Plan
-      INTEGER*8                               :: Plan      
-      INTEGER                          :: mbistride, mbrank, mbidist, mbiembed 
+      INTEGER*8                               :: Plan
+      INTEGER                          :: mbistride, mbrank, mbidist, mbiembed
       INTEGER                          :: mboembed, mbhowmany, mbodist
 #endif
 
@@ -155,13 +155,18 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
 
       !-------------------------------------------------------------------------
       !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_fdsolver_fft_bd_2d',t0,info)
+
+#ifdef __MATHKEISAN
+      ! MATHKEISAN variables for MathKeisan FFTs
+      NULLIFY(table,work)
+#endif
 
 #if  !(defined(__FFTW) | defined(__MATHKEISAN))
 
@@ -183,7 +188,7 @@
 #endif
 
 
-      GOTO 9999      
+      GOTO 9999
 #else
 
       !-------------------------------------------------------------------------
@@ -231,7 +236,7 @@
      &        'fft result DATA_OUT',__LINE__,info)
           GOTO 9999
       ENDIF
-     
+
 
       print*,'Nx_in', Nx_in
       print*,'Nx_out', Nx_out
@@ -306,7 +311,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Forward FFT 
+      !  Forward FFT
       !-------------------------------------------------------------------------
 
 
@@ -404,7 +409,7 @@
       !-------------------------------------------------------------------------
       DO j=1,Ny_out
             data_out(lda(1),j) = data_out(1,j)
-      ENDDO     
+      ENDDO
 
       !-------------------------------------------------------------------------
       !  Return

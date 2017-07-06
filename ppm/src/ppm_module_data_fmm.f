@@ -3,11 +3,11 @@
       !-------------------------------------------------------------------------
       !
       ! Purpose       : fast mulipole method, data
-      !               
+      !
       !
       ! Remarks       :
       !
-      ! References    : 
+      ! References    :
       !
       ! Revisions     :
       !-------------------------------------------------------------------------
@@ -55,7 +55,7 @@
       !  Revision 1.1  2005/05/27 08:04:09  polasekb
       !  initial implementation
       !
-      !  
+      !
       !	 Revision 0 2004/11/11 4:04:15 polasekb
       !  Start.
       !
@@ -66,7 +66,7 @@
       !  CH-8092 Zurich, Switzerland
       !-------------------------------------------------------------------------
 
-MODULE ppm_module_data_fmm   
+MODULE ppm_module_data_fmm
       !-------------------------------------------------------------------------
       !Modules
       !-------------------------------------------------------------------------
@@ -86,30 +86,30 @@ MODULE ppm_module_data_fmm
       !-------------------------------------------------------------------------
       ! Define radius of tree boxes
       !-------------------------------------------------------------------------
-      REAL(ppm_kind_single),DIMENSION(:),POINTER    :: radius_s
-      REAL(ppm_kind_double),DIMENSION(:),POINTER    :: radius_d
+      REAL(ppm_kind_single),DIMENSION(:),POINTER    :: radius_s => NULL()
+      REAL(ppm_kind_double),DIMENSION(:),POINTER    :: radius_d => NULL()
 
       !-------------------------------------------------------------------------
       ! Define expansions of all tree boxes
       ! 1st index: boxid
       ! 2nd/3rd index: expansion
       !-------------------------------------------------------------------------
-      COMPLEX(ppm_kind_single),DIMENSION(:,:,:)  ,POINTER :: expansion_s_sf
-      COMPLEX(ppm_kind_double),DIMENSION(:,:,:)  ,POINTER :: expansion_d_sf
-      COMPLEX(ppm_kind_single),DIMENSION(:,:,:,:),POINTER :: expansion_s_vf
-      COMPLEX(ppm_kind_double),DIMENSION(:,:,:,:),POINTER :: expansion_d_vf
+      COMPLEX(ppm_kind_single),DIMENSION(:,:,:)  ,POINTER :: expansion_s_sf => NULL()
+      COMPLEX(ppm_kind_double),DIMENSION(:,:,:)  ,POINTER :: expansion_d_sf => NULL()
+      COMPLEX(ppm_kind_single),DIMENSION(:,:,:,:),POINTER :: expansion_s_vf => NULL()
+      COMPLEX(ppm_kind_double),DIMENSION(:,:,:,:),POINTER :: expansion_d_vf => NULL()
 
       !-------------------------------------------------------------------------
       ! Define center of mass of tree boxes
       !-------------------------------------------------------------------------
-      REAL(ppm_kind_single),DIMENSION(:,:),POINTER   :: centerofbox_s
-      REAL(ppm_kind_double),DIMENSION(:,:),POINTER   :: centerofbox_d
+      REAL(ppm_kind_single),DIMENSION(:,:),POINTER   :: centerofbox_s => NULL()
+      REAL(ppm_kind_double),DIMENSION(:,:),POINTER   :: centerofbox_d => NULL()
 
       !-------------------------------------------------------------------------
       ! Define totalmass of tree boxes
       !-------------------------------------------------------------------------
-      REAL(ppm_kind_single),DIMENSION(:),POINTER     :: totalmass_s
-      REAL(ppm_kind_double),DIMENSION(:),POINTER     :: totalmass_d
+      REAL(ppm_kind_single),DIMENSION(:),POINTER     :: totalmass_s => NULL()
+      REAL(ppm_kind_double),DIMENSION(:),POINTER     :: totalmass_d => NULL()
 
       !-------------------------------------------------------------------------
       ! Store tree output in data file
@@ -118,19 +118,19 @@ MODULE ppm_module_data_fmm
       !-------------------------------------------------------------------------
       ! Define min_box, minimum extent of tree boxes
       !-------------------------------------------------------------------------
-      REAL(ppm_kind_single),DIMENSION(:,:),POINTER   :: min_box_s
-      REAL(ppm_kind_double),DIMENSION(:,:),POINTER   :: min_box_d
+      REAL(ppm_kind_single),DIMENSION(:,:),POINTER   :: min_box_s => NULL()
+      REAL(ppm_kind_double),DIMENSION(:,:),POINTER   :: min_box_d => NULL()
 
       !-------------------------------------------------------------------------
       ! Define max_box, maximum extent of tree boxes
       !-------------------------------------------------------------------------
-      REAL(ppm_kind_single),DIMENSION(:,:),POINTER   :: max_box_s
-      REAL(ppm_kind_double),DIMENSION(:,:),POINTER   :: max_box_d
+      REAL(ppm_kind_single),DIMENSION(:,:),POINTER   :: max_box_s => NULL()
+      REAL(ppm_kind_double),DIMENSION(:,:),POINTER   :: max_box_d => NULL()
 
       !-------------------------------------------------------------------------
       ! Define nbox, total number of boxes
       !-------------------------------------------------------------------------
-      INTEGER                                        :: nbox 
+      INTEGER                                        :: nbox
 
       !-------------------------------------------------------------------------
       ! Define nchld, number of children of the box
@@ -152,30 +152,30 @@ MODULE ppm_module_data_fmm
       !-------------------------------------------------------------------------
       ! Define boxcost
       !-------------------------------------------------------------------------
-      REAL(ppm_kind_single),DIMENSION(:),POINTER   :: boxcost_s
-      REAL(ppm_kind_double),DIMENSION(:),POINTER   :: boxcost_d
+      REAL(ppm_kind_single),DIMENSION(:),POINTER   :: boxcost_s => NULL()
+      REAL(ppm_kind_double),DIMENSION(:),POINTER   :: boxcost_d => NULL()
 
       !-------------------------------------------------------------------------
       ! Define parent, the partent of the box
       !-------------------------------------------------------------------------
-      INTEGER,DIMENSION(:),POINTER                 :: parent
+      INTEGER,DIMENSION(:),POINTER                 :: parent => NULL()
 
       !-------------------------------------------------------------------------
       ! Define   child, the child ids of the box
       ! 1st index: child number (1-8 in octtree)
       ! 2nd index: box id
       !-------------------------------------------------------------------------
-      INTEGER,DIMENSION(:,:),POINTER               :: child
+      INTEGER,DIMENSION(:,:),POINTER               :: child => NULL()
 
       !-------------------------------------------------------------------------
       ! Define blevel, level of box
       !-------------------------------------------------------------------------
-      INTEGER,DIMENSION(:),POINTER                 :: blevel
+      INTEGER,DIMENSION(:),POINTER                 :: blevel => NULL()
 
       !-------------------------------------------------------------------------
       ! Define nbpl, number of boxes per level
       !-------------------------------------------------------------------------
-      INTEGER,DIMENSION(:),POINTER                 :: nbpl
+      INTEGER,DIMENSION(:),POINTER                 :: nbpl => NULL()
 
       !-------------------------------------------------------------------------
       ! Define nlevel, total number of levels
@@ -185,7 +185,7 @@ MODULE ppm_module_data_fmm
       !-------------------------------------------------------------------------
       ! Define list of topo ids
       !-------------------------------------------------------------------------
-      INTEGER,DIMENSION(:),POINTER                 :: topoidlist
+      INTEGER,DIMENSION(:),POINTER                 :: topoidlist => NULL()
 
       !-------------------------------------------------------------------------
       ! End of Tree data definition
@@ -196,19 +196,19 @@ MODULE ppm_module_data_fmm
       ! 1st index: sub id
       ! 2nd index: user topology id
       !-------------------------------------------------------------------------
-      INTEGER,DIMENSION(:,:),POINTER               :: ppm_boxid
+      INTEGER,DIMENSION(:,:),POINTER               :: ppm_boxid => NULL()
 
       !-------------------------------------------------------------------------
       ! Define subid. sub id of box id
       ! 1st index: box id
       ! 2nd index: user topology id
       !-------------------------------------------------------------------------
-      INTEGER,DIMENSION(:,:),POINTER               :: ppm_subid
+      INTEGER,DIMENSION(:,:),POINTER               :: ppm_subid => NULL()
 
       !-------------------------------------------------------------------------
       ! Define boxpart, which particle is in which box
       !-------------------------------------------------------------------------
-      INTEGER,DIMENSION(:),POINTER               :: boxpart
+      INTEGER,DIMENSION(:),POINTER               :: boxpart => NULL()
 
       !-------------------------------------------------------------------------
       ! Define maxboxcost, the maximum nr of particles per box
@@ -217,80 +217,80 @@ MODULE ppm_module_data_fmm
       REAL(ppm_kind_double)                      :: maxboxcost_d
 
       !-------------------------------------------------------------------------
-      ! Data for spherical harmonics 
+      ! Data for spherical harmonics
       !-------------------------------------------------------------------------
       !-------------------------------------------------------------------------
       ! Define Anm
       !-------------------------------------------------------------------------
-      REAL(ppm_kind_single),DIMENSION(:,:),POINTER :: Anm_s
-      REAL(ppm_kind_double),DIMENSION(:,:),POINTER :: Anm_d
+      REAL(ppm_kind_single),DIMENSION(:,:),POINTER :: Anm_s => NULL()
+      REAL(ppm_kind_double),DIMENSION(:,:),POINTER :: Anm_d => NULL()
 
       !-------------------------------------------------------------------------
       ! Define sqrtfac
       !-------------------------------------------------------------------------
-      REAL(ppm_kind_single),DIMENSION(:,:),POINTER :: sqrtfac_s
-      REAL(ppm_kind_double),DIMENSION(:,:),POINTER :: sqrtfac_d
+      REAL(ppm_kind_single),DIMENSION(:,:),POINTER :: sqrtfac_s => NULL()
+      REAL(ppm_kind_double),DIMENSION(:,:),POINTER :: sqrtfac_d => NULL()
 
       !-------------------------------------------------------------------------
       ! Define Cnm
       !-------------------------------------------------------------------------
-      COMPLEX(ppm_kind_single),DIMENSION(:,:),POINTER   :: Cnm_s_sf
-      COMPLEX(ppm_kind_double),DIMENSION(:,:),POINTER   :: Cnm_d_sf
-      COMPLEX(ppm_kind_single),DIMENSION(:,:,:),POINTER :: Cnm_s_vf
-      COMPLEX(ppm_kind_double),DIMENSION(:,:,:),POINTER :: Cnm_d_vf
+      COMPLEX(ppm_kind_single),DIMENSION(:,:),POINTER   :: Cnm_s_sf => NULL()
+      COMPLEX(ppm_kind_double),DIMENSION(:,:),POINTER   :: Cnm_d_sf => NULL()
+      COMPLEX(ppm_kind_single),DIMENSION(:,:,:),POINTER :: Cnm_s_vf => NULL()
+      COMPLEX(ppm_kind_double),DIMENSION(:,:,:),POINTER :: Cnm_d_vf => NULL()
 
       !-------------------------------------------------------------------------
       ! Define Inner
       !-------------------------------------------------------------------------
-      COMPLEX(ppm_kind_single),DIMENSION(:,:),POINTER :: Inner_s
-      COMPLEX(ppm_kind_double),DIMENSION(:,:),POINTER :: Inner_d
+      COMPLEX(ppm_kind_single),DIMENSION(:,:),POINTER :: Inner_s => NULL()
+      COMPLEX(ppm_kind_double),DIMENSION(:,:),POINTER :: Inner_d => NULL()
 
       !-------------------------------------------------------------------------
       ! Define Outer
       !-------------------------------------------------------------------------
-      COMPLEX(ppm_kind_single),DIMENSION(:,:),POINTER :: Outer_s
-      COMPLEX(ppm_kind_double),DIMENSION(:,:),POINTER :: Outer_d
+      COMPLEX(ppm_kind_single),DIMENSION(:,:),POINTER :: Outer_s => NULL()
+      COMPLEX(ppm_kind_double),DIMENSION(:,:),POINTER :: Outer_d => NULL()
 
       !-------------------------------------------------------------------------
       ! Define Ynm
       !-------------------------------------------------------------------------
-      COMPLEX(ppm_kind_single),DIMENSION(:,:),POINTER :: Ynm_s
-      COMPLEX(ppm_kind_double),DIMENSION(:,:),POINTER :: Ynm_d
-      
+      COMPLEX(ppm_kind_single),DIMENSION(:,:),POINTER :: Ynm_s => NULL()
+      COMPLEX(ppm_kind_double),DIMENSION(:,:),POINTER :: Ynm_d => NULL()
+
       !-------------------------------------------------------------------------
       ! Define Pnm
       !-------------------------------------------------------------------------
-      REAL(ppm_kind_single),DIMENSION(:,:),POINTER :: Pnm_s
-      REAL(ppm_kind_double),DIMENSION(:,:),POINTER :: Pnm_d
+      REAL(ppm_kind_single),DIMENSION(:,:),POINTER :: Pnm_s => NULL()
+      REAL(ppm_kind_double),DIMENSION(:,:),POINTER :: Pnm_d => NULL()
 
       !-------------------------------------------------------------------------
       ! Define fracfac
       !-------------------------------------------------------------------------
-      REAL(ppm_kind_single),DIMENSION(:  ),POINTER :: fracfac_s
-      REAL(ppm_kind_double),DIMENSION(:  ),POINTER :: fracfac_d
+      REAL(ppm_kind_single),DIMENSION(:  ),POINTER :: fracfac_s => NULL()
+      REAL(ppm_kind_double),DIMENSION(:  ),POINTER :: fracfac_d => NULL()
 
       !-------------------------------------------------------------------------
       ! Define rho
       !-------------------------------------------------------------------------
-      REAL(ppm_kind_single),DIMENSION(:  ),POINTER :: rho_s
-      REAL(ppm_kind_double),DIMENSION(:  ),POINTER :: rho_d
-      
+      REAL(ppm_kind_single),DIMENSION(:  ),POINTER :: rho_s => NULL()
+      REAL(ppm_kind_double),DIMENSION(:  ),POINTER :: rho_d => NULL()
+
       !-------------------------------------------------------------------------
       ! Define theta
       !-------------------------------------------------------------------------
-      REAL(ppm_kind_single),DIMENSION(:  ),POINTER :: theta_s
-      REAL(ppm_kind_double),DIMENSION(:  ),POINTER :: theta_d
-      
+      REAL(ppm_kind_single),DIMENSION(:  ),POINTER :: theta_s => NULL()
+      REAL(ppm_kind_double),DIMENSION(:  ),POINTER :: theta_d => NULL()
+
       !-------------------------------------------------------------------------
       ! Define phi
       !-------------------------------------------------------------------------
-      REAL(ppm_kind_single),DIMENSION(:  ),POINTER :: phi_s
-      REAL(ppm_kind_double),DIMENSION(:  ),POINTER :: phi_d
+      REAL(ppm_kind_single),DIMENSION(:  ),POINTER :: phi_s => NULL()
+      REAL(ppm_kind_double),DIMENSION(:  ),POINTER :: phi_d => NULL()
 
       !-------------------------------------------------------------------------
       ! Define fac
       !-------------------------------------------------------------------------
-      REAL(ppm_kind_single),DIMENSION(:  ),POINTER :: fac_s
-      REAL(ppm_kind_double),DIMENSION(:  ),POINTER :: fac_d
+      REAL(ppm_kind_single),DIMENSION(:  ),POINTER :: fac_s => NULL()
+      REAL(ppm_kind_double),DIMENSION(:  ),POINTER :: fac_d => NULL()
 
 END MODULE ppm_module_data_fmm

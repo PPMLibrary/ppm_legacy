@@ -4,7 +4,7 @@
       !
       !  Purpose      : This routine recompute the new particles values, thx to
       !                 the precomputed weights...
-      !                 
+      !
       !
       !  Input        : xp(:,:)      (F) the position of the particles
       !                 Np           (I) the number of particles (on processor)
@@ -21,15 +21,15 @@
       !
       !
       !  Output       : info         (I) return status
-      !                 field_up(:,:,:,:) (I) mesh on which particles have been 
+      !                 field_up(:,:,:,:) (I) mesh on which particles have been
       !                                  distributed (if not present field)
       !
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   :
       !
-      !  Revisions    : 
+      !  Revisions    :
       !-------------------------------------------------------------------------
       !  $Log: ppm_rmsh_remesh.f,v $
       !  Revision 1.1.1.1  2007/07/13 10:19:01  ivos
@@ -42,7 +42,7 @@
       !  unrolled remeshing for lda=4
       !
       !  Revision 1.10  2004/08/27 09:23:08  michaebe
-      !  unrolled loop for lda=3 dim=3 krnl=mp4; makes it more than 2x 
+      !  unrolled loop for lda=3 dim=3 krnl=mp4; makes it more than 2x
       !  as fast @G5
       !
       !  Revision 1.9  2004/08/24 07:34:10  michaebe
@@ -78,7 +78,7 @@
       !  ETH Zentrum, Hirschengraben 84
       !  CH-8092 Zurich, Switzerland
       !-------------------------------------------------------------------------
- 
+
       !-------------------------------------------------------------------------
       !  Have to modify field_up to be optional. if its not present then an
       !  internal field is allocated; Nfortunately a little bit of a pain cause
@@ -121,7 +121,7 @@
      &     ghostsize,info,field_up,wx1_user,wx2_user,wx3_user)
 #endif
 #endif
-#endif       
+#endif
 
       !-------------------------------------------------------------------------
       !  Includes
@@ -168,8 +168,8 @@
       REAL(MK) , DIMENSION(:,:,:,:  ) , POINTER        :: field_up
 #elif __DIME == __3D
       REAL(MK) , DIMENSION(:,:,:,:,:) , POINTER        :: field_up
-#endif     
-#endif     
+#endif
+#endif
       INTEGER                         , INTENT(IN   )  :: Np
       INTEGER                         , INTENT(IN   )  :: topo_id, mesh_id
       INTEGER                         , INTENT(IN   )  :: kernel
@@ -179,7 +179,7 @@
      &                                                    wx3_user
 
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(ppm_dim)             :: len_phys
       REAL(MK), DIMENSION(:,:,:)   , POINTER   :: wx1,wx2,wx3
@@ -312,14 +312,14 @@
          !----------------------------------------------------------------------
          kernel_support = ppm_rmsh_kernelsize(kernel)*2
         !kernel_support = ppm_rmsh_kernelsize(kernel)*2
-        !IF (.NOT.((kernel_support.EQ.2).OR.(kernel_support.EQ.4) & 
+        !IF (.NOT.((kernel_support.EQ.2).OR.(kernel_support.EQ.4) &
         !     & .OR.(kernel_support.EQ.6))) THEN
         !   info = ppm_error_error
         !   CALL ppm_error(ppm_err_argument,'ppm_rmsh_remesh',  &
         !        &     'wrong kernel support',__LINE__,info)
         !   GOTO 9999
         !END IF
-        
+
          IF (SIZE(up).LT.Np) THEN
             info = ppm_error_error
             CALL ppm_error(ppm_err_argument,'ppm_rmsh_remesh',  &
@@ -346,7 +346,7 @@
             ENDIF
          ENDDO
       ENDIF
-     
+
       !-------------------------------------------------------------------------
       !  Check meshid and topoid validity
       !-------------------------------------------------------------------------
@@ -362,7 +362,7 @@
      &          'topo_id cannot be negative!',__LINE__,info)
             GOTO 9999
          ENDIF
-        
+
          !----------------------------------------------------------------------
          !  check that the user topoid is less that the maximum length of the
          !  ppm_internal_topoid array
@@ -373,7 +373,7 @@
      &          'topo_id too large',__LINE__,info)
             GOTO 9999
          ENDIF
-        
+
          !----------------------------------------------------------------------
          !  Check that the topology is defined
          !----------------------------------------------------------------------
@@ -386,8 +386,8 @@
             ENDIF
          ENDIF
       ENDIF
-     
-     
+
+
       !-------------------------------------------------------------------------
       !  Get the internal topoid
       !-------------------------------------------------------------------------
@@ -414,18 +414,18 @@
       !  Get the internal meshid
       !-------------------------------------------------------------------------
       meshid = ppm_meshid(topoid)%internal(mesh_id)
-     
+
       !-------------------------------------------------------------------------
       !  Get istart
       !-------------------------------------------------------------------------
       istart => ppm_cart_mesh(meshid,topoid)%istart
- 
-      IF(ppm_debug.GT.0) THEN   
+
+      IF(ppm_debug.GT.0) THEN
          !----------------------------------------------------------------------
          !  Check weights again
          !----------------------------------------------------------------------
          SELECT CASE(ppm_dim)
-           
+
          CASE(2)
             IF(PRESENT(wx1_user)) THEN
                IF(   .NOT.ASSOCIATED(wx1_user).OR.&
@@ -436,7 +436,7 @@
                   GOTO 9999
                END IF
             END IF
-           
+
          CASE(3)
             IF(PRESENT(wx1_user)) THEN
                IF(   .NOT.ASSOCIATED(wx1_user).OR.&
@@ -448,7 +448,7 @@
                   GOTO 9999
                END IF
             END IF
-           
+
          END SELECT
 
          IF(.NOT.PRESENT(wx1_user)) THEN
@@ -468,7 +468,7 @@
             END IF
 #endif
          END IF
-        
+
       END IF
 
       IF(np.EQ.0) GOTO 5555
@@ -485,7 +485,7 @@
          wx2 => wx2_s
          IF(ppm_dim.EQ.3) wx3 => wx3_s
 #elif __KIND == __DOUBLE_PRECISION
-         wx1 => wx1_d  
+         wx1 => wx1_d
          wx2 => wx2_d
          IF(ppm_dim.EQ.3) wx3 => wx3_d
 #endif
@@ -566,8 +566,8 @@
       ldu(1)     = ndata1_max + ghostsize(1)
       ldu(2)     = ndata2_max + ghostsize(2)
       ldu(3)     = nsubs
-#endif     
-#endif        
+#endif
+#endif
       CALL ppm_alloc(field_up,ldl,ldu,iopt,info)
       IF(info.NE.0) THEN
          info = ppm_error_fatal
@@ -585,7 +585,7 @@
       !  Recover particle lists
       !-------------------------------------------------------------------------
       !  dont need to do this as they are in ppm_module_data_rmsh
-      
+
       !-------------------------------------------------------------------------
       !  Pre computing operations
       !-------------------------------------------------------------------------
@@ -595,14 +595,14 @@
 #elif __KIND == __DOUBLE_PRECISION
       min_phys => ppm_min_physd
       max_phys => ppm_max_physd
-#endif  
+#endif
 
       DO i = 1,ppm_dim
          Nc(i)       = Nm(i)-1
          len_phys(i) = max_phys(i,topoid) - min_phys(i,topoid)
          dx(i)       = len_phys(i)/REAL(Nc(i),MK)
       END DO
-     
+
       dxi = 1.0_mk/dx
       dv1 = dx(1)
       dv2 = dx(2)
@@ -631,7 +631,7 @@
                tup(1:lda) = up(1:lda,list_sub(isub,ip))
 #elif __MODE == __SCA
                tup        = up(list_sub(isub,ip))
-#endif              
+#endif
                !----------------------------------------------------------------
                !  flipped upside down for ppm conformance
                !----------------------------------------------------------------
@@ -640,12 +640,12 @@
                kkdec = 0
                DO kk=ip3-1,ip3+2
                   kkdec = kkdec + 1
-                 
+
 #endif
                   jjdec = 0
                   DO jj=ip2-1,ip2+2
                      jjdec = jjdec + 1
- 
+
                      iidec = 0
                      DO ii=ip1-1,ip1+2
                         iidec = iidec + 1
@@ -667,15 +667,15 @@
                              &=field_up(3,ii,jj,kk,isub)&
                              &+wx1(iidec,isub,ip)*wx2(jjdec,isub,ip)&
                              &*wx3(kkdec,isub,ip)*tup(3)
-                       
-                       
+
+
 #elif __MODE == __SCA
                         field_up(ii,jj,kk,isub)=field_up(ii,jj,kk,isub)&
                              &+wx1(iidec,isub,ip)*wx2(jjdec,isub,ip)&
                              &*wx3(kkdec,isub,ip)*tup
-#endif                          
+#endif
 #elif __DIME == __2D
-#if   __MODE == __VEC                       
+#if   __MODE == __VEC
                         field_up(1:lda,ii,jj,isub)=field_up(1:lda,ii,jj,isub)&
                           &+wx1(iidec,isub,ip)*wx2(jjdec,isub,ip)&
                           &*tup(1:lda)
@@ -684,18 +684,18 @@
                              &+wx1(iidec,isub,ip)*wx2(jjdec,isub,ip)&
                              &*tup
 #endif
-#endif                       
+#endif
                      END DO
                   END DO
 #if  __DIME == __3D
                END DO
-#endif                 
+#endif
             ELSEIF (lda.eq.4.and.ppm_dim.eq.3) then
 #if     __DIME == __3D
                kkdec = 0
                DO kk=ip3-1,ip3+2
                   kkdec = kkdec + 1
-                 
+
 #endif
                   jjdec = 0
                   DO jj=ip2-1,ip2+2
@@ -726,15 +726,15 @@
                              &=field_up(4,ii,jj,kk,isub)&
                              &+wx1(iidec,isub,ip)*wx2(jjdec,isub,ip)&
                              &*wx3(kkdec,isub,ip)*tup(4)
-                       
-                       
+
+
 #elif __MODE == __SCA
                         field_up(ii,jj,kk,isub)=field_up(ii,jj,kk,isub)&
                              &+wx1(iidec,isub,ip)*wx2(jjdec,isub,ip)&
                              &*wx3(kkdec,isub,ip)*tup
-#endif                          
+#endif
 #elif __DIME == __2D
-#if   __MODE == __VEC                       
+#if   __MODE == __VEC
                         field_up(1:lda,ii,jj,isub)=field_up(1:lda,ii,jj,isub)&
                           &+wx1(iidec,isub,ip)*wx2(jjdec,isub,ip)&
                           &*tup(1:lda)
@@ -743,18 +743,18 @@
                              &+wx1(iidec,isub,ip)*wx2(jjdec,isub,ip)&
                              &*tup
 #endif
-#endif                       
+#endif
                      END DO
                   END DO
 #if  __DIME == __3D
                END DO
-#endif                 
+#endif
             ELSE
 #if     __DIME == __3D
               kkdec = 0
               DO kk=ip3-1,ip3+2
                  kkdec = kkdec + 1
-                 
+
 #endif
                  jjdec = 0
                  DO jj=ip2-1,ip2+2
@@ -771,14 +771,14 @@
                                &+wx1(iidec,isub,ip)*wx2(jjdec,isub,ip)&
                                &*wx3(kkdec,isub,ip)*tup(l)
                        END DO
-                       
+
 #elif __MODE == __SCA
                        field_up(ii,jj,kk,isub)=field_up(ii,jj,kk,isub)&
                             &+wx1(iidec,isub,ip)*wx2(jjdec,isub,ip)&
                             &*wx3(kkdec,isub,ip)*tup
-#endif                          
+#endif
 #elif __DIME == __2D
-#if   __MODE == __VEC                       
+#if   __MODE == __VEC
                        field_up(1:lda,ii,jj,isub)=field_up(1:lda,ii,jj,isub)&
                          &+wx1(iidec,isub,ip)*wx2(jjdec,isub,ip)&
                          &*tup(1:lda)
@@ -787,18 +787,18 @@
                             &+wx1(iidec,isub,ip)*wx2(jjdec,isub,ip)&
                             &*tup
 #endif
-#endif                       
+#endif
                     END DO
 
                  END DO
 
 #if  __DIME == __3D
               END DO
-#endif                 
+#endif
            END IF
-              
+
            END DO
-           
+
         END DO
         !-----------------------------------------------------------------------
         ! BS2
@@ -814,7 +814,7 @@
 #if   __DIME == __3D
               ip3 = INT((xp(3,list_sub(isub,ip))-min_phys(3,topoid)&
                    &)*dxi(3))+2-istart(3,isubl)
-#endif              
+#endif
               !-----------------------------------------------------------------
               !  flipped upside down for ppm conformance
               !-----------------------------------------------------------------
@@ -822,7 +822,7 @@
               kkdec = 0
               DO kk=ip3,ip3+1
                  kkdec = kkdec + 1
-                 
+
 #endif
                  jjdec = 0
                  DO jj=ip2,ip2+1
@@ -841,9 +841,9 @@
                        field_up(ii,jj,kk,isub)=field_up(ii,jj,kk,isub)&
                             &+wx1(iidec,isub,ip)*wx2(jjdec,isub,ip)&
                             &*wx3(kkdec,isub,ip)*up(list_sub(isub,ip))
-#endif                          
+#endif
 #elif __DIME == __2D
-#if   __MODE == __VEC                       
+#if   __MODE == __VEC
                        field_up(1:lda,ii,jj,isub)=field_up(1:lda,ii,jj,isub)&
                             &+wx1(iidec,isub,ip)*wx2(jjdec,isub,ip)&
                             &*up(1:lda,list_sub(isub,ip))
@@ -852,19 +852,19 @@
                             &+wx1(iidec,isub,ip)*wx2(jjdec,isub,ip)&
                             &*up(list_sub(isub,ip))
 #endif
-#endif                       
+#endif
                     END DO
-                    
+
                  END DO
-                 
+
 #if  __DIME == __3D
               END DO
-#endif                 
-              
+#endif
+
            END DO
-           
+
         END DO
-        
+
      END SELECT
 
 
@@ -874,64 +874,64 @@
      !--------------------------------------------------------------------------
 
      maptype = ppm_param_map_init
-#if   __MODE == __SCA     
+#if   __MODE == __SCA
      CALL ppm_map_field_ghost(field_up,topo_id,mesh_id,ghostsize,maptype, &
           & info)
-#elif __MODE == __VEC     
+#elif __MODE == __VEC
      CALL ppm_map_field_ghost(field_up,lda,topo_id,mesh_id,ghostsize,maptype, &
           & info)
-#endif     
+#endif
      IF (info .NE. 0) GOTO 9999
      maptype = ppm_param_map_ghost_put
-#if   __MODE == __SCA     
+#if   __MODE == __SCA
      CALL ppm_map_field_ghost(field_up,topo_id,mesh_id,ghostsize,maptype, &
           & info)
-#elif __MODE == __VEC     
+#elif __MODE == __VEC
      CALL ppm_map_field_ghost(field_up,lda,topo_id,mesh_id,ghostsize,maptype, &
           & info)
-#endif     
+#endif
 
      IF (info .NE. 0) GOTO 9999
      maptype = ppm_param_map_push
-#if   __MODE == __SCA     
+#if   __MODE == __SCA
      CALL ppm_map_field_ghost(field_up,topo_id,mesh_id,ghostsize,maptype, &
           & info)
-#elif __MODE == __VEC     
+#elif __MODE == __VEC
      CALL ppm_map_field_ghost(field_up,lda,topo_id,mesh_id,ghostsize,maptype, &
           & info)
-#endif     
+#endif
 
      IF (info .NE. 0) GOTO 9999
      maptype = ppm_param_map_send
-#if   __MODE == __SCA     
+#if   __MODE == __SCA
      CALL ppm_map_field_ghost(field_up,topo_id,mesh_id,ghostsize,maptype, &
           & info)
-#elif __MODE == __VEC     
+#elif __MODE == __VEC
      CALL ppm_map_field_ghost(field_up,lda,topo_id,mesh_id,ghostsize,maptype, &
           & info)
-#endif     
+#endif
 
      IF (info .NE. 0) GOTO 9999
      maptype = ppm_param_map_pop
-#if   __MODE == __SCA     
+#if   __MODE == __SCA
      CALL ppm_map_field_ghost(field_up,topo_id,mesh_id,ghostsize,maptype, &
           & info)
-#elif __MODE == __VEC     
+#elif __MODE == __VEC
      CALL ppm_map_field_ghost(field_up,lda,topo_id,mesh_id,ghostsize,maptype, &
           & info)
-#endif     
+#endif
 
      IF (info .NE. 0) GOTO 9999
 
-     
+
      !--------------------------------------------------------------------------
-     !  Return 
+     !  Return
      !--------------------------------------------------------------------------
      9999 CONTINUE
      CALL substop('ppm_rmsh_remesh',t0,info)
      RETURN
 
-     
+
 #if   __DIME == __2D
 #if   __MODE == __SCA
 #if   __KIND == __SINGLE_PRECISION
@@ -960,8 +960,8 @@
      END SUBROUTINE ppm_rmsh_remesh_dv_3d
 #endif
 #endif
-#endif       
+#endif
 
-     
 
-     
+
+

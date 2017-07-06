@@ -32,7 +32,7 @@
       !                                     assumed if absent. Ghostlayers
       !                                     of size >=1 must be pre-filled.
       !
-      !  Input/output : 
+      !  Input/output :
       !
       !  Output       : npts            (I) Number of unique grid points
       !                                     adjacent to the interface.
@@ -48,9 +48,9 @@
       !                                     by this routine.
       !                 info            (I) return status. 0 on success.
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
-      !  References   : 
+      !  References   :
       !
       !  Revisions    :
       !-------------------------------------------------------------------------
@@ -99,7 +99,7 @@
 #elif  __KIND == __DOUBLE_PRECISION
       SUBROUTINE ppm_gmm_cpt_2dd(fdata,tol,npts,ipts,closest,   &
      &    info,chi)
-#endif 
+#endif
 
 #elif  __DIM == __3D
 #if    __KIND == __SINGLE_PRECISION
@@ -108,7 +108,7 @@
 #elif  __KIND == __DOUBLE_PRECISION
       SUBROUTINE ppm_gmm_cpt_3dd(fdata,tol,npts,ipts,closest,   &
      &    info,chi)
-#endif 
+#endif
 #endif
       !-------------------------------------------------------------------------
       !  Includes
@@ -116,7 +116,7 @@
 #include "ppm_define.h"
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_mesh
@@ -134,7 +134,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
 #if   __DIM == __2D
       REAL(MK), DIMENSION(:,:,:)     , POINTER             :: fdata
@@ -148,7 +148,7 @@
       REAL(MK)                       , INTENT(IN   )       :: tol
       INTEGER                        , INTENT(  OUT)       :: info,npts
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER                          :: i,iopt,Nt,isub
       INTEGER                          :: n1,n2,n3,jsub,prev
@@ -157,9 +157,9 @@
       REAL(MK)                         :: t0,x,y,z,xx,yy,zz,dx,dy,dz
       REAL(MK)                         :: s,sprev,thresh
       LOGICAL                          :: lok
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_gmm_cpt',t0,info)
 #if   __KIND == __SINGLE_PRECISION
@@ -297,7 +297,7 @@
       ENDDO
 
       !-------------------------------------------------------------------------
-      !  Sort 
+      !  Sort
       !-------------------------------------------------------------------------
       CALL ppm_util_qsort(key,idx,info)
       IF (info .NE. ppm_param_success) THEN
@@ -308,7 +308,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Find the number of unique points 
+      !  Find the number of unique points
       !-------------------------------------------------------------------------
       npts = 0
       prev = -1
@@ -454,9 +454,9 @@
           CALL ppm_error(ppm_err_alloc,'ppm_gmm_cpt',        &
      &        'sort key KEY',__LINE__,info)
       ENDIF
-      
+
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_gmm_cpt',t0,info)
@@ -466,12 +466,12 @@
       END SUBROUTINE ppm_gmm_cpt_2ds
 #elif  __KIND == __DOUBLE_PRECISION
       END SUBROUTINE ppm_gmm_cpt_2dd
-#endif 
+#endif
 
 #elif  __DIM == __3D
 #if    __KIND == __SINGLE_PRECISION
       END SUBROUTINE ppm_gmm_cpt_3ds
 #elif  __KIND == __DOUBLE_PRECISION
       END SUBROUTINE ppm_gmm_cpt_3dd
-#endif 
+#endif
 #endif

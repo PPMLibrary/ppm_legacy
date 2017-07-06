@@ -1,12 +1,12 @@
 !-----------------------------------------------------------------------
-!  Subroutine   :            ppm_mg_smooth_fine    
+!  Subroutine   :            ppm_mg_smooth_fine
 !-----------------------------------------------------------------------
 !  Purpose      : In this routine we compute the corrections for
 !                 the function based on the Gauss-Seidel iteration
-!                  
-!  
+!
+!
 !  Input/output :
-! 
+!
 !  Output       : info        (I) return status. 0 upon success
 !
 !  Remarks      :
@@ -34,12 +34,12 @@
 !  Revision 1.1  2004/09/22 18:44:11  kotsalie
 !  MG new version
 !
-!------------------------------------------------------------------------  
+!------------------------------------------------------------------------
 !  Parallel Particle Mesh Library (PPM)
 !  Institute of Computational Science
 !  ETH Zentrum, Hirschengraben 84
 !  CH-8092 Zurich, Switzerland
-!------------------------------------------------------------------------- 
+!-------------------------------------------------------------------------
 
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
@@ -71,13 +71,13 @@
 #endif
 #endif
 
-        !---------------------------------------------------------------------- 
+        !----------------------------------------------------------------------
         !  Includes
         !----------------------------------------------------------------------
 #include "ppm_define.h"
 
-        !-------------------------------------------------------------------    
-        !  Modules 
+        !-------------------------------------------------------------------
+        !  Modules
         !--------------------------------------------------------------------
         USE ppm_module_data
         USE ppm_module_data_mg
@@ -96,8 +96,8 @@
 #else
         INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
-        !-------------------------------------------------------------------    
-        !  Arguments     
+        !-------------------------------------------------------------------
+        !  Arguments
         !-------------------------------------------------------------------
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
@@ -119,18 +119,18 @@
         INTEGER,                   INTENT(IN)      ::  nsweep
         INTEGER,                   INTENT(IN)      ::  mlev
 #if  __MESH_DIM == __2D
-        REAL(MK),                  INTENT(IN)      ::  c1,c2,c3 
+        REAL(MK),                  INTENT(IN)      ::  c1,c2,c3
 #elif __MESH_DIM == __3D
-        REAL(MK),                  INTENT(IN)      ::  c1,c2,c3,c4 
+        REAL(MK),                  INTENT(IN)      ::  c1,c2,c3,c4
 #endif
         INTEGER,                   INTENT(INOUT)   ::  info
-        !---------------------------------------------------------------------  
-        !  Local variables 
+        !---------------------------------------------------------------------
+        !  Local variables
         !---------------------------------------------------------------------
         CHARACTER(LEN=256) :: cbuf
         INTEGER                                    ::  i,j,isub,color
         INTEGER                                    ::  ilda,isweep,count
-        REAL(MK)                                   ::  c11,c22,c33,c44 
+        REAL(MK)                                   ::  c11,c22,c33,c44
         INTEGER                                    ::  k,idom
         REAL(MK)                                   ::  x,y
         REAL(MK)                                   ::  omega
@@ -181,19 +181,7 @@
        LOGICAL,DIMENSION(:,:,:),POINTER :: mask_red
        LOGICAL,DIMENSION(:,:,:),POINTER :: mask_black
 #endif
-#if __DIM == __SFIELD
-#if __MESH_DIM == __2D
-     REAL(MK),DIMENSION(:,:,:),POINTER :: oldu
-#elif __MESH_DIM == __3D
-     REAL(MK),DIMENSION(:,:,:,:),POINTER :: oldu
-#endif
-#elif  __DIM == __VFIELD
-#if __MESH_DIM == __2D
-     REAL(MK),DIMENSION(:,:,:,:),POINTER :: oldu
-#elif __MESH_DIM == __3D
-     REAL(MK),DIMENSION(:,:,:,:,:),POINTER :: oldu
-#endif
-#endif
+
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
      REAL(MK) :: moldu
@@ -219,7 +207,7 @@
         !-----------------------------------------------------------------------
 
         CALL substart('ppm_mg_smooth_fine',t0,info)
-         
+
 
         !-----------------------------------------------------------------------
         !  Check arguments
@@ -264,6 +252,12 @@
           ENDIF
 #endif
         ENDIF
+
+#if __DIM == __VFIELD
+        NULLIFY(moldu)
+#endif
+
+
         !-----------------------------------------------------------------------
         !Definition of necessary variables and allocation of arrays
         !-----------------------------------------------------------------------
@@ -312,8 +306,8 @@ omega=omega_d
 
         !-----------------------------------------------------------------------
         !Implementation
-        !----------------------------------------------------------------------- 
-       
+        !-----------------------------------------------------------------------
+
         count = 0
 
             iopt = ppm_param_alloc_fit
@@ -336,31 +330,31 @@ omega=omega_d
               DO isub=1,nsubs
 
                  IF (color.EQ.0) THEN
-                    mask_red=>mgfield(isub,mlev)%mask_red   
+                    mask_red=>mgfield(isub,mlev)%mask_red
                     mask_dummy_2d(:,:,&
      &                            isub)=mask_red(:,:)
                  ELSE
-                    mask_black=>mgfield(isub,mlev)%mask_black   
+                    mask_black=>mgfield(isub,mlev)%mask_black
                     mask_dummy_2d(:,:,&
-     &                             isub)=mask_black(:,:) 
+     &                             isub)=mask_black(:,:)
                  ENDIF
 
 
 
-              ENDDO!DO isub 
-                
+              ENDDO!DO isub
+
               !-----------------------------------------------------------------
-              !Communicate red(even) if color==0 or communicate black(odd) 
-              !if color==1 
+              !Communicate red(even) if color==0 or communicate black(odd)
+              !if color==1
               !-----------------------------------------------------------------
               CALL ppm_map_field_ghost(u,topoid,mesh_id_g(mlev),&
-     &                    ghostsize,ppm_param_map_ghost_get,info,mask_dummy_2d) 
+     &                    ghostsize,ppm_param_map_ghost_get,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(u,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_push,info,mask_dummy_2d) 
+     &                         ghostsize,ppm_param_map_push,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(u,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_send,info,mask_dummy_2d) 
+     &                         ghostsize,ppm_param_map_send,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(u,topoid,mesh_id_g(mlev),&
-     &                          ghostsize,ppm_param_map_pop,info,mask_dummy_2d) 
+     &                          ghostsize,ppm_param_map_pop,info,mask_dummy_2d)
 
 
             DO isub=1,nsubs
@@ -376,20 +370,20 @@ omega=omega_d
                  ENDDO
               ENDDO
              ENDDO
-              IF (isweep.EQ.nsweep) THEN 
+              IF (isweep.EQ.nsweep) THEN
                IF (color.EQ.1) THEN
-                DO isub=1,nsubs 
+                DO isub=1,nsubs
                  mask_red=>mgfield(isub,mlev)%mask_red
                      mask_dummy_2d(:,:,&
      &                            isub)=mask_red(:,:)
                 ENDDO
                ENDIF
-              ENDIF 
+              ENDIF
 
 
         ENDDO!DO color
 
-        IF (isweep.EQ.nsweep) THEN 
+        IF (isweep.EQ.nsweep) THEN
               CALL ppm_map_field_ghost(u,topoid,mesh_id_g(mlev),&
      &                    ghostsize,ppm_param_map_ghost_get,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(u,topoid,mesh_id_g(mlev),&
@@ -402,38 +396,38 @@ omega=omega_d
        ENDIF
 
       ENDDO
-                    
+
 
 
 #elif __MESH_DIM == __3D
 
         !-----------------------------------------------------------------------
         !Implementation
-        !----------------------------------------------------------------------- 
+        !-----------------------------------------------------------------------
 
 
 
-       
-        DO isweep=1,nsweep 
+
+        DO isweep=1,nsweep
            DO color=0,1
 
 
 
 
               !-----------------------------------------------------------------
-              !Communicate red(even) if color==0 or communicate black(odd) 
-              !if color==1 
+              !Communicate red(even) if color==0 or communicate black(odd)
+              !if color==1
               !-----------------------------------------------------------------
 
- 
+
               CALL ppm_map_field_ghost(u,topoid,mesh_id_g(mlev),&
-     &                    ghostsize,ppm_param_map_ghost_get,info) 
+     &                    ghostsize,ppm_param_map_ghost_get,info)
               CALL ppm_map_field_ghost(u,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_push,info) 
+     &                         ghostsize,ppm_param_map_push,info)
               CALL ppm_map_field_ghost(u,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_send,info) 
+     &                         ghostsize,ppm_param_map_send,info)
               CALL ppm_map_field_ghost(u,topoid,mesh_id_g(mlev),&
-     &                          ghostsize,ppm_param_map_pop,info) 
+     &                          ghostsize,ppm_param_map_pop,info)
 
 
 
@@ -457,7 +451,7 @@ omega=omega_d
                 ENDDO
               ENDDO
 
-           ENDDO!subs   
+           ENDDO!subs
 
         ENDDO!DO color
 
@@ -465,16 +459,16 @@ omega=omega_d
 
 
               CALL ppm_map_field_ghost(u,topoid,mesh_id_g(mlev),&
-     &                    ghostsize,ppm_param_map_ghost_get,info) 
+     &                    ghostsize,ppm_param_map_ghost_get,info)
               CALL ppm_map_field_ghost(u,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_push,info) 
+     &                         ghostsize,ppm_param_map_push,info)
               CALL ppm_map_field_ghost(u,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_send,info) 
+     &                         ghostsize,ppm_param_map_send,info)
               CALL ppm_map_field_ghost(u,topoid,mesh_id_g(mlev),&
-     &                          ghostsize,ppm_param_map_pop,info) 
+     &                          ghostsize,ppm_param_map_pop,info)
 
 
-        ENDIF 
+        ENDIF
        ENDDO
 
 
@@ -484,8 +478,8 @@ omega=omega_d
 
         !-----------------------------------------------------------------------
         !Implementation
-        !----------------------------------------------------------------------- 
-       
+        !-----------------------------------------------------------------------
+
         count = 0
 
             iopt = ppm_param_alloc_fit
@@ -507,38 +501,38 @@ omega=omega_d
            DO color=0,1
               DO isub=1,nsubs
                  !-------------------------------------------------------------
-                 !Impose boundaries on even if color=0 or odd if color=1  
+                 !Impose boundaries on even if color=0 or odd if color=1
                  !-------------------------------------------------------------
 
                  IF (color.EQ.0) THEN
-                    mask_red=>mgfield(isub,mlev)%mask_red   
+                    mask_red=>mgfield(isub,mlev)%mask_red
                     mask_dummy_2d(:,:,isub)=mask_red(:,:)
                  ELSE
-                    mask_black=>mgfield(isub,mlev)%mask_black   
-                    mask_dummy_2d(:,:,isub)=mask_black(:,:) 
+                    mask_black=>mgfield(isub,mlev)%mask_black
+                    mask_dummy_2d(:,:,isub)=mask_black(:,:)
                  ENDIF
 
 
-              ENDDO!DO isub 
-                
+              ENDDO!DO isub
+
               !-----------------------------------------------------------------
-              !Communicate red(even) if color==0 or communicate black(odd) 
-              !if color==1 
+              !Communicate red(even) if color==0 or communicate black(odd)
+              !if color==1
               !-----------------------------------------------------------------
 
 
               CALL ppm_map_field_ghost(u,vecdim,topoid,mesh_id_g(mlev),&
-     &                    ghostsize,ppm_param_map_ghost_get,info,mask_dummy_2d) 
+     &                    ghostsize,ppm_param_map_ghost_get,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(u,vecdim,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_push,info,mask_dummy_2d) 
+     &                         ghostsize,ppm_param_map_push,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(u,vecdim,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_send,info,mask_dummy_2d) 
+     &                         ghostsize,ppm_param_map_send,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(u,vecdim,topoid,mesh_id_g(mlev),&
-     &                          ghostsize,ppm_param_map_pop,info,mask_dummy_2d) 
+     &                          ghostsize,ppm_param_map_pop,info,mask_dummy_2d)
 
- 
 
-             
+
+
            DO isub=1,nsubs
               DO j=start(2,isub,1),stop(2,isub,1)
                  DO i=start(1,isub,1)+mod(j+color,2),stop(1,isub,1),2
@@ -557,23 +551,23 @@ omega=omega_d
                 IF (isweep.EQ.nsweep) THEN
                  IF (color.EQ.1) THEN
                   DO isub=1,nsubs
-                    mask_red=>mgfield(isub,mlev)%mask_red   
+                    mask_red=>mgfield(isub,mlev)%mask_red
                     mask_dummy_2d(:,:,isub)=mask_red(:,:)
                   ENDDO
                 ENDIF
-               ENDIF  
+               ENDIF
 
         ENDDO!DO color
         IF (isweep.EQ.nsweep) THEN
               CALL ppm_map_field_ghost(u,vecdim,topoid,mesh_id_g(mlev),&
-     &                    ghostsize,ppm_param_map_ghost_get,info,mask_dummy_2d) 
+     &                    ghostsize,ppm_param_map_ghost_get,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(u,vecdim,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_push,info,mask_dummy_2d) 
+     &                         ghostsize,ppm_param_map_push,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(u,vecdim,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_send,info,mask_dummy_2d) 
+     &                         ghostsize,ppm_param_map_send,info,mask_dummy_2d)
               CALL ppm_map_field_ghost(u,vecdim,topoid,mesh_id_g(mlev),&
-     &                          ghostsize,ppm_param_map_pop,info,mask_dummy_2d) 
-         
+     &                          ghostsize,ppm_param_map_pop,info,mask_dummy_2d)
+
          ENDIF
 
         ENDDO
@@ -584,12 +578,12 @@ omega=omega_d
 
         !-----------------------------------------------------------------------
         !Implementation
-        !----------------------------------------------------------------------- 
+        !-----------------------------------------------------------------------
 
 
             iopt = ppm_param_alloc_fit
             ldu1(1)=vecdim
-            CALL ppm_alloc(moldu,ldu1,iopt,info) 
+            CALL ppm_alloc(moldu,ldu1,iopt,info)
             IF (info .NE. 0) THEN
             info = ppm_error_fatal
             CALL ppm_error(ppm_err_alloc,'GSsolv',    &
@@ -597,26 +591,26 @@ omega=omega_d
             GOTO 9999
             ENDIF
 
-       
-        DO isweep=1,nsweep 
+
+        DO isweep=1,nsweep
            DO color=0,1
 
 
               !-----------------------------------------------------------------
-              !Communicate red(even) if color==0 or communicate black(odd) 
-              !if color==1 
+              !Communicate red(even) if color==0 or communicate black(odd)
+              !if color==1
               !-----------------------------------------------------------------
 
 
               CALL ppm_map_field_ghost(u,vecdim,topoid,mesh_id_g(mlev),&
-     &                    ghostsize,ppm_param_map_ghost_get,info) 
+     &                    ghostsize,ppm_param_map_ghost_get,info)
               CALL ppm_map_field_ghost(u,vecdim,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_push,info) 
+     &                         ghostsize,ppm_param_map_push,info)
               CALL ppm_map_field_ghost(u,vecdim,topoid,mesh_id_g(mlev),&
-     &                         ghostsize,ppm_param_map_send,info) 
+     &                         ghostsize,ppm_param_map_send,info)
               CALL ppm_map_field_ghost(u,vecdim,topoid,mesh_id_g(mlev),&
-     &                          ghostsize,ppm_param_map_pop,info) 
-              
+     &                          ghostsize,ppm_param_map_pop,info)
+
 
 
 
@@ -637,7 +631,7 @@ omega=omega_d
      &                  +(u(1,i,j-1,k,isub)+u(1,i,j+1,k,isub))*c3 &
      &                  +(u(1,i,j,k-1,isub)+u(1,i,j,k+1,isub))*c4- &
      &                                                 f(1,i,j,k,isub))&
-&-moldu(1)) 
+&-moldu(1))
 
                        u(2,i,j,k,isub)=moldu(2)+omega*&
      &                           (&
@@ -646,8 +640,8 @@ omega=omega_d
      &                  +(u(2,i,j-1,k,isub)+u(2,i,j+1,k,isub))*c3 &
      &                  +(u(2,i,j,k-1,isub)+u(2,i,j,k+1,isub))*c4- &
      &                                                 f(2,i,j,k,isub))&
-&-moldu(2)) 
-                     
+&-moldu(2))
+
 
                        u(3,i,j,k,isub)=moldu(3)+omega*&
      &                           (&
@@ -656,19 +650,19 @@ omega=omega_d
      &                  +(u(3,i,j-1,k,isub)+u(3,i,j+1,k,isub))*c3 &
      &                  +(u(3,i,j,k-1,isub)+u(3,i,j,k+1,isub))*c4- &
      &                                                 f(3,i,j,k,isub))&
-&-moldu(3)) 
+&-moldu(3))
 
                     ENDDO
                 ENDDO
               ENDDO
-            ENDDO!subs   
+            ENDDO!subs
 
 
            ENDDO!DO color
-            IF (isweep.EQ.nsweep) THEN  
+            IF (isweep.EQ.nsweep) THEN
 
-      
- 
+
+
               CALL ppm_map_field_ghost(u,vecdim,topoid,mesh_id_g(mlev),&
      &                    ghostsize,ppm_param_map_ghost_get,info)
               CALL ppm_map_field_ghost(u,vecdim,topoid,mesh_id_g(mlev),&
@@ -678,7 +672,7 @@ omega=omega_d
               CALL ppm_map_field_ghost(u,vecdim,topoid,mesh_id_g(mlev),&
      &                          ghostsize,ppm_param_map_pop,info)
 
- 
+
 
 
            ENDIF
@@ -687,7 +681,7 @@ omega=omega_d
 
             iopt = ppm_param_dealloc
             ldu1(1)=vecdim
-            CALL ppm_alloc(moldu,ldu1,iopt,info) 
+            CALL ppm_alloc(moldu,ldu1,iopt,info)
             IF (info .NE. 0) THEN
             info = ppm_error_fatal
             CALL ppm_error(ppm_err_alloc,'GSsolv',    &
@@ -697,8 +691,8 @@ omega=omega_d
 #endif
 #endif
 
-        !---------------------------------------------------------------------- 
-        !  Return 
+        !----------------------------------------------------------------------
+        !  Return
         !----------------------------------------------------------------------
 9999    CONTINUE
         CALL substop('ppm_mg_smooth_fine',t0,info)

@@ -6,14 +6,14 @@
       !                 a given box.
       !
       !  Input        : xp(:,:)      (F) the positions of the particles
-      !                 Npart        (I) the number of particles 
+      !                 Npart        (I) the number of particles
       !                 weights(3)   (F) weights for the three cost
       !                                  contributions: particles, mesh,
       !                                  geometry used to find the cut
       !                                  directions.
-      !                 min_box(:,:) (F) the minimum coordinate of the 
+      !                 min_box(:,:) (F) the minimum coordinate of the
       !                                  boxes
-      !                 max_box(:,:) (F) the maximum coordinate of the 
+      !                 max_box(:,:) (F) the maximum coordinate of the
       !                                  boxes
       !                 cutbox       (I) ID of the box to be cut.
       !                 ncut         (I) number of cut directions to be
@@ -27,7 +27,7 @@
       !                                  computational cost of each
       !                                  particle.
       !
-      !  Input/output :                                            
+      !  Input/output :
       !
       !  Output       : icut(:)      (I) directions of best cut. icut=i
       !                                  means: cutting plane is orthogonal
@@ -36,7 +36,7 @@
       !                                  with the most favorable first.
       !                 info         (I) return status
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   :
       !
@@ -93,7 +93,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_tree
@@ -117,7 +117,7 @@
       INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: min_box,max_box
@@ -128,7 +128,7 @@
       INTEGER , DIMENSION(:  ), POINTER       :: icut
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(ppm_dim)            :: len_box,EW
       REAL(MK), DIMENSION(ppm_dim,ppm_dim)    :: J,Jsum,EV
@@ -145,11 +145,11 @@
       INTEGER                                 :: MPTYPE
 #endif
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_tree_cutdir',t0,info)
 #if   __KIND == __SINGLE_PRECISION
@@ -167,34 +167,34 @@
             CALL ppm_error(ppm_err_argument,'ppm_tree_cutdir',     &
      &          'cutbox must be > 0 !',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
          IF (SIZE(min_box,2) .LT. cutbox) THEN
             info = ppm_error_error
             CALL ppm_error(ppm_err_argument,'ppm_tree_cutdir',     &
      &          'size of min_box must be at least cutbox !',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
          IF (SIZE(max_box,2) .LT. cutbox) THEN
             info = ppm_error_error
             CALL ppm_error(ppm_err_argument,'ppm_tree_cutdir',     &
      &          'size of max_box must be at least cutbox !',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
          DO i=1,ppm_dim
             IF (min_box(i,cutbox) .GT. max_box(i,cutbox)) THEN
                info = ppm_error_error
                CALL ppm_error(ppm_err_argument,'ppm_tree_cutdir',     &
      &             'min_box must be <= max_box !',__LINE__,info)
                GOTO 9999
-            ENDIF 
+            ENDIF
             IF (minboxsize(i) .LT. 0.0_MK) THEN
                info = ppm_error_error
                CALL ppm_error(ppm_err_argument,'ppm_tree_cutdir',     &
      &             'minboxsize must be >= 0.0 !',__LINE__,info)
                GOTO 9999
-            ENDIF 
+            ENDIF
          ENDDO
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  If we have less than 1 direction to find, we are done
@@ -263,7 +263,7 @@
       !-------------------------------------------------------------------------
 #if   __KIND == __SINGLE_PRECISION
       MPTYPE = MPI_REAL
-#elif __KIND == __DOUBLE_PRECISION 
+#elif __KIND == __DOUBLE_PRECISION
       MPTYPE = MPI_DOUBLE_PRECISION
 #endif
 #endif
@@ -286,7 +286,7 @@
               ctotal(i) = weights(3)*cgeom(i)
           ENDDO
       ENDIF
-      
+
       !-------------------------------------------------------------------------
       !  Mesh costs
       !-------------------------------------------------------------------------
@@ -385,7 +385,7 @@
               CALL ppm_error(ppm_err_mpi_fail,'ppm_tree_cutdir',   &
      &            'MPI_Allreduce of inertia tensor failed!',__LINE__,info)
               GOTO 9999
-          ENDIF 
+          ENDIF
           J = Jsum
 #endif
 
@@ -411,7 +411,7 @@
               CALL ppm_error(ppm_err_sub_failed,'ppm_tree_cutdir',   &
      &            'Eigendecomposition failed!',__LINE__,info)
               GOTO 9999
-          ENDIF 
+          ENDIF
 
           !---------------------------------------------------------------------
           !  Flip Eigenvalues because we want the cost of a cut
@@ -476,7 +476,7 @@
       ENDDO
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_tree_cutdir',t0,info)

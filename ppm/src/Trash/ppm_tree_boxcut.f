@@ -3,13 +3,13 @@
       !-------------------------------------------------------------------------
       !
       !  Purpose      : This routine cuts a box into 2, 4 or 8 pieces using
-      !                 the given cut directions and cut positions. 
+      !                 the given cut directions and cut positions.
       !
       !  Input        : xp(:,:)      (F) The positions of the points.
       !                 cutbox       (I) ID of the box to be cut.
-      !                 min_box(:)   (F) the minimum coordinates of the 
+      !                 min_box(:)   (F) the minimum coordinates of the
       !                                  box to be cut.
-      !                 max_box(:)   (F) the maximum coordinates of the 
+      !                 max_box(:)   (F) the maximum coordinates of the
       !                                  box to be cut.
       !                 ncut         (I) number of cuts to apply
       !                 cutdir(:)    (I) directions of the cuts.
@@ -19,18 +19,18 @@
       !                 cutpos(:)    (F) positions of the cuts along the
       !                                  given axes.
       !
-      !  Input/output :  
+      !  Input/output :
       !
       !  Output       : mincut(:,:)  (F) minimum coordinates of the cut
       !                                  boxes. 1st: x,y[,z], 2nd: ibox.
       !                 maxcut(:,:)  (F) maximum coordinates of the cut
       !                                  boxes. 1st: x,y[,z], 2nd: ibox.
       !                 lhbx(:)      (I) pointer to the first point
-      !                                  (in lpdx) in each sub-box. This is 
-      !                                  only allocated and returned if there 
+      !                                  (in lpdx) in each sub-box. This is
+      !                                  only allocated and returned if there
       !                                  are particles at all.
-      !                 lpdx(:)      (I) index of particles in sub-boxes. 
-      !                                  This is only allocated and returned 
+      !                 lpdx(:)      (I) index of particles in sub-boxes.
+      !                                  This is only allocated and returned
       !                                  if there are particles at all.
       !                 info         (I) return status
       !
@@ -84,7 +84,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_data_tree
@@ -104,7 +104,7 @@
       !-------------------------------------------------------------------------
 #include "ppm_define.h"
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
       REAL(MK), DIMENSION(:  ), INTENT(IN   ) :: min_box,max_box,cutpos
@@ -114,20 +114,22 @@
       INTEGER , DIMENSION(:  ), POINTER       :: lhbx,lpdx
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK)                                :: t0
       INTEGER                                 :: nnbox,cd,i,j,iopt,Np,ip
       INTEGER , DIMENSION(2)                  :: ldc
       INTEGER , DIMENSION(:), POINTER         :: pbox
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_tree_boxcut',t0,info)
+
+      NULLIFY(pbox)
 
       !-------------------------------------------------------------------------
       !  Check input arguments
@@ -138,20 +140,20 @@
             CALL ppm_error(ppm_err_argument,'ppm_tree_boxcut',     &
      &          'cutbox must be >0 !',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
          IF ((ppm_dim .LT. 3) .AND. (ncut .GT. 2)) THEN
             info = ppm_error_error
             CALL ppm_error(ppm_err_argument,'ppm_tree_boxcut',     &
      &          'Cannot cut more than 2 times in 2D!',__LINE__,info)
             GOTO 9999
-         ENDIF 
+         ENDIF
          DO i=1,ppm_dim
             IF (min_box(i) .GT. max_box(i)) THEN
                info = ppm_error_error
                CALL ppm_error(ppm_err_argument,'ppm_tree_boxcut',     &
      &             'min_box must be <= max_box !',__LINE__,info)
                GOTO 9999
-            ENDIF 
+            ENDIF
          ENDDO
          DO i=1,ncut-1
             DO j=i+1,ncut
@@ -160,10 +162,10 @@
                   CALL ppm_error(ppm_err_argument,'ppm_tree_boxcut',     &
      &                'cut directions must be distinct !',__LINE__,info)
                   GOTO 9999
-               ENDIF 
+               ENDIF
             ENDDO
          ENDDO
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Exit if there is nothing to be cut
@@ -190,8 +192,8 @@
               CALL ppm_error(ppm_err_alloc,'ppm_tree_boxcut',          &
      &            'particle list pointers LPDX',__LINE__,info)
               GOTO 9999
-          ENDIF 
-      ENDIF 
+          ENDIF
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Split box into 2 pieces
@@ -221,7 +223,7 @@
 
           maxcut(cd,1) = cutpos(1)
           maxcut(cd,2) = max_box(cd)
-          
+
       !-------------------------------------------------------------------------
       !  Split box into 4 pieces
       !-------------------------------------------------------------------------
@@ -265,7 +267,7 @@
           maxcut(cd,2) = max_box(cd)
           maxcut(cd,3) = cutpos(2)
           maxcut(cd,4) = max_box(cd)
-      
+
       !-------------------------------------------------------------------------
       !  Split box into 8 pieces
       !-------------------------------------------------------------------------
@@ -350,7 +352,7 @@
           maxcut(cd,6) = max_box(cd)
           maxcut(cd,7) = max_box(cd)
           maxcut(cd,8) = max_box(cd)
-      
+
       !-------------------------------------------------------------------------
       !  Unknown cutting mode
       !-------------------------------------------------------------------------
@@ -382,7 +384,7 @@
           npbx = 0
 
           !---------------------------------------------------------------------
-          !  Determine sub-box for each particle. 
+          !  Determine sub-box for each particle.
           !---------------------------------------------------------------------
           PRINT*,'start comparison'
           IF (ncut .EQ. 1) THEN
@@ -485,7 +487,7 @@
       ENDIF           ! have_particles
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_tree_boxcut',t0,info)

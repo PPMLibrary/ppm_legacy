@@ -24,7 +24,7 @@
       !  ETH Zentrum, Hirschengraben 84
       !  CH-8092 Zurich, Switzerland
       !-------------------------------------------------------------------------
-     
+
       !-------------------------------------------------------------------------
       !  Define types
       !-------------------------------------------------------------------------
@@ -40,7 +40,10 @@
          !  Work lists
          !----------------------------------------------------------------------
          INTEGER                         :: nlist1,nlist2,nlist3,nlist4
-         INTEGER , DIMENSION(:), POINTER :: ilist1,ilist2,ilist3,ilist4
+         INTEGER , DIMENSION(:), POINTER :: ilist1 => NULL()
+         INTEGER , DIMENSION(:), POINTER :: ilist2 => NULL()
+         INTEGER , DIMENSION(:), POINTER :: ilist3 => NULL()
+         INTEGER , DIMENSION(:), POINTER :: ilist4 => NULL()
 
          !----------------------------------------------------------------------
          !  Define interfaces to the ppm_map_part
@@ -51,7 +54,7 @@
          END INTERFACE
 
          !----------------------------------------------------------------------
-         !  include the source 
+         !  include the source
          !----------------------------------------------------------------------
          CONTAINS
 

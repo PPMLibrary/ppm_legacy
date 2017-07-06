@@ -3,9 +3,9 @@
       !-------------------------------------------------------------------------
       !
       !  Purpose      : This routine stores all relevant information about
-      !                 the new topology (created by ppm_decomp routines) in 
-      !                 the global arrays and creates an internal topology ID 
-      !                 for it (and updates the maping lists between user 
+      !                 the new topology (created by ppm_decomp routines) in
+      !                 the global arrays and creates an internal topology ID
+      !                 for it (and updates the maping lists between user
       !                 topoid and internal ppm topoid).
       !
       !  Input        : min_phys(:)  (F) the min. extent of the comput. domain
@@ -83,7 +83,7 @@
       !  Removed debug PRINT statements.
       !
       !  Revision 1.24  2004/04/05 14:36:33  walther
-      !  Bug fix: had removed an iopt too much before allocating the 
+      !  Bug fix: had removed an iopt too much before allocating the
       !  ppm_isublist.
       !
       !  Revision 1.23  2004/04/05 13:11:26  walther
@@ -135,7 +135,7 @@
       !
       !  Revision 1.8  2003/12/12 16:13:53  ivos
       !  Now translates user topology IDs to internal ones and (re)allocates all
-      !  topology lists (and of course updates them). Can now auto-generate 
+      !  topology lists (and of course updates them). Can now auto-generate
       !  topology IDs and return them to the user.
       !
       !  Revision 1.7  2003/12/11 13:56:53  ivos
@@ -178,7 +178,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -200,7 +200,7 @@
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:  ), INTENT(IN   ) :: min_phys,max_phys
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: min_sub,max_sub
@@ -216,18 +216,18 @@
       ! neighbors)
       INTEGER , DIMENSION(:,:), INTENT(IN   ) :: ineigh
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       INTEGER , DIMENSION(3) :: ldc, ldl
       INTEGER                :: i,j,k,kk,iopt,isize,iproc,isin,topoid
       INTEGER                :: maxneigh,minbound,nsubmax,nsublistmax
       REAL(MK)               :: t0
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_topo_store',t0,info)
 
@@ -304,7 +304,7 @@
       ELSE
           topoid = 0
       ENDIF
-      
+
       !-------------------------------------------------------------------------
       !  Increase the internal topology counter if needed
       !-------------------------------------------------------------------------
@@ -318,7 +318,7 @@
       ELSE
           minbound = 1
       ENDIF
-      
+
       IF (topoid .EQ. 0) THEN
           minbound = 0
       ENDIF
@@ -351,7 +351,7 @@
          CALL ppm_error(ppm_err_sub_failed,'ppm_topo_store', &
      &                  'ppm_util_invert_list failed',__LINE__,info)
          GOTO 9999
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  (Re)allocate memory for the internally stored min_phys and max_phys
@@ -418,7 +418,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  (Re)allocate memory for the internally stored subdomains 
+      !  (Re)allocate memory for the internally stored subdomains
       !-------------------------------------------------------------------------
       iopt   = ppm_param_alloc_grow_preserve
       ldl(1) = 1
@@ -460,7 +460,7 @@
 #endif
 
       !-------------------------------------------------------------------------
-      !  Allocate memory for internally stored total number of subdomains 
+      !  Allocate memory for internally stored total number of subdomains
       !-------------------------------------------------------------------------
       ldl(1) = 1
       ldl(2) = minbound
@@ -478,7 +478,7 @@
       ENDDO
 
       !-------------------------------------------------------------------------
-      !  Allocate memory for internally stored total number of subdomains 
+      !  Allocate memory for internally stored total number of subdomains
       !-------------------------------------------------------------------------
       ldl(1) = minbound
       ldc(1) = ppm_max_topoid
@@ -557,7 +557,7 @@
             ppm_max_subd(3,i,topoid) = max_sub(3,i)
 #endif
          ENDDO
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Store the external boundary conditions for this topology
@@ -575,9 +575,9 @@
           GOTO 9999
       ENDIF
       DO i=1,2*ppm_dim
-         ppm_bcdef(i,topoid) = bcdef(i) 
+         ppm_bcdef(i,topoid) = bcdef(i)
       ENDDO
-      
+
       !-------------------------------------------------------------------------
       !  The MAX of nsublist and 1 is needed to avoid allocation failures
       !  if a processor has 0 subs. Same for nsubs if there are no subs at
@@ -585,7 +585,7 @@
       !-------------------------------------------------------------------------
       nsubmax = MAX(nsubs,1)
       nsublistmax = MAX(nsublist,1)
-      
+
       !-------------------------------------------------------------------------
       !  Allocate memory for the number of neighbours of the subs handled by
       !  the current processor i.e, a subset of the nneigh(1:nsubs) list.
@@ -620,12 +620,12 @@
       ENDDO
 
       !-------------------------------------------------------------------------
-      !  Next allocate memory for the ID of these neighbouring subs. 
+      !  Next allocate memory for the ID of these neighbouring subs.
       !  The required size is maxneigh, nsublist, and the maximum topoid
       !-------------------------------------------------------------------------
       iopt   = ppm_param_alloc_grow_preserve
       ldc(1) = maxneigh
-      ldc(2) = nsublist 
+      ldc(2) = nsublist
       ldc(3) = ppm_max_topoid
       CALL ppm_alloc(ppm_ineighsubs,ldc,iopt,info)
       IF (info .NE. 0) THEN
@@ -637,7 +637,7 @@
 
       !-------------------------------------------------------------------------
       !  ... and store the data by looping over the subs handled by the current
-      !  processor: isublist(1:nsublist) - the neighbours are the accessed 
+      !  processor: isublist(1:nsublist) - the neighbours are the accessed
       !  through the ineigh(1:nsublist,)
       !-------------------------------------------------------------------------
       DO i=1,nsublist
@@ -662,7 +662,7 @@
           CALL ppm_error(ppm_err_alloc,'ppm_topo_store',     &
      &        'BCs for subs on local processor failed',__LINE__,info)
           GOTO 9999
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  And store it ...
@@ -699,7 +699,7 @@
           CALL ppm_error(ppm_err_dealloc,'ppm_topo_store',     &
      &        'BCs for subs on local processor failed',__LINE__,info)
           GOTO 9999
-      ENDIF 
+      ENDIF
 
       !-------------------------------------------------------------------------
       !  Allocate memory for internally stored number of subdomains handled by
@@ -768,7 +768,7 @@
                   END DO
                   ! if not already in list
                   IF (isin .EQ. 0) THEN
-                      ppm_nneighlist(topoid) = ppm_nneighlist(topoid) + 1  
+                      ppm_nneighlist(topoid) = ppm_nneighlist(topoid) + 1
                       IF (ppm_nneighlist(topoid) .GT. isize) THEN
                           ! kindly ask for more memory
                           isize = isize + 2
@@ -791,7 +791,7 @@
       END DO
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_topo_store',t0,info)

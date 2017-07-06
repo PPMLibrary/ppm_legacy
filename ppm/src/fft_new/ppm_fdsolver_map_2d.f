@@ -2,28 +2,28 @@
       !  Subroutine   :                ppm_fdsolver_map_2d
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : maps the data from topology topo_ids(1)) / mesh 
+      !  Purpose      : maps the data from topology topo_ids(1)) / mesh
       !               (mesh_ids(1)) to topology (topo_ids(2))/mesh (mesh_ids(2))
-      !                 
       !
-      !  Input        :  
-      !                 topo_ids(2)        (I)     
-      !                                         first: current topology   
-      !                                         second: destination topology   
+      !
+      !  Input        :
+      !                 topo_ids(2)        (I)
+      !                                         first: current topology
+      !                                         second: destination topology
       !                 mesh_ids(2)        (I)
       !                                         first: current mesh of the data
-      !                                         second: destination mesh   
-      !                                
+      !                                         second: destination mesh
+      !
       !
       !  Input/output : data_fv(:,:,:,:)   (F)  data to be mapped
-      !                                
-      !                                
       !
-      !  Output       : 
+      !
+      !
+      !  Output       :
       !                 info          (I) return status. =0 if no error.
       !
-      !  Remarks      : 
-      !                                                  
+      !  Remarks      :
+      !
       !  References   :
       !
       !  Revisions    :
@@ -99,16 +99,16 @@
 
       IMPLICIT NONE
 
-#if   __KIND == __SINGLE_PRECISION | __KIND == __COMPLEX 
+#if   __KIND == __SINGLE_PRECISION | __KIND == __COMPLEX
       INTEGER, PARAMETER :: MK = ppm_kind_single
-#elif __KIND == __DOUBLE_PRECISION | __KIND == __DOUBLE_COMPLEX 
+#elif __KIND == __DOUBLE_PRECISION | __KIND == __DOUBLE_COMPLEX
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
 
 
 
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       ! POINTER to data
 
@@ -132,28 +132,28 @@
 
 #if   __DIM == __VFIELD
       INTEGER,                          INTENT(IN)     :: lda
-#endif  
-   
+#endif
+
       INTEGER, DIMENSION(2),            INTENT(IN)     :: topo_ids
       INTEGER, DIMENSION(2),            INTENT(IN)     :: mesh_ids
       INTEGER              ,            INTENT(  OUT)  :: info
 
 
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       ! timer
       REAL(MK)                                :: t0
       ! counters
       INTEGER                                 :: k, i, j
-      !Size of the data_in 
+      !Size of the data_in
       INTEGER                                 :: from_topo, to_topo
       INTEGER                                 :: from_mesh, to_mesh
       LOGICAL                                 :: valid
 
 #if   __DIM == __SFIELD
       INTEGER, PARAMETER                      :: lda = 1
-#endif   
+#endif
 
 
       INTEGER , DIMENSION(2  )                :: ghostsize
@@ -161,7 +161,7 @@
       CHARACTER(LEN=ppm_char)                 :: mesg
 
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
 
       !-------------------------------------------------------------------------
@@ -187,7 +187,7 @@
                   CALL ppm_error(ppm_err_argument,'ppm_fdsolver_map_2d',  &
      &                'Topology ID (from_topo) is invalid!',__LINE__,info)
                   GOTO 9999
-              ENDIF           
+              ENDIF
           ENDIF
           IF (mesh_ids(1) .GT. 0) THEN
                 CALL ppm_check_meshid(ppm_param_id_user,mesh_ids(1),     &
@@ -213,10 +213,10 @@
 
 
       ENDIF
-      
+
 
       !-------------------------------------------------------------------------
-      ! Define source and destination 
+      ! Define source and destination
       !-------------------------------------------------------------------------
       from_topo   = topo_ids(1)
       to_topo   = topo_ids(2)
@@ -228,14 +228,14 @@
       IF (ppm_debug .GT. 0) THEN
 
          WRITE(mesg,'(A,I5,A,I5)' )'Mapping from topo ',from_topo,        &
-    &          ', mesh ',from_mesh 
-         CALL ppm_write(ppm_rank,'ppm_fdsolver_map',mesg,j)      
+    &          ', mesh ',from_mesh
+         CALL ppm_write(ppm_rank,'ppm_fdsolver_map',mesg,j)
 
          WRITE(mesg,'(A,I5,A,I5)' )'          to topo ',to_topo,        &
-   &             ', mesh ',to_mesh 
-         CALL ppm_write(ppm_rank,'ppm_fdsolver_map',mesg,j)      
+   &             ', mesh ',to_mesh
+         CALL ppm_write(ppm_rank,'ppm_fdsolver_map',mesg,j)
       ENDIF
- 
+
 
       !-------------------------------------------------------------------------
       !  Map fields
@@ -255,7 +255,7 @@
       CALL ppm_map_field(DATA_fv,to_topo,from_mesh,to_mesh,ghostsize,maptype,  &
      &           info)
 
-#elif __DIM == __VFIELD     
+#elif __DIM == __VFIELD
       maptype = ppm_param_map_global;
       CALL ppm_map_field(DATA_fv,lda,to_topo,from_mesh,to_mesh,ghostsize,      &
      &           maptype,info)
@@ -263,7 +263,7 @@
       CALL ppm_map_field(DATA_fv,lda,to_topo,from_mesh,to_mesh,ghostsize,      &
      &           maptype,info)
       maptype = ppm_param_map_send;
-      CALL ppm_map_field(DATA_fv,lda,to_topo,from_mesh,to_mesh,ghostsize,      & 
+      CALL ppm_map_field(DATA_fv,lda,to_topo,from_mesh,to_mesh,ghostsize,      &
      &           maptype,info)
       maptype = ppm_param_map_pop;
       CALL ppm_map_field(DATA_fv,lda,to_topo,from_mesh,to_mesh,ghostsize,      &

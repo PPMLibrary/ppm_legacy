@@ -25,7 +25,7 @@
       !                                  not present, a cost of 1 per
       !                                  particle is assumed.
       !
-      !  Input/output : 
+      !  Input/output :
       !
       !  Output       : cost(:)      (F) Aggregate cost for each subdomain
       !                 info         (I) return status
@@ -73,7 +73,7 @@
       !  of MPI_All=Reduce() must be disjoined.
       !
       !  Revision 1.4  2004/03/04 14:29:13  ivos
-      !  bugfix: in argument check changed .LE. to .LT. when comparing 
+      !  bugfix: in argument check changed .LE. to .LT. when comparing
       !  SIZE(nnodes) with nsubs.
       !
       !  Revision 1.3  2004/03/03 17:37:30  ivos
@@ -104,7 +104,7 @@
      &              info,pcost)
 #endif
       !-------------------------------------------------------------------------
-      !  Modules 
+      !  Modules
       !-------------------------------------------------------------------------
       USE ppm_module_data
       USE ppm_module_substart
@@ -126,7 +126,7 @@
       INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: min_sub,max_sub
@@ -136,7 +136,7 @@
       INTEGER                 , INTENT(IN   ) :: Np,nsubs
       INTEGER                 , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK)                          :: t0
 #ifdef __MPI
@@ -149,11 +149,11 @@
       INTEGER, DIMENSION(:), POINTER    :: ilist1,ilist2,ilist3
       CHARACTER(LEN=ppm_char)           :: mesg
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
-      !  Initialise 
+      !  Initialise
       !-------------------------------------------------------------------------
       CALL substart('ppm_topo_cost',t0,info)
 
@@ -212,6 +212,11 @@
               ENDIF
           ENDIF
       ENDIF
+
+#ifdef __MPI
+      NULLIFY(costsum)
+#endif
+      NULLIFY(ilist1,ilist2,ilist3)
 
       !-------------------------------------------------------------------------
       !  Allocate memory for the costs
@@ -281,9 +286,9 @@
                   IF (ppm_dim .GT. 2) THEN
                       IF (xp(1,ipart).GE.min_sub(1,idom).AND.   &
      &                    xp(1,ipart).LT.max_sub(1,idom).AND.   &
-     &                    xp(2,ipart).GE.min_sub(2,idom).AND.   & 
+     &                    xp(2,ipart).GE.min_sub(2,idom).AND.   &
      &                    xp(2,ipart).LT.max_sub(2,idom).AND.   &
-     &                    xp(3,ipart).GE.min_sub(3,idom).AND.   & 
+     &                    xp(3,ipart).GE.min_sub(3,idom).AND.   &
      &                    xp(3,ipart).LT.max_sub(3,idom)) THEN
                           !-----------------------------------------------------
                           !  Cost based on particles
@@ -303,7 +308,7 @@
                   ELSE
                       IF (xp(1,ipart).GE.min_sub(1,idom).AND.   &
      &                    xp(1,ipart).LT.max_sub(1,idom).AND.   &
-     &                    xp(2,ipart).GE.min_sub(2,idom).AND.   & 
+     &                    xp(2,ipart).GE.min_sub(2,idom).AND.   &
      &                    xp(2,ipart).LT.max_sub(2,idom)) THEN
                           !-----------------------------------------------------
                           !  Cost based on particles
@@ -331,14 +336,14 @@
                  ilist3 => ilist1
                  ilist1 => ilist2
                  ilist2 => ilist3
-              ENDIF 
+              ENDIF
 
               !-----------------------------------------------------------------
               !  Exit if the list is empty
               !-----------------------------------------------------------------
               IF (nlist1.EQ.0) EXIT
           ENDDO    ! loop over subdomains
-              
+
           !---------------------------------------------------------------------
           !  Check that we did not miss a particle
           !---------------------------------------------------------------------
@@ -477,7 +482,7 @@
       ENDIF
 
       !-------------------------------------------------------------------------
-      !  Return 
+      !  Return
       !-------------------------------------------------------------------------
  9999 CONTINUE
       CALL substop('ppm_topo_cost',t0,info)

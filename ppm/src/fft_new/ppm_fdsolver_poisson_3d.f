@@ -2,30 +2,30 @@
       !  Subroutine   :                ppm_fdsolver_poisson_3d.f
       !-------------------------------------------------------------------------
       !
-      !  Purpose      : This routine solves the poisson equation with the data 
+      !  Purpose      : This routine solves the poisson equation with the data
       !               as right hand side in fourier space
-      !                  - Laplacian of Phi = omega 
-      !                 
+      !                  - Laplacian of Phi = omega
       !
-      !  Input        :  
+      !
+      !  Input        :
       !                 lda(3)          (I)      size of local data field
       !                 istart(3)       (I)      starting index of local field
       !                 Nm(3)           (I)      size of global data
-      !                 length(3)       (I)      length of the domain 
-      !                                
+      !                 length(3)       (I)      length of the domain
       !
-      !  Input/output : 
+      !
+      !  Input/output :
       !                 fdata(:,:)       (F)     data in fourier space
       !                                         right hand side  of poisson
-      !                                         equation   
-      !                                
+      !                                         equation
       !
-      !  Output       : 
+      !
+      !  Output       :
       !                 info       (       I) return status. =0 if no error.
       !
-      !  Remarks      : 
-      !                                                
-      !                                                  
+      !  Remarks      :
+      !
+      !
       !  References   :
       !
       !  Revisions    :
@@ -79,16 +79,16 @@
 
       IMPLICIT NONE
 
-#if   __KIND == __COMPLEX 
+#if   __KIND == __COMPLEX
       INTEGER, PARAMETER :: MK = ppm_kind_single
-#elif __KIND == __DOUBLE_COMPLEX 
+#elif __KIND == __DOUBLE_COMPLEX
       INTEGER, PARAMETER :: MK = ppm_kind_double
 #endif
 
 
 
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       ! POINTER to data
       COMPLEX(MK), DIMENSION(:,:,:),    POINTER          :: fdata
@@ -98,21 +98,21 @@
 
 
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       ! timer
       REAL(MK)                                :: t0
       ! counters
       INTEGER                                 :: i,j,k
       INTEGER                                 :: i_global,j_global, k_global
-      !Size of the data 
+      !Size of the data
       INTEGER, DIMENSION(2)                   :: lda_end
       INTEGER                                 :: lda_end2
       ! wave number
       REAL(MK)                                :: kx, ky, kz
       REAL(MK)                                :: pi2_Lx, pi2_Ly, pi2_Lz
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
 
       !-------------------------------------------------------------------------
@@ -150,11 +150,11 @@
       !  Solve Poisson Equation
       !-------------------------------------------------------------------------
 
-#if   __KIND == __COMPLEX 
+#if   __KIND == __COMPLEX
       pi2_Lx = 2.0_MK*ppm_pi_s/length(1)
       pi2_Ly = 2.0_MK*ppm_pi_s/length(2)
       pi2_Lz = 2.0_MK*ppm_pi_s/length(3)
-#elif __KIND == __DOUBLE_COMPLEX 
+#elif __KIND == __DOUBLE_COMPLEX
       pi2_Lx = 2.0_MK*ppm_pi_d/length(1)
       pi2_Ly = 2.0_MK*ppm_pi_d/length(2)
       pi2_Lz = 2.0_MK*ppm_pi_d/length(3)
@@ -162,7 +162,7 @@
 
       lda_end(1)=Nm(1)/2 +1
       lda_end(2)=Nm(2)/2 +1
-      
+
 
       !-------------------------------------------------------------------------
       !  loop over all elements in fourier space and multiply 1/(kx^2+ky^2+kz^2)
@@ -171,7 +171,7 @@
       DO k=1,lda(3)
         DO j=1,lda(2)
           DO i=1,lda(1)
-            ! decremented global index 
+            ! decremented global index
             i_global = istart(1)+i-2
             j_global = istart(2)+j-2
             k_global = istart(3)+k-2
@@ -188,7 +188,7 @@
                j_global = Nm(2)-j_global
                ENDIF
 
-               kx=pi2_Lx*real(i_global,MK)  
+               kx=pi2_Lx*real(i_global,MK)
                ky=pi2_Ly*real(j_global,MK)
                kz=pi2_Lz*real(k_global,MK)
                fdata(i,j,k)=-1.0_MK /(kx*kx + ky*ky + kz*kz)*fdata(i,j,k)

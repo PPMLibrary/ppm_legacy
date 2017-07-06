@@ -25,14 +25,14 @@
       !                                    automatically to meet the time
       !                                    requirements.
       !
-      !  Input/output : 
+      !  Input/output :
       !
       !  Output       :  proc_speed(:) (F) Relative speeds of all processors
       !                                    from 0 to ppm_nproc-1. The numbers
       !                                    do sum up to 1.
       !                  info          (I) 0 on success.
       !
-      !  Remarks      : 
+      !  Remarks      :
       !
       !  References   :
       !
@@ -101,14 +101,14 @@
        INCLUDE 'mpif.h'
 #endif
       !-------------------------------------------------------------------------
-      !  Arguments     
+      !  Arguments
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:) , POINTER       :: proc_speed
       REAL(MK), OPTIONAL     , INTENT(IN   ) :: mintime,maxtime
       INTEGER , OPTIONAL     , INTENT(IN   ) :: Npart
       INTEGER                , INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
-      !  Local variables 
+      !  Local variables
       !-------------------------------------------------------------------------
       REAL(MK)                         :: t0,lmyeps,tim,tim1,cutoff2
       REAL(MK)                         :: xmax,ymax,zmax,r2,r2i,r6i,fs,en
@@ -124,9 +124,9 @@
       CHARACTER(LEN=ppm_char)          :: mesg
       LOGICAL                          :: ldone
       !-------------------------------------------------------------------------
-      !  Externals 
+      !  Externals
       !-------------------------------------------------------------------------
-      
+
       !-------------------------------------------------------------------------
       !  Initialise
       !-------------------------------------------------------------------------
@@ -175,6 +175,8 @@
           ENDIF
       ENDIF
 
+      NULLIFY(alltim,sendtim)
+
       !-------------------------------------------------------------------------
       !  Set timing limits. Stop as soon as slowest processor takes more
       !  than tmax seconds, but require every processor to run for at least
@@ -189,7 +191,7 @@
       !  Set number of particles to start with. The user can override this if
       !  running on a very slow processor.
       !-------------------------------------------------------------------------
-      N    = 1000     
+      N    = 1000
       IF (PRESENT(Npart))      N = Npart
 
       !-------------------------------------------------------------------------
@@ -213,7 +215,7 @@
       IF (ppm_nproc .EQ. 1) THEN
           proc_speed(0) = 1.0_MK
           CALL ppm_write(ppm_rank,'ppm_estimate_proc_speed', &
-                 'Only one processor found. Terminating.',info) 
+                 'Only one processor found. Terminating.',info)
           GOTO 9999
       ENDIF
 
@@ -246,17 +248,17 @@
           CALL ppm_util_time(tim)
           en = 0.0_MK
           DO i=1,N-1        ! loop over all pairs of particles
-             DO j=i+1,N 
+             DO j=i+1,N
                 CALL RANDOM_NUMBER(ri)
                 CALL RANDOM_NUMBER(rj)
                 rx(1) = rj(1) - ri(1)                 ! vector between i and j
                 rx(2) = rj(2) - ri(2)
                 rx(3) = rj(3) - ri(3)
                 rx(1) = rx(1)-xmax*NINT(rx(1)/xmax)     ! nearest image
-                rx(2) = rx(2)-ymax*NINT(rx(2)/ymax)  
-                rx(3) = rx(3)-zmax*NINT(rx(3)/zmax)  
+                rx(2) = rx(2)-ymax*NINT(rx(2)/ymax)
+                rx(3) = rx(3)-zmax*NINT(rx(3)/zmax)
                 r2 = SUM(rx(:)**2)                      ! square of distance
-                IF (r2 .LT. cutoff2) THEN 
+                IF (r2 .LT. cutoff2) THEN
                    r2i = 1.0_MK/r2
                    r6i = r2i*r2i*r2i
                    ! force factor using Lennard-Jones
@@ -306,7 +308,7 @@
 #else
           alltim(1) = tim
 #endif
-          
+
           !---------------------------------------------------------------------
           !  Check if test was sufficient
           !---------------------------------------------------------------------
