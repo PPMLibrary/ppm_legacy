@@ -1,0 +1,9 @@
+__*.f
+*.o
+*.mod
+*.pc
+*.pcl
+vectorized_mg/*
+OLD_ROUTINES/*
+fft_new/*
+Trash/*

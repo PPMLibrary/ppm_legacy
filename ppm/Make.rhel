@@ -1,0 +1,79 @@
+#-------------------------------------------------------------------------
+#  File         :  Sample Make.rhel
+#-------------------------------------------------------------------------
+#
+#  Purpose      :  Set build environment variables
+#
+#  Remarks      :  RH Enterprise + ifort
+#
+#  References   :
+#
+#  Revisions    :
+#-------------------------------------------------------------------------
+#  $Log: Make.rhel,v $
+#  Revision 1.1.1.1  2007/07/13 10:16:28  ivos
+#  CBL version of the PPM library
+#
+#  Revision 1.1  2006/04/06 10:08:43  pchatela
+#  Commits and clean-ups before release 0.8
+#
+#
+#-------------------------------------------------------------------------
+#  Parallel Particle Mesh Library (PPM)
+#  Institute of Computational Science
+#  ETH Zentrum, Hirschengraben 84
+#  CH-8092 Zurich, Switzerland
+#-------------------------------------------------------------------------
+
+
+# Have to define a VERSION: DEBUG or OPTIMIZED
+# (can also be defined in SHELL and passed by using 
+#  make -e )
+VERSION := OPTIMIZED
+
+
+MPILIBDIR   := ~/software/mpich-1.2.6/lib/
+MPIINCLDIR  := ~/software/mpich-1.2.6/include/
+FFTWLIBDIR  := ./lib/
+FFTWINCLDIR := ./include/
+CPPINCLDIR := /usr/lib/gcc/i386-redhat-linux/3.4.3/
+# Pre-compilers
+# One for dependency generation
+DEPCPP     := cpp
+# and one for F90 code generation
+CPP     := cpp
+# Compiler
+FC      := ~/software/mpich-1.2.6/bin/mpif90
+# Linker/Archiver
+AR      := ar
+# Linker Flags
+ARFLAGS := crus
+
+# Module redirection stuff !NOT USED, SEE MAIN MAKEFILE
+ifeq ($(strip $(FC)), xlf)
+MODREDIR := -qmoddir=
+endif
+ifeq ($(strip $(FC)), sxf90)
+MODREDIR := -qmoddir=
+endif
+
+
+# Various compiler options depending on version
+DEFINE = 
+DEBUG_FFLAGS = $(DEFINE) -CB -g -unroll -FR 
+OPTIMIZED_FFLAGS = $(DEFINE) -O3 -tpp7 -aN -axN -unroll -vec_report3 -FR
+
+# We can now set the INCL FLAGS
+INCL   := -I$(MPIINCLDIR) -I$(FFTWINCLDIR) -I$(CPPINCLDIR)
+# and the LIBS
+LIBS   := -L$(FFTWLIBDIR) -lm -lmetis -lvizing -lstdc++ -lmpich -lpmpich -lfftw3 -lfftw3f
+
+ifeq "$(VERSION)" "DEBUG"
+FFLAGS := $(DEBUG_FFLAGS)
+BUILDDIR:= ./
+endif
+ifeq "$(VERSION)" "OPTIMIZED"
+FFLAGS := $(OPTIMIZED_FFLAGS)
+BUILDDIR:= ./
+endif
+

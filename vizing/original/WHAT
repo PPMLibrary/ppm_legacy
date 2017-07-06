@@ -1,0 +1,24 @@
+From yandong Thu May  2 14:23:11 1996
+Received: from sbgrad9.csdept (sbgrad9.cs.sunysb.edu [130.245.2.29]) by cs.sunysb.edu (8.6.12/8.6.9) with SMTP id OAA06601 for <skiena>; Thu, 2 May 1996 14:23:10 -0400
+Date: Thu, 2 May 1996 14:23:10 -0400
+From: Yan Dong <yandong>
+Message-Id: <199605021823.OAA06601@cs.sunysb.edu>
+To: skiena
+Subject: submit project
+Status: RO
+
+
+Dear Prof. Skiena,
+
+	The code and ReadMe files of my project will be include in the
+following mails, one mail for each file. I will also try to submit
+hard copies with sample tests by tomorrow.
+
+	There will be ten files included:
+	ReadMe, main.cc, verify.cc, Array.h, Boolean.h, adj.h,
+	edge.h, graph.h, list.h,  color.h
+
+Best regards,
+Dong Yan
+
+

@@ -1,0 +1,24 @@
+#----------------------------------------------------------------------
+#  Makefile : libvizing.a
+#  Version  :                                                          
+#  Author   :                                                          
+#  Created  : 1 - 2004         
+#                                                                      
+#----------------------------------------------------------------------
+#  Creator: Ivo Sbalzarini
+#  Rev: 2004/01/07 by Ivo Sbalzarini
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#  Compiler settings (gcc)
+#----------------------------------------------------------------------
+CC          = /opt/ibmcmp/vac/6.0/bin/xlc
+LD          = $(CC)
+AR          = ar
+INC         =
+DEBUG       = 
+OPT         = -O3 -qstrict -qunroll=yes -qtune=auto -qarch=auto
+CFLAGS      = $(OPT) $(DEBUG)
+ARFLAGS     = rvs
+LIBS        = 
+DEFINE      = -D__XLF

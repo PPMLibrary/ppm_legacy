@@ -1,0 +1,86 @@
+#-------------------------------------------------------------------------
+#  File         :  Sample Make.include
+#-------------------------------------------------------------------------
+#
+#  Purpose      :  Set build environment variables
+#
+#  Remarks      :
+#
+#  References   :
+#
+#  Revisions    :
+#-------------------------------------------------------------------------
+#  $Log: Make.include,v $
+#  Revision 1.1.1.1  2007/07/13 10:16:28  ivos
+#  CBL version of the PPM library
+#
+#  Revision 1.2  2005/04/29 11:17:28  pchatela
+#  Additional fixes to get compilation going on G5's
+#  - Deleting left over spaces in dependecy lines
+#  - Moved the -P option to the beginning of the CPP options
+#  - Allow for two pre-processors: one for generating the dependencies
+#    (this will be typically gnu cpp) and one for the actual code-compilation
+#    as some compilers, e.g. xlf, are quite picky about the code they
+#    are passed
+#
+#
+#
+#-------------------------------------------------------------------------
+#  Parallel Particle Mesh Library (PPM)
+#  Institute of Computational Science
+#  ETH Zentrum, Hirschengraben 84
+#  CH-8092 Zurich, Switzerland
+#-------------------------------------------------------------------------
+
+
+# Have to define a VERSION: DEBUG or OPTIMIZED
+# (can also be defined in SHELL and passed by using 
+#  make -e )
+VERSION := DEBUG
+
+
+MPILIBDIR   := /usr/local/lib/
+MPIINCLDIR  := /usr/local/include/
+FFTWLIBDIR  := ./lib/
+FFTWINCLDIR := ./include/
+CPPINCLDIR := /usr/lib/gcc/i386-redhat-linux/3.4.3/
+# Pre-compilers
+# One for dependency generation
+DEPCPP     := cpp
+# and one for F90 code generation
+CPP     := cpp
+# Compiler
+FC      := mpif90
+# Linker/Archiver
+AR      := ar
+# Linker Flags
+ARFLAGS := crus
+
+# Module redirection stuff !NOT USED, SEE MAIN MAKEFILE
+ifeq ($(strip $(FC)), xlf)
+MODREDIR := -qmoddir=
+endif
+ifeq ($(strip $(FC)), sxf90)
+MODREDIR := -qmoddir=
+endif
+
+
+# Various compiler options depending on version
+DEFINE = 
+DEBUG_FFLAGS = $(DEFINE) -CB -g -unroll -FR 
+OPTIMIZED_FFLAGS = $(DEFINE) -O3 -xB -axB -unroll -vec_report3 -FR
+
+# We can now set the INCL FLAGS
+INCL   := -I$(MPIINCLDIR) -I$(FFTWINCLDIR) -I$(CPPINCLDIR)
+# and the LIBS
+LIBS   := -L$(FFTWLIBDIR) -lm -lmetis -lvizing -lstdc++ -lmpich -lpmpich -lfftw3 -lfftw3f
+
+ifeq "$(VERSION)" "DEBUG"
+FFLAGS := $(DEBUG_FFLAGS)
+BUILDDIR:= ./
+endif
+ifeq "$(VERSION)" "OPTIMIZED"
+FFLAGS := $(OPTIMIZED_FFLAGS)
+BUILDDIR:= ./
+endif
+

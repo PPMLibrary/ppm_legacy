@@ -1,0 +1,85 @@
+#-------------------------------------------------------------------------
+#  File         :  Sample Make.include
+#-------------------------------------------------------------------------
+#
+#  Purpose      :  Set build environment variables
+#
+#  Remarks      :
+#
+#  References   :
+#
+#  Revisions    :
+#-------------------------------------------------------------------------
+#  $Log: Make.nag,v $
+#  Revision 1.1.1.1  2007/07/13 10:16:28  ivos
+#  CBL version of the PPM library
+#
+#  Revision 1.1  2005/04/20 14:22:55  pchatela
+#  Initial insertion
+#
+#
+#
+#-------------------------------------------------------------------------
+#  Parallel Particle Mesh Library (PPM)
+#  Institute of Computational Science
+#  ETH Zentrum, Hirschengraben 84
+#  CH-8092 Zurich, Switzerland
+#-------------------------------------------------------------------------
+
+
+# Have to define a VERSION: DEBUG or OPTIMIZED
+# (can also be defined in SHELL and passed by using 
+#  make -e )
+VERSION := OPTIMIZED
+
+
+MPILIBDIR   := /usr/local/lib/
+MPIINCLDIR  := /usr/local/include/
+FFTWLIBDIR  := ./lib/
+FFTWINCLDIR := ./include/
+CPPINCLDIR  := 
+# Pre-compiler
+# One for dependency generation
+DEPCPP  := cpp
+# and one for F90 code generation
+CPP     := /opt/ibmcmp/xlf/8.1/exe/cpp
+# Compiler
+FC      := /usr/local/bin/f95
+# Linker/Archiver
+AR      := ar
+# Linker Flags
+ARFLAGS := crus
+
+# Module redirection stuff !NOT USED, SEE MAIN MAKEFILE
+ifeq ($(strip $(FC)), xlf)
+MODREDIR := -qmoddir=
+endif
+ifeq ($(strip $(FC)), sxf90)
+MODREDIR := -qmoddir=
+endif
+
+
+# Various compiler options depending on version
+DEFINE = 
+DEBUG_FFLAGS = $(DEFINE) -C=all -g -O0 -free -ieee=stop -mtrace=on -strict95 -u -gline
+OPTIMIZED_FFLAGS = $(DEFINE) -O4 -align=natural -free -Oblas -strict95 -u
+NOOPT_FFLAGS = $(DEFINE) -O0 -free -strict95 -u
+
+# We can now set the INCL FLAGS
+INCL   := -I$(MPIINCLDIR) -I$(FFTWINCLDIR) -I$(CPPINCLDIR)
+# and the LIBS
+LIBS   := -L$(FFTWLIBDIR) -lm -lmetis -lvizing -lstdc++ -lmpich -lpmpich -lfftw3f
+
+ifeq "$(VERSION)" "DEBUG"
+FFLAGS := $(DEBUG_FFLAGS)
+BUILDDIR:= ./
+endif
+ifeq "$(VERSION)" "OPTIMIZED"
+FFLAGS := $(OPTIMIZED_FFLAGS)
+BUILDDIR:= ./
+endif
+ifeq "$(VERSION)" "NOOPT"
+FFLAGS := $(NOOPT_FFLAGS)
+BUILDDIR:= ./
+endif
+

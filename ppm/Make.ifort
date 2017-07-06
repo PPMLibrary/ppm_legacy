@@ -1,0 +1,114 @@
+#-------------------------------------------------------------------------
+#  File         :  Sample Make.include
+#-------------------------------------------------------------------------
+#
+#  Purpose      :  Set build environment variables
+#
+#  Remarks      :
+#
+#  References   :
+#
+#  Revisions    :
+#-------------------------------------------------------------------------
+#  $Log: Make.ifort,v $
+#  Revision 1.2  2007/11/08 12:52:53  birtes
+#  Modified Files:
+#  Added Files:
+#   	ppm_lennardjones/Makefile ppm_lennardjones/Makefile~
+#   	ppm_lennardjones/__lj.f90 ppm_lennardjones/__lj_finalize.f90
+#   	ppm_lennardjones/__lj_init.f90
+#   	ppm_lennardjones/__lj_module_global.f90
+#   	ppm_lennardjones/__lj_module_writeout.f90
+#   	ppm_lennardjones/__lj_set_particles.f90
+#   	ppm_lennardjones/lj.f90 ppm_lennardjones/lj.o
+#   	ppm_lennardjones/lj_finalize.f90
+#   	ppm_lennardjones/lj_finalize.o ppm_lennardjones/lj_init.f90
+#   	ppm_lennardjones/lj_init.f90~ ppm_lennardjones/lj_init.o
+#   	ppm_lennardjones/lj_module_global.f90
+#   	ppm_lennardjones/lj_module_global.f90~
+#   	ppm_lennardjones/lj_module_global.mod
+#   	ppm_lennardjones/lj_module_global.o
+#   	ppm_lennardjones/lj_module_writeout.f90
+#   	ppm_lennardjones/lj_module_writeout.mod
+#   	ppm_lennardjones/lj_module_writeout.o
+#   	ppm_lennardjones/lj_set_particles.f90
+#   	ppm_lennardjones/lj_set_particles.f90~
+#   	ppm_lennardjones/lj_set_particles.o
+#   	ppm_lennardjones/lj_writeout.f90
+#   	ppm_lennardjones/processor.pdb ppm_lennardjones/velocity.pdb
+#   ----------------------------------------------------------------------
+#
+#  Revision 1.1.1.1  2007/07/13 10:16:28  ivos
+#  CBL version of the PPM library
+#
+#  Revision 1.1  2005/04/20 14:22:55  pchatela
+#  Initial insertion
+#
+#
+#
+#-------------------------------------------------------------------------
+#  Parallel Particle Mesh Library (PPM)
+#  Institute of Computational Science
+#  ETH Zentrum, Hirschengraben 84
+#  CH-8092 Zurich, Switzerland
+#-------------------------------------------------------------------------
+
+
+# Have to define a VERSION: DEBUG or OPTIMIZED
+# (can also be defined in SHELL and passed by using 
+#  make -e )
+VERSION := OPTIMIZED
+
+
+#MPILIBDIR   := /usr/local/lib/
+#MPIINCLDIR  := /usr/local/include/
+MPILIBDIR   := /opt/lib/
+MPIINCLDIR  := /opt/include/
+FFTWLIBDIR  := ./lib/
+FFTWINCLDIR := ./include/
+CPPINCLDIR  := 
+# Pre-compiler
+# One for dependency generation
+DEPCPP  := cpp
+# and one for F90 code generation
+CPP     := cpp
+# Compiler
+FC      := /opt/intel/fc/9.1.039/bin/ifort
+# Linker/Archiver
+AR      := ar
+# Linker Flags
+ARFLAGS := crus
+
+# Module redirection stuff !NOT USED, SEE MAIN MAKEFILE
+ifeq ($(strip $(FC)), xlf)
+MODREDIR := -qmoddir=
+endif
+ifeq ($(strip $(FC)), sxf90)
+MODREDIR := -qmoddir=
+endif
+
+
+# Various compiler options depending on version
+DEFINE = 
+DEBUG_FFLAGS = $(DEFINE) -C -g -O0 -FR
+OPTIMIZED_FFLAGS = $(DEFINE) -O2 -msse3 -FR
+NOOPT_FFLAGS = $(DEFINE) -O0 -FR
+
+# We can now set the INCL FLAGS
+INCL   := -I$(MPIINCLDIR) -I$(FFTWINCLDIR) -I$(CPPINCLDIR)
+# and the LIBS
+LIBS   := -L$(FFTWLIBDIR) -lm -lmetis -lvizing -lstdc++ -lmpich -lpmpich -lfftw3f
+
+ifeq "$(VERSION)" "DEBUG"
+FFLAGS := $(DEBUG_FFLAGS)
+BUILDDIR:= ./
+endif
+ifeq "$(VERSION)" "OPTIMIZED"
+FFLAGS := $(OPTIMIZED_FFLAGS)
+BUILDDIR:= ./
+endif
+ifeq "$(VERSION)" "NOOPT"
+FFLAGS := $(NOOPT_FFLAGS)
+BUILDDIR:= ./
+endif
+

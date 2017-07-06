@@ -1,0 +1,29 @@
+#----------------------------------------------------------------------
+#  Makefile : libvizing.a
+#  Version  :                                                          
+#  Author   :                                                          
+#  Created  : 1 - 2004         
+#                                                                      
+#----------------------------------------------------------------------
+#  Creator: Ivo Sbalzarini
+#  Rev: 2004/01/07 by Ivo Sbalzarini
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#  Compiler settings (gcc)
+#----------------------------------------------------------------------
+CC          = /sx5/usr/bin/sxmpic++
+LD          = $(CC)
+AR          = /sx5/usr/bin/sxar
+INC         =
+DEBUG       = 
+# on the IBM G5 processors:
+OPT         = -O3 -faltivec
+# else:
+OPT         = -C hopt
+#OPT         =
+CFLAGS      = -w all $(OPT) $(DEBUG)
+ARFLAGS     = rvs
+LIBS        = 
+DEFINE      = -D__XLF
+DEFINE      = 

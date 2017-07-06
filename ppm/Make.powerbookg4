@@ -1,0 +1,79 @@
+#-------------------------------------------------------------------------
+#  File         :  Sample Make.powerbookg4
+#-------------------------------------------------------------------------
+#
+#  Purpose      :  Set build environment variables
+#
+#  Remarks      :  Mac architecture (powerbook G4) + xlf
+#
+#  References   :
+#
+#  Revisions    :
+#-------------------------------------------------------------------------
+#  $Log: Make.powerbookg4,v $
+#  Revision 1.1.1.1  2007/07/13 10:16:28  ivos
+#  CBL version of the PPM library
+#
+#  Revision 1.1  2006/04/06 10:08:42  pchatela
+#  Commits and clean-ups before release 0.8
+#
+#
+#-------------------------------------------------------------------------
+#  Parallel Particle Mesh Library (PPM)
+#  Institute of Computational Science
+#  ETH Zentrum, Hirschengraben 84
+#  CH-8092 Zurich, Switzerland
+#-------------------------------------------------------------------------
+
+
+# Have to define a VERSION: DEBUG or OPTIMIZED
+# (can also be defined in SHELL and passed by using 
+#  make -e )
+VERSION := DEBUG
+
+
+MPILIBDIR   := /usr/local/lib/
+MPIINCLDIR  := /usr/local/include/
+FFTWLIBDIR  := ./lib/
+FFTWINCLDIR := ./include/
+CPPINCLDIR := 
+# Pre-compilers
+# One for dependency generation
+DEPCPP  := cpp
+# and one for F90 code generation
+CPP     := /opt/ibmcmp/xlf/8.1/exe/cpp
+# Compiler
+FC      := /usr/local/bin/mpif90
+# Linker/Archiver
+AR      := ar
+# Linker Flags
+ARFLAGS := crus
+
+# Module redirection stuff !NOT USED, SEE MAIN MAKEFILE
+ifeq ($(strip $(FC)), xlf)
+MODREDIR := -qmoddir=
+endif
+ifeq ($(strip $(FC)), sxf90)
+MODREDIR := -qmoddir=
+endif
+
+
+# Various compiler options depending on version
+DEFINE = 
+DEBUG_FFLAGS = $(DEFINE) -C -g -O0 -qnohot -qstrict
+OPTIMIZED_FFLAGS = $(DEFINE) -O5 -qarch=g5 -qtune=g5 -qunroll=auto -qcache=auto -qhot -qstrict
+
+# We can now set the INCL FLAGS
+INCL   := -I$(MPIINCLDIR) -I$(FFTWINCLDIR) -I$(CPPINCLDIR)
+# and the LIBS
+LIBS   := -L$(FFTWLIBDIR) -lm -lmetis -lvizing -lmpich -lpmpich -lfftw3 -lfftw3f
+
+ifeq "$(VERSION)" "DEBUG"
+FFLAGS := $(DEBUG_FFLAGS)
+BUILDDIR:= ./
+endif
+ifeq "$(VERSION)" "OPTIMIZED"
+FFLAGS := $(OPTIMIZED_FFLAGS)
+BUILDDIR:= ./
+endif
+

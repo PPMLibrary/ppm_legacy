@@ -1,0 +1,22 @@
+
+# Which compiler to use
+CC = xlc
+
+# What optimization level to use
+OPTFLAGS = -O5 -qhot -qstrict -qtune=pwr4 -qarch=pwr4 -qipa
+
+# What options to be used by the compiler
+COPTIONS = 
+
+# What options to be used by the loader
+LDOPTIONS = -qipa
+
+# What archiving to use
+AR = ar rv
+
+# What to use for indexing the archive
+RANLIB = ranlib
+#RANLIB = ar -ts
+#RANLIB = 
+
+

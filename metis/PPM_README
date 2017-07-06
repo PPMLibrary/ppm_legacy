@@ -1,0 +1,21 @@
+This directory contains the Metis library for mesh decomposition. PPM can
+make use of it for assigning subdomains to processors. To use this, ppm
+needs to be compiled with #define __METIS set in ppm_define.h.
+
+To build metis:
+---------------
+
+> vi Makefile.in
+
+     adjust the values of the variables CC, AR and RANLIB
+
+> ./MakeMETIS
+
+If you use the -Wall (or similar) compiler option, youu will see some
+warnings during compilation. Ignore them :-)
+
+The complete libmetis.a will be in ppm/lib/ afterwards. The script will
+also delete the unpacked Metis source code again after compilation. Edit
+the script if you don't like this.
+
+Then, recompile ppm with #define __METIS enabled.

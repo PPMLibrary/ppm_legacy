@@ -1,0 +1,67 @@
+
+In addition to Yan Dong's Vizing's theorem code (discussed in the
+file ReadMe), I include an alternate implementation by Mark Goldberg
+and Amir Sehic of RPI in the directory goldberg.
+
+Steve Skiena
+9/25/96
+
+te: Thu, 2 May 1996 14:28:31 -0400
+From: Yan Dong <yandong>
+Message-Id: <199605021828.OAA06693@cs.sunysb.edu>
+To: skiena
+Subject: ReadMe
+Status: RO
+
+
+
+	       CSE548 Graduate Project
+
+Purpose
+	Implement Vizing's edge coloring theorem of a graph.
+
+Program
+	This program is written in C++. It consists of the following
+	files: Array.h, list.h, Boolean.h, edge.h, adj.h, color.h,
+        graph.h, main.cc.
+
+	main.cc: the driver, which read from input, call the class ColorGraph
+	         and output the colored graph.
+
+	edge.h: provides Edge class.
+	Array.h: provides a template class of Array with variant size.
+	list:  define List class.
+	adj.h: provide the class Adj as the adjacent list of a graph.
+	graph.h: provides Graph class with member functions as tools
+	         to study various properties of a graph.
+	color.h: provides the class ColorGraph, which essentially 
+	         colors a graph according to Vizing's Algorithm.
+
+Input And Output
+	Our input file should have the same format as that in bandwidth
+	programming. For the output format:
+	First line:  number of vertices;
+	Second line: number of edges;
+	Third line: Edge   Color
+	Starting from fourth line, one edge and its color number
+	is ouputed in one line. 
+
+Correctness Of The Program
+	To prove the program provides a correct coloring to each
+	graph, we provide a simple verification program, which is
+	verify.cc. This program is only one page long, thus it
+	is easy to see that verify.cc is a correct program.
+
+	To apply verify.cc, first remove the third line of the output
+	file, i.e. Edge Color, and use it as the input file to verify.cc.
+
+	We have tested all the testfiles for bandwidth program, include
+	those huge graphs, eg. with 500 vertices. Every coloring has been
+	proved to be correct so far (using the provided verify.cc). 
+
+Compile
+	To compile the pragram, simply type
+	      gcc main.cc -lg++ -o executeName -Wall -g
+
+
+

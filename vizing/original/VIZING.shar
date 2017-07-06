@@ -1,0 +1,1505 @@
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  Array.h Boolean.h ReadMe WHAT adj.h color.h edge.h graph.h
+#   list.h main.cc verify.cc
+# Wrapped by skiena@sbskiena on Mon Aug  5 10:25:29 1996
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f Array.h -a "${1}" != "-c" ; then 
+  echo shar: Will not over-write existing file \"Array.h\"
+else
+echo shar: Extracting \"Array.h\" \(3173 characters\)
+sed "s/^X//" >Array.h <<'END_OF_Array.h'
+XFrom yandong Thu May  2 14:23:54 1996
+XReceived: from sbgrad9.csdept (sbgrad9.cs.sunysb.edu [130.245.2.29]) by cs.sunysb.edu (8.6.12/8.6.9) with SMTP id OAA06614 for <skiena>; Thu, 2 May 1996 14:23:53 -0400
+XDate: Thu, 2 May 1996 14:23:53 -0400
+XFrom: Yan Dong <yandong>
+XMessage-Id: <199605021823.OAA06614@cs.sunysb.edu>
+XTo: skiena
+XSubject: Array.h
+XStatus: RO
+X
+X
+X
+X
+X// Templated safe Array.  An Array are resizable by calling */
+X// resize(newsize), making the array smaller or larger.  If the array */
+X// is made smaller, only a partial copy is performed.  All arrays */
+X// initialize to 0, so the Templated class must have a way to */
+X// initialize to 0 by writing george = 0;
+X//
+X// Bounds checking is done only via assert() calls.
+X#ifndef ARRAY_H
+X#define ARRAY_H
+X
+X#include "Boolean.h"
+X#include <iostream.h>
+X#include <stdlib.h>
+X#include <assert.h>
+X#include "edge.h"
+X
+Xtemplate<class T>
+Xclass Array {
+Xpublic:
+X    Array(int size = 0);
+X    Array(const Array<T> & source);
+X    ~Array();
+X    void resize(const int newsize);       
+X    // OK to resize the array to make it smaller;
+X    int getSize() const;
+X    T &operator[](int);
+X    T &operator()(int) const;       
+X    // Just like operator[], but cannot be an lvalue;
+X    void Append(T);
+X    void insert(int, T);
+X
+Xprivate:
+X   T *ptr; // pointer to first element of array
+X   int size; // size of the array
+X   void getNewArray (int size, Boolean initializeToZero);
+X};
+X
+X//________________________________________________________________
+X// 		IMPLEMENTATION
+X//________________________________________________________________
+X
+Xtemplate<class T>
+XArray<T>::Array(int arraySize)
+X{
+X    getNewArray (arraySize, TRUE);
+X}
+X
+Xtemplate<class T>
+XArray<T>::Array(const Array<T> & source)
+X{
+X    getNewArray (source.size, FALSE);
+X    for (int i = 0; i < size; i++)
+X	ptr[i] = source.ptr[i];
+X}
+X
+Xtemplate<class T>
+Xvoid Array<T>::insert(int i, T item)
+X{
+X  assert( i < size );
+X
+X  ptr[i] = item;
+X}
+X
+X
+Xtemplate<class T>
+XArray<T>::~Array()
+X{
+X    delete [] ptr;
+X    ptr = NULL;
+X}
+X
+Xtemplate<class T>
+Xvoid Array<T>::resize(const int newSize) {
+X    T *oldPtr = ptr;
+X    int oldSize = size;
+X    getNewArray (newSize, TRUE);
+X    for (int i = 0; i < newSize && i < oldSize; i++) {
+X	ptr[i] = oldPtr[i];
+X    }
+X    delete [] oldPtr;
+X}
+X
+Xtemplate<class T>
+Xvoid Array<T>::Append(T item) {
+X  int newSize = size + 1;
+X  resize(newSize);
+X  ptr[newSize-1] = item;
+X}
+X
+Xtemplate<class T>
+Xint Array<T>::getSize() const {
+X    return size;
+X}
+X
+Xtemplate<class T>
+XT &Array<T>::operator[](int subscript)
+X{
+X    // check for subscript out of range error
+X    assert(0 <= subscript && subscript < size);
+X    
+X    return ptr[subscript];
+X}
+X
+X// operator() is just like operator[] but is const'ed and cannot be an */
+X// lvalue
+Xtemplate<class T>
+XT &Array<T>::operator()(int subscript) const
+X{
+X    // check for subscript out of range error
+X    assert(0 <= subscript && subscript < size);
+X    
+X    return ptr[subscript];
+X}
+X
+Xtemplate<class T>
+Xvoid Array<T>::getNewArray (int arraySize, Boolean initializeToZero)
+X{
+X    size = arraySize;
+X    ptr = new T[size];
+X    assert(ptr != 0);
+X/*    if (initializeToZero == TRUE) {
+X	for (int i = 0; i < size; i++)
+X	    ptr[i] = zero;
+X    }
+X    */
+X}
+X
+X
+X#endif
+X
+X
+X
+X
+END_OF_Array.h
+if test 3173 -ne `wc -c <Array.h`; then
+    echo shar: \"Array.h\" unpacked with wrong size!
+fi
+# end of overwriting check
+fi
+if test -f Boolean.h -a "${1}" != "-c" ; then 
+  echo shar: Will not over-write existing file \"Boolean.h\"
+else
+echo shar: Extracting \"Boolean.h\" \(491 characters\)
+sed "s/^X//" >Boolean.h <<'END_OF_Boolean.h'
+XFrom yandong Thu May  2 14:24:29 1996
+XReceived: from sbgrad9.csdept (sbgrad9.cs.sunysb.edu [130.245.2.29]) by cs.sunysb.edu (8.6.12/8.6.9) with SMTP id OAA06619 for <skiena>; Thu, 2 May 1996 14:24:28 -0400
+XDate: Thu, 2 May 1996 14:24:28 -0400
+XFrom: Yan Dong <yandong>
+XMessage-Id: <199605021824.OAA06619@cs.sunysb.edu>
+XTo: skiena
+XSubject: Boolean.h
+XStatus: RO
+X
+X
+X#ifndef BOOLEAN_H
+X#define BOOLEAN_H
+X
+Xenum Boolean {FALSE=0, TRUE=1};
+Xenum Sign {NEGATIVE = -1, ZERO = 0, POSITIVE = 1};
+X
+X#endif
+X
+X
+END_OF_Boolean.h
+if test 491 -ne `wc -c <Boolean.h`; then
+    echo shar: \"Boolean.h\" unpacked with wrong size!
+fi
+# end of overwriting check
+fi
+if test -f ReadMe -a "${1}" != "-c" ; then 
+  echo shar: Will not over-write existing file \"ReadMe\"
+else
+echo shar: Extracting \"ReadMe\" \(2111 characters\)
+sed "s/^X//" >ReadMe <<'END_OF_ReadMe'
+XFrom yandong Thu May  2 14:28:32 1996
+XReceived: from sbgrad9.csdept (sbgrad9.cs.sunysb.edu [130.245.2.29]) by cs.sunysb.edu (8.6.12/8.6.9) with SMTP id OAA06693 for <skiena>; Thu, 2 May 1996 14:28:31 -0400
+XDate: Thu, 2 May 1996 14:28:31 -0400
+XFrom: Yan Dong <yandong>
+XMessage-Id: <199605021828.OAA06693@cs.sunysb.edu>
+XTo: skiena
+XSubject: ReadMe
+XStatus: RO
+X
+X
+X
+X	       CSE548 Graduate Project
+X
+XPurpose
+X	Implement Vizing's edge coloring theorem of a graph.
+X
+XProgram
+X	This program is written in C++. It consists of the following
+X	files: Array.h, list.h, Boolean.h, edge.h, adj.h, color.h,
+X        graph.h, main.cc.
+X
+X	main.cc: the driver, which read from input, call the class ColorGraph
+X	         and output the colored graph.
+X
+X	edge.h: provides Edge class.
+X	Array.h: provides a template class of Array with variant size.
+X	list:  define List class.
+X	adj.h: provide the class Adj as the adjacent list of a graph.
+X	graph.h: provides Graph class with member functions as tools
+X	         to study various properties of a graph.
+X	color.h: provides the class ColorGraph, which essentially 
+X	         colors a graph according to Vizing's Algorithm.
+X
+XInput And Output
+X	Our input file should have the same format as that in bandwidth
+X	programming. For the output format:
+X	First line:  number of vertices;
+X	Second line: number of edges;
+X	Third line: Edge   Color
+X	Starting from fourth line, one edge and its color number
+X	is ouputed in one line. 
+X
+XCorrectness Of The Program
+X	To prove the program provides a correct coloring to each
+X	graph, we provide a simple verification program, which is
+X	verify.cc. This program is only one page long, thus it
+X	is easy to see that verify.cc is a correct program.
+X
+X	To apply verify.cc, first remove the third line of the output
+X	file, i.e. Edge Color, and use it as the input file to verify.cc.
+X
+X	We have tested all the testfiles for bandwidth program, include
+X	those huge graphs, eg. with 500 vertices. Every coloring has been
+X	proved to be correct so far (using the provided verify.cc). 
+X
+XCompile
+X	To compile the pragram, simply type
+X	      gcc main.cc -lg++ -o executeName -Wall -g
+X
+X
+X
+END_OF_ReadMe
+if test 2111 -ne `wc -c <ReadMe`; then
+    echo shar: \"ReadMe\" unpacked with wrong size!
+fi
+# end of overwriting check
+fi
+if test -f WHAT -a "${1}" != "-c" ; then 
+  echo shar: Will not over-write existing file \"WHAT\"
+else
+echo shar: Extracting \"WHAT\" \(713 characters\)
+sed "s/^X//" >WHAT <<'END_OF_WHAT'
+XFrom yandong Thu May  2 14:23:11 1996
+XReceived: from sbgrad9.csdept (sbgrad9.cs.sunysb.edu [130.245.2.29]) by cs.sunysb.edu (8.6.12/8.6.9) with SMTP id OAA06601 for <skiena>; Thu, 2 May 1996 14:23:10 -0400
+XDate: Thu, 2 May 1996 14:23:10 -0400
+XFrom: Yan Dong <yandong>
+XMessage-Id: <199605021823.OAA06601@cs.sunysb.edu>
+XTo: skiena
+XSubject: submit project
+XStatus: RO
+X
+X
+XDear Prof. Skiena,
+X
+X	The code and ReadMe files of my project will be include in the
+Xfollowing mails, one mail for each file. I will also try to submit
+Xhard copies with sample tests by tomorrow.
+X
+X	There will be ten files included:
+X	ReadMe, main.cc, verify.cc, Array.h, Boolean.h, adj.h,
+X	edge.h, graph.h, list.h,  color.h
+X
+XBest regards,
+XDong Yan
+X
+X
+END_OF_WHAT
+if test 713 -ne `wc -c <WHAT`; then
+    echo shar: \"WHAT\" unpacked with wrong size!
+fi
+# end of overwriting check
+fi
+if test -f adj.h -a "${1}" != "-c" ; then 
+  echo shar: Will not over-write existing file \"adj.h\"
+else
+echo shar: Extracting \"adj.h\" \(3194 characters\)
+sed "s/^X//" >adj.h <<'END_OF_adj.h'
+XFrom yandong Thu May  2 14:24:56 1996
+XReceived: from sbgrad9.csdept (sbgrad9.cs.sunysb.edu [130.245.2.29]) by cs.sunysb.edu (8.6.12/8.6.9) with SMTP id OAA06624 for <skiena>; Thu, 2 May 1996 14:24:55 -0400
+XDate: Thu, 2 May 1996 14:24:55 -0400
+XFrom: Yan Dong <yandong>
+XMessage-Id: <199605021824.OAA06624@cs.sunysb.edu>
+XTo: skiena
+XSubject: adj.h
+XStatus: RO
+X
+X
+X//adj.h
+X//class of Adjacent list of a graph
+X
+X#ifndef ADJ_H
+X#define ADJ_H
+X#include "list.h"
+X#include "Array.h"
+X#include "edge.h"
+X//#include <iostream.h>
+X
+X
+Xclass Adj {
+X
+X    friend  ostream& operator<<(ostream &output, const Adj &graph);
+X    friend class Graph;
+X    friend class ColorGraph;
+Xpublic:
+X    Adj(int);
+X    Adj(int, int); 
+X    Adj(int v, Array<Edge> A);
+X    //copy constructor;
+X    Adj(const Adj &);
+X    ~Adj() { delete [] adj; } 
+X    int getVertices() { return vertices; }
+X    int getEdges() { return edges; }
+X    const Adj & operator=(const Adj &);
+X    List getList(int u); //return the list of edges joining u;
+X    int maxDegree();
+X    
+Xprivate:
+X    typedef List* PtrToList;
+X    int vertices;  //# of vertices;
+X    int edges;     //# of edges;
+X    PtrToList *adj;     //adjacent list; 
+X
+X   
+X
+X};
+X
+X
+X/*---------------------implementation-------------------------*/
+X
+XAdj::Adj(int v)
+X{
+X  vertices = v;
+X  edges = 0;
+X  
+X  adj = new PtrToList[vertices];
+X  for(int i=0; i<vertices; i++)
+X    adj[i] = new List;
+X}
+X
+X
+XAdj::Adj(int v, int e)
+X{
+X  vertices = v;
+X  edges = e;
+X
+X  adj = new PtrToList[vertices];
+X
+X  for(int i=0; i<vertices; i++)
+X      adj[i] = new List;
+X
+X
+X  for(i=0; i<e; i++)
+X    {
+X      int x, y;
+X      
+X      cin >> x >> y;
+X      assert( x < y );
+X      adj[x-1]->Prepend(y);
+X      adj[y-1]->Prepend(x);
+X    }
+X}
+X
+XAdj::Adj(int v, Array<Edge> A)
+X{
+X  vertices = v;
+X  edges = A.getSize();
+X  adj = new PtrToList[vertices];
+X
+X  for(int i=0; i<vertices; i++)
+X      adj[i] = new List;
+X
+X  for(i=0; i<edges; i++)
+X    {
+X      int x, y;
+X      x = A[i].startVx;
+X      y = A[i].endVx;
+X      
+X      adj[x-1]->Append(y);
+X      adj[y-1]->Append(x);
+X    }
+X}
+X
+X Adj::Adj(const Adj &old)
+X{
+X  adj = 0;
+X  *this = old;
+X}
+X
+Xconst Adj&
+X Adj::operator=(const Adj& old)
+X{
+X  if (&old == this) {
+X    //Self assignment; do nothing;
+X  } else {
+X    delete [] adj;
+X    vertices = old.vertices;
+X    edges = old.edges;
+X    adj = new PtrToList[vertices];
+X    for (int i = 0; i < vertices; i++)  
+X      adj[i] = old.adj[i];
+X   }
+X  return *this;
+X}
+X                                                       
+XList
+X Adj::getList(int u)
+X{
+X  List L;
+X  
+X  L = *(adj[u-1]);
+X  return L;
+X}
+X
+X//return maximum of degrees at each vertex;
+Xint
+X Adj::maxDegree()
+X{
+X  int max = 0;
+X
+X  for (int i = 0; i < vertices; i++) {
+X
+X      if ( max < (adj[i] -> length())) {
+X	  max = adj[i] -> length();
+X      }
+X  }
+X  return max;
+X}
+X    
+X
+Xostream&  operator<<(ostream &output, const Adj &graph)
+X{
+X    
+X    output << "Number of Vertices  " << graph.vertices << endl;
+X    output << "Number of Edges  " << graph.edges << endl;
+X    output << "Edges of The Graph:"<< endl;
+X
+X    for (int i=0; i<graph.vertices; i++) {
+X	ListIterator I;
+X	for (I.start(*(graph.adj[i])); !I.done(); I++) {
+X	  if ( (i+1) < I())
+X	    output << i+1 <<' '<< I() << endl; 
+X	    }
+X    }
+X    
+X    return output;
+X}
+X
+X
+X
+X#endif ADJ_H
+X
+X
+X
+X
+X
+END_OF_adj.h
+if test 3194 -ne `wc -c <adj.h`; then
+    echo shar: \"adj.h\" unpacked with wrong size!
+fi
+# end of overwriting check
+fi
+if test -f color.h -a "${1}" != "-c" ; then 
+  echo shar: Will not over-write existing file \"color.h\"
+else
+echo shar: Extracting \"color.h\" \(7360 characters\)
+sed "s/^X//" >color.h <<'END_OF_color.h'
+XFrom yandong Thu May  2 14:26:13 1996
+XReceived: from sbgrad9.csdept (sbgrad9.cs.sunysb.edu [130.245.2.29]) by cs.sunysb.edu (8.6.12/8.6.9) with SMTP id OAA06638 for <skiena>; Thu, 2 May 1996 14:26:12 -0400
+XDate: Thu, 2 May 1996 14:26:12 -0400
+XFrom: Yan Dong <yandong>
+XMessage-Id: <199605021826.OAA06638@cs.sunysb.edu>
+XTo: skiena
+XSubject: color.h
+XStatus: RO
+X
+X
+X//color.h
+X
+X#ifndef COLOR_H
+X#define COLOR_H
+X#include "graph.h"
+X#include <assert.h>
+X
+Xtypedef Color* ColorPtr;
+X  
+X//if color = 0, the edge is uncolored (default value);
+X//color starts from 1 to max.
+X
+Xclass ColorGraph {
+X    friend  ostream& operator<<(ostream &output, const ColorGraph &graph);
+X
+Xpublic:
+X    ColorGraph(int, Array<Edge>);
+X    ColorGraph(int v, int e);
+X    
+X    Boolean isColor(int v, Color s);
+X    Color missingColor(int vertex);
+X    Edge locateEdge(int v, Color s);
+X    Boolean isIn(int edVx, Array<int> endVerices, int range, int& position);
+X    void AddOneEdge(Array<Edge> A, int k);
+X    void recolor(int, Array<int>, Array<Color>, int,  int);
+X    Array<Edge> searchEdges(Array<Edge> A, Color s, Color t);
+X    Graph* subGraph(Array<Edge> A, Color s, Color t);
+X    void switchColor(Graph *subPtr, Color s, Color t, int vertex);
+X
+X
+Xprivate:
+X    Graph *G;
+X    //record the colors of each edge, for efficient search;
+X    ColorPtr *colorMatrix;
+X
+X    int max; //maximum degree+1 (maximum colors allowed);
+X    int count; //count # of edges already colored;
+X
+X};
+X
+X
+X
+X//Implementation
+X
+X
+X
+XColorGraph::ColorGraph(int v, Array<Edge> A)
+X{
+X  G = new Graph(v, A);
+X  int size = A.getSize();
+X  count = 0;
+X
+X  max = G -> maxDegree() +1;
+X
+X  //color initialization;
+X
+X  colorMatrix = new ColorPtr[v];
+X
+X  for (int i = 0; i < v; i++) {
+X
+X      colorMatrix[i] = new Color[v];
+X      for (int j = 0; j < v; j++)
+X	  colorMatrix[i][j] = 0;
+X  }
+X
+X  //start coloring processing
+X  while ( count < size ) {
+X    if ( count < max ) {
+X      int start = A[count].startVx;
+X      int end = A[count].endVx;
+X      colorMatrix[start-1][end-1] = ++count;
+X      colorMatrix[end-1][start-1] = count;
+X    } else {
+X      //coloring one more edge;
+X      AddOneEdge(A, count++);
+X
+X    }
+X  }
+X}
+X
+X
+X
+XColorGraph::ColorGraph(int v, int e)
+X{
+X  G = new Graph(v);
+X  colorMatrix = new ColorPtr[v];
+X
+X  for (int i = 0; i < v; i++) {
+X    colorMatrix[i] = new Color[v];
+X    for (int j = 0; j < v; j++)
+X      colorMatrix[i][j] = 0;
+X  }
+X  count = 0;
+X}
+X
+X
+XColor
+XColorGraph::missingColor(int vertex) {
+X 
+X    Color tmp;
+X    for (Color color = 1; color <= max; color++) 
+X        if (!isColor(vertex, color)) {
+X            tmp = color;
+X            color = max+1;
+X    }
+X    return tmp;
+X}
+X//Is "s" a color of some edge at v
+X
+X
+XBoolean
+X ColorGraph::isColor(int v, Color s) {
+X
+X   int size = G->getVertices();
+X   
+X   for (int i=0; i<size; i++) {
+X       assert( colorMatrix[v-1][i] == colorMatrix[i][v-1]);
+X       if ( colorMatrix[v-1][i] == s)
+X	   return TRUE;
+X   }
+X   return FALSE;
+X
+X }
+X
+X//search for an edge with vertex v and color s
+X//assume that such an edge exists
+X
+XEdge
+XColorGraph::locateEdge(int v, Color s) {
+X
+X    Edge E;
+X    assert (isColor(v, s));
+X    int vertices = G->getVertices();
+X    for (int i = 0; i < vertices; i++) {
+X       if (colorMatrix[v-1][i] == s) {
+X         E.startVx = v;
+X         E.endVx = i+1;
+X         E.color = s;
+X         i=vertices;
+X     }
+X   }
+X
+X   return E;
+X}
+X
+X
+X
+XBoolean 
+XColorGraph::isIn(int edVx, Array<int> endVertices, int range, int& position) 
+X{
+X  for (int i = 0; i < range; i++) {
+X    if (edVx == endVertices[i]) {
+X      position = i;
+X      return TRUE;
+X    }
+X  }
+X  return FALSE;
+X}    
+X
+Xvoid
+XColorGraph::AddOneEdge(Array<Edge> A, int k) {
+X
+X  Edge E = A[k];
+X  int x = E.startVx;
+X  Array<Edge> xEdges(max-1);
+X  Array<int> endVertices(max-1);
+X  
+X  int v = G -> getVertices();
+X  Array<Color> missingCol(v);
+X  int xEdgeCount = 0;
+X  Color t;
+X  Color s = missingColor(x);
+X  missingCol.insert(x-1, s);
+X  int tmp = E.endVx;
+X  Boolean flag = TRUE;
+X  int position;
+X  
+X  while (!isIn(tmp, endVertices, xEdgeCount, position) && flag) {
+X    endVertices.insert(xEdgeCount, tmp);
+X    xEdges.insert(xEdgeCount, E);
+X    xEdgeCount++;
+X    t = missingColor(tmp);
+X    missingCol.insert(tmp-1, t);
+X    
+X    if (isColor(x, t)) {
+X      E = locateEdge(x, t);
+X      tmp = E.endVx;
+X    } else {
+X      flag = FALSE;
+X    }
+X  }
+X
+X  if (flag) {
+X    //recolor the edges for i < position;
+X    int y = endVertices[position];
+X    assert(y==tmp);
+X    int z = endVertices[xEdgeCount-1];
+X
+X    recolor(x,  endVertices, missingCol, 0, position);
+X
+X    Graph* subPtr=subGraph(A, s, t);
+X
+X    if (!(subPtr->isConnected(x, y))) {
+X      switchColor(subPtr, s, t, y);
+X      colorMatrix[x-1][y-1] = s;
+X      colorMatrix[y-1][x-1] = s;
+X
+X    } else {
+X      assert (!(subPtr->isConnected(x, z)));
+X      recolor(x, endVertices, missingCol, position, xEdgeCount-1);
+X      switchColor(subPtr, s, t, z);
+X      colorMatrix[x-1][z-1] = s;
+X      colorMatrix[z-1][x-1] = s;
+X    }
+X  } else {
+X    for (int i = xEdgeCount-2; i >= 0; i--) {
+X      int j = endVertices[i]-1;
+X      colorMatrix[x-1][j] = missingCol[j];
+X      colorMatrix[j][x-1] = missingCol[j];
+X    }
+X    colorMatrix[x-1][tmp-1] = t;
+X    colorMatrix[tmp-1][x-1] = t;
+X  }
+X}
+X
+X
+Xvoid
+XColorGraph::recolor(int x, Array<int> endVertices, Array<Color> missingCol,
+X           int start,  int position) 
+X{
+X    int end;
+X    assert (start <= position);
+X    for (int i = start; i < position; i++) {
+X        end = endVertices[i];
+X        colorMatrix[x-1][end-1] = missingCol[end-1];
+X        colorMatrix[end-1][x-1] = missingCol[end-1];
+X    }
+X    end = endVertices[position];
+X    colorMatrix[x-1][end-1] = 0;
+X    colorMatrix[end-1][x-1] = 0;
+X}
+X
+X
+XArray<Edge>
+XColorGraph::searchEdges(Array<Edge> A, Color s, Color t)
+X{
+X  Array<Edge> first(count);
+X  int tmp = 0;
+X  for (int i = 0; i < count; i++) {
+X    int start = A[i].startVx;
+X    int end = A[i].endVx;
+X
+X    if ( colorMatrix[start-1][end-1] == s || colorMatrix[start-1][end-1] == t){
+X      Edge choose(start, end, colorMatrix[start-1][end-1]);
+X      first.insert(tmp++, choose);
+X    }
+X  }
+X
+X  Array<Edge> final(tmp);
+X
+X  for (i = 0; i < tmp; i++)
+X    final.insert(i, first[i]);
+X  return final;
+X}
+X
+X     
+XGraph* 
+XColorGraph::subGraph(Array<Edge> A, Color s, Color t) {
+X    int v = G->getVertices();
+X    Graph *graphPtr = new Graph(v, searchEdges(A, s, t));
+X    return graphPtr;
+X}
+X
+Xvoid
+XColorGraph::switchColor(Graph *subPtr, Color s, Color t, int vertex)
+X{
+X  int v = subPtr -> getVertices();
+X
+X  for (int i = 0; i < v; i++) {
+X    List L = *((subPtr -> theAdj)->adj[i]);
+X    ListIterator I;
+X    if ( subPtr -> isConnected(i+1, vertex)) {
+X      for (I.start(L); !I.done(); I++) {
+X
+X	  if ( (i+1) < I()) {
+X	      if ( colorMatrix[i][I()-1] == s) {
+X		  colorMatrix[i][I()-1] = t;
+X		  colorMatrix[I()-1][i] = t;
+X	      } else {
+X		  assert ( colorMatrix[i][I()-1] == t );
+X		  colorMatrix[i][I()-1] = s;
+X		  colorMatrix[I()-1][i] = s;
+X	      }
+X	  }
+X      }
+X    }
+X  }
+X}
+X
+X
+Xostream& operator<<(ostream &output, const ColorGraph &graph)
+X{
+X    output << "Edges  " << "  Color " << endl;
+X
+X    int v = graph.G->getVertices();
+X
+X    for (int i = 0; i < v; i++) {
+X         ListIterator I;
+X         List L;
+X         L = *(((graph.G->theAdj)->adj)[i]);
+X         for (I.start(L); !I.done(); I++) {
+X             if ( (i+1) < I())
+X                 output << i+1 <<' '<< I() <<"       "
+X		   << graph.colorMatrix[i][I()-1]<< endl; 
+X            }
+X    }
+X    return output;
+X}
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X#endif
+X
+X
+X
+END_OF_color.h
+if test 7360 -ne `wc -c <color.h`; then
+    echo shar: \"color.h\" unpacked with wrong size!
+fi
+# end of overwriting check
+fi
+if test -f edge.h -a "${1}" != "-c" ; then 
+  echo shar: Will not over-write existing file \"edge.h\"
+else
+echo shar: Extracting \"edge.h\" \(1408 characters\)
+sed "s/^X//" >edge.h <<'END_OF_edge.h'
+XFrom yandong Thu May  2 14:25:32 1996
+XReceived: from sbgrad9.csdept (sbgrad9.cs.sunysb.edu [130.245.2.29]) by cs.sunysb.edu (8.6.12/8.6.9) with SMTP id OAA06629 for <skiena>; Thu, 2 May 1996 14:25:32 -0400
+XDate: Thu, 2 May 1996 14:25:32 -0400
+XFrom: Yan Dong <yandong>
+XMessage-Id: <199605021825.OAA06629@cs.sunysb.edu>
+XTo: skiena
+XSubject: edge.h
+XStatus: RO
+X
+X
+X//edge.h
+X
+X#ifndef EDGE_H
+X#define EDGE_H
+X#include <iostream.h>
+X
+X
+Xtypedef int Color;
+X
+Xclass Edge {
+X
+X    friend  ostream& operator<<(ostream &output, const Edge &E);
+X
+X public:
+X
+X    static const Edge zero;
+X    
+X    Edge(){startVx=0; endVx=0; color=0;}
+X    Edge(int);
+X    Edge(int, int);
+X    Edge(int, int, int);
+X    const Edge& operator=(const Edge&);
+X
+X  
+X    int startVx;
+X    int endVx;
+X    Color color;
+X};
+X  
+X//if color = 0, the edge is uncolored.
+X
+Xconst Edge Edge::zero = 0;
+X
+X
+XEdge::Edge(int x)
+X{
+X    startVx = x;
+X    endVx = 0;
+X    color = 0;
+X}
+X
+XEdge::Edge(int x, int y)
+X{
+X    startVx  = x;
+X    endVx = y;
+X    color = 0;
+X}
+X
+XEdge::Edge(int x, int y, int c)
+X{
+X    startVx = x;
+X    endVx = y;
+X    color = c;
+X}
+X
+Xconst Edge&
+XEdge::operator=(const Edge& old) 
+X{
+X    if (&old == this) {
+X    } else {
+X	startVx = old.startVx;
+X	endVx = old.endVx;
+X	color = old.color;
+X    }
+X    return *this;
+X}
+X
+X
+X
+X
+Xostream& operator<<(ostream &output, const Edge &E)
+X{
+X    output << E.startVx << "   "<< E.endVx 
+X	   << "  "<< E.color<< endl;
+X    return output;
+X
+X}
+X
+X
+X#endif
+X
+X
+X
+X
+END_OF_edge.h
+if test 1408 -ne `wc -c <edge.h`; then
+    echo shar: \"edge.h\" unpacked with wrong size!
+fi
+# end of overwriting check
+fi
+if test -f graph.h -a "${1}" != "-c" ; then 
+  echo shar: Will not over-write existing file \"graph.h\"
+else
+echo shar: Extracting \"graph.h\" \(2843 characters\)
+sed "s/^X//" >graph.h <<'END_OF_graph.h'
+XFrom yandong Thu May  2 14:26:44 1996
+XReceived: from sbgrad9.csdept (sbgrad9.cs.sunysb.edu [130.245.2.29]) by cs.sunysb.edu (8.6.12/8.6.9) with SMTP id OAA06643 for <skiena>; Thu, 2 May 1996 14:26:43 -0400
+XDate: Thu, 2 May 1996 14:26:43 -0400
+XFrom: Yan Dong <yandong>
+XMessage-Id: <199605021826.OAA06643@cs.sunysb.edu>
+XTo: skiena
+XSubject: graph.h
+XStatus: RO
+X
+X
+X
+X//graph.h
+X
+X#ifndef GRAPH_H
+X#define GRAPH_H
+X#include "Boolean.h"
+X#include "adj.h"
+X//#include "edge.h"
+X
+X
+Xclass Graph {
+X
+X    friend class ColorGraph;
+X    friend ostream& operator<<(ostream &output, const Graph &graph);
+X    enum NodeColor {white, gray, black};
+X    
+Xpublic:
+X    Graph(int v);
+X    Graph(int v, int e);
+X    Graph(int v, Array<Edge> A);
+X    const Graph & operator=(const Graph &);
+X    ~Graph() { delete theAdj; delete color; }
+X    Graph(const Graph &old);
+X    int getVertices() { return theAdj->getVertices(); }
+X    int getEdges() { return theAdj->getEdges(); }
+X    int maxDegree() { return theAdj->maxDegree(); }
+X    Boolean isConnected(int, int);
+X    void BFS(int);
+X    void whiten();
+X    void AddOneEdge(Edge E);
+X   
+Xprivate:
+X    Adj *theAdj;
+X    NodeColor *color;
+X
+X};
+X
+X/*----------implementation-----------------------------------*/
+X
+X
+XGraph::Graph(int v)
+X{
+X  theAdj = new Adj(v);
+X  color = new NodeColor[v];
+X
+X  for ( int i = 0; i < v; i++ )
+X    color[i] = white;
+X}
+X  
+XGraph::Graph(int v, int e) 
+X{
+X  theAdj = new Adj(v, e);
+X  color = new NodeColor[v];
+X
+X  for ( int i = 0; i < v; i++ )
+X    color[i] = white;
+X}
+X
+XGraph::Graph(int v, Array<Edge> A)
+X{
+X  theAdj = new Adj(v, A);
+X  color = new NodeColor[v];
+X
+X  for (int i = 0; i < v; i++)
+X    color[i] = white;
+X}
+X
+Xconst Graph & 
+XGraph::operator=(const Graph & old) 
+X{
+X  if (&old == this) {
+X    //Self assignment, do nothing;
+X  } else {
+X    delete theAdj;
+X    int v = old.theAdj->vertices;
+X    theAdj = new Adj(v);
+X    *theAdj = *old.theAdj;
+X   
+X    delete [] color;
+X    color = new NodeColor[v];
+X
+X    for (int i=0; i<v; i++)
+X      color[i] = old.color[i];
+X  }
+X    return *this;
+X}
+X
+XGraph:: Graph(const Graph &old)
+X{
+X  theAdj = 0;
+X  color = 0;
+X
+X  *this = old;
+X}
+X
+Xvoid
+XGraph::BFS(int v)
+X{
+X  List Q, L;
+X
+X  color[v-1] = gray;
+X  Q.Append(v);
+X
+X  while (!Q.isEmpty()) {
+X
+X    int u = Q.nth(1);
+X    L = theAdj -> getList(u);
+X    ListIterator I;
+X    for (I.start(L); !I.done(); I++)
+X      if (color[I()-1] == white) {
+X	color[I()-1] = gray;
+X	Q.Append(I());
+X      }
+X    Q.deleteNth(1);
+X    color[u-1] = black;
+X  }
+X} 
+X
+Xvoid
+XGraph::whiten()
+X{
+X    int v = theAdj->vertices;
+X
+X    for (int i = 0; i < v; i++)
+X	color[i] = white;
+X}
+X
+X
+XBoolean
+XGraph::isConnected(int v, int w)
+X{
+X  whiten();
+X  BFS(v);
+X  if (color[w-1] == black)
+X    return TRUE;
+X  else
+X    return FALSE;
+X}
+X
+Xvoid 
+XGraph::AddOneEdge(Edge)
+X{
+X}
+X
+Xostream& operator<<(ostream &output, const Graph &graph)
+X{
+X    output << *graph.theAdj;
+X    return output;
+X}
+X
+X
+X
+X
+X#endif GRAPH_H
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+X
+END_OF_graph.h
+if test 2843 -ne `wc -c <graph.h`; then
+    echo shar: \"graph.h\" unpacked with wrong size!
+fi
+# end of overwriting check
+fi
+if test -f list.h -a "${1}" != "-c" ; then 
+  echo shar: Will not over-write existing file \"list.h\"
+else
+echo shar: Extracting \"list.h\" \(3758 characters\)
+sed "s/^X//" >list.h <<'END_OF_list.h'
+XFrom yandong Thu May  2 14:27:08 1996
+XReceived: from sbgrad9.csdept (sbgrad9.cs.sunysb.edu [130.245.2.29]) by cs.sunysb.edu (8.6.12/8.6.9) with SMTP id OAA06648 for <skiena>; Thu, 2 May 1996 14:27:07 -0400
+XDate: Thu, 2 May 1996 14:27:07 -0400
+XFrom: Yan Dong <yandong>
+XMessage-Id: <199605021827.OAA06648@cs.sunysb.edu>
+XTo: skiena
+XSubject: list.h
+XStatus: RO
+X
+X
+X// 
+X#ifndef LIST_H
+X#define LIST_H
+X#include "Boolean.h"
+X#include <assert.h>
+X#include <iostream.h>
+X
+Xclass ListNode {
+X    friend class List;
+X    friend class ListIterator;
+Xprivate:
+X    ListNode() {next = 0;}	// Private, since only needed by List
+X    int item;
+X    ListNode  *next;
+X};
+X
+X
+Xclass List {
+X    friend class ListIterator;
+Xpublic:
+X    List();
+X    ~List();
+X    List(const List &);
+X    const List & operator=(const List &);
+X
+X    Boolean isEmpty() const;
+X    int length() const;
+X    void insertNth(int, int);
+X    void Append(int);
+X    void Prepend(int item){insertNth(1, item);}
+X    void deleteNth(int);
+X    int nth (int) const;
+X
+Xprivate:
+X    int size;
+X    ListNode  *head, *tail;
+X    inline ListNode *ptrToNth (int) const;
+X};
+X
+X
+Xclass ListIterator {
+Xpublic:
+X    ListIterator(){current = NULL;}
+X    int operator()(){return current->item;}
+X    void start(const List & l) {current = l.head;}
+X    void operator++(){current = current->next;}
+X    Boolean done() {return current == 0 ? TRUE : FALSE;}
+Xprivate:
+X    ListNode *current;
+X    Boolean JustStarted;
+X};
+X
+X// Implementation_____________________________________________________________
+X
+X
+XList::List() {head = 0; tail = 0; size=0;}
+X
+X
+XList::List(const List &old) {
+X    head = 0;
+X    tail = 0;
+X    size = 0;
+X    *this = old;
+X}
+X  
+X //     const List<T> & operator=(const List<T> &);
+Xconst List & List::operator=(const List & old)
+X{
+X    if (&old == this) {
+X	// Self assignment; do nothing
+X    } else {
+X	while (!isEmpty()) {
+X	    deleteNth (1);
+X	}
+X	size = old.size;
+X	head = 0;
+X	tail = 0;
+X
+X	if (old.head != 0) {
+X	    head = new ListNode;
+X	 
+X	    assert (head != 0);
+X	 
+X	    ListNode *newPtr, *oldPtr;
+X	    newPtr = head;
+X	    oldPtr = old.head;
+X	    newPtr->item = oldPtr->item;
+X	    while (oldPtr->next != 0) {
+X		newPtr->next = new ListNode;
+X		newPtr = newPtr->next;
+X		oldPtr = oldPtr->next;
+X		newPtr->item = oldPtr->item;
+X	    }
+X	    newPtr->next = 0;
+X	    tail = newPtr;
+X	    newPtr = 0;
+X	    oldPtr = 0;
+X	}
+X    }
+X    return *this;
+X}
+X
+X
+XList::~List()
+X{
+X    while (!isEmpty()) {
+X	deleteNth (1);
+X    }
+X}
+X
+XBoolean List::isEmpty() const {return head == 0 ? TRUE : FALSE;}
+X
+Xint List::length() const {return size;}
+X
+X
+Xvoid List::insertNth (int position, int item) {
+X    assert (position >= 1 && position <= size+1);
+X    size++;
+X    ListNode *newPtr = new ListNode;
+X    newPtr->item = item;
+X    if (position == 1) {
+X	newPtr->next = head;
+X	head = newPtr;
+X    } else {
+X	ListNode *prev = ptrToNth (position-1);
+X	newPtr->next = prev->next;
+X	prev->next = newPtr;
+X	
+X    }
+X    if (tail -> next != 0)
+X      tail = tail -> next;
+X}
+X
+Xvoid List::Append (int item) {
+X
+X    size++;
+X
+X    ListNode *newPtr = new ListNode;
+X  
+X    newPtr->item = item;
+X    
+X    if (isEmpty())
+X	tail = head = newPtr;
+X    else {
+X	tail->next = newPtr;
+X	tail = newPtr;
+X	newPtr = 0;
+X    }
+X}
+X
+Xvoid List::deleteNth (int position) {
+X    assert (1 <= position && position <= size);
+X    size--;
+X    ListNode *old;
+X    if (position == 1) {
+X	old = head;
+X	head = head->next;
+X    } else {
+X	ListNode *prev = ptrToNth (position -1);
+X	old = prev->next;
+X
+X	if (old == tail)
+X	  tail = prev;
+X
+X	prev->next = old->next;
+X    }
+X    delete old;
+X}
+X
+X
+Xint List::nth (int n) const {
+X    return ptrToNth(n)->item;
+X}
+X
+X
+Xinline ListNode *List::ptrToNth(int position) const {
+X    assert (position >= 1 && position <= size);
+X    ListNode *p = head;
+X    for (int i=1; i<position; i++)
+X	p = p->next;
+X    return p;
+X}
+X
+X#endif LIST_H
+X
+X
+X
+X
+X
+X
+X
+END_OF_list.h
+if test 3758 -ne `wc -c <list.h`; then
+    echo shar: \"list.h\" unpacked with wrong size!
+fi
+# end of overwriting check
+fi
+if test -f main.cc -a "${1}" != "-c" ; then 
+  echo shar: Will not over-write existing file \"main.cc\"
+else
+echo shar: Extracting \"main.cc\" \(692 characters\)
+sed "s/^X//" >main.cc <<'END_OF_main.cc'
+XFrom yandong Thu May  2 14:27:50 1996
+XReceived: from sbgrad9.csdept (sbgrad9.cs.sunysb.edu [130.245.2.29]) by cs.sunysb.edu (8.6.12/8.6.9) with SMTP id OAA06674 for <skiena>; Thu, 2 May 1996 14:27:49 -0400
+XDate: Thu, 2 May 1996 14:27:49 -0400
+XFrom: Yan Dong <yandong>
+XMessage-Id: <199605021827.OAA06674@cs.sunysb.edu>
+XTo: skiena
+XSubject: main.cc
+XStatus: RO
+X
+X
+X#include <iostream.h>
+X#include "color.h"
+X#include "graph.h"
+Xmain( )
+X{
+X    int v, e;
+X    cin >> v;
+X    cin >> e;
+X    Array<Edge> A(e);
+X   
+X
+X    for (int i = 0; i < e; i++) {
+X	int x, y;
+X	cin >> x >> y;
+X	Edge tmp(x, y);
+X	A.insert(i, tmp);
+X    }
+X
+X
+X    ColorGraph G(v, A);
+X    cout << v << endl << e << endl;
+X
+X    cout << G << endl;
+X
+X}
+X
+X
+END_OF_main.cc
+if test 692 -ne `wc -c <main.cc`; then
+    echo shar: \"main.cc\" unpacked with wrong size!
+fi
+# end of overwriting check
+fi
+if test -f verify.cc -a "${1}" != "-c" ; then 
+  echo shar: Will not over-write existing file \"verify.cc\"
+else
+echo shar: Extracting \"verify.cc\" \(1085 characters\)
+sed "s/^X//" >verify.cc <<'END_OF_verify.cc'
+XFrom yandong Thu May  2 14:28:12 1996
+XReceived: from sbgrad9.csdept (sbgrad9.cs.sunysb.edu [130.245.2.29]) by cs.sunysb.edu (8.6.12/8.6.9) with SMTP id OAA06684 for <skiena>; Thu, 2 May 1996 14:28:12 -0400
+XDate: Thu, 2 May 1996 14:28:12 -0400
+XFrom: Yan Dong <yandong>
+XMessage-Id: <199605021828.OAA06684@cs.sunysb.edu>
+XTo: skiena
+XSubject: verify.cc
+XStatus: RO
+X
+X
+X
+X//This program provides a way to verify that the graph-edge-coloring
+X//program is correct!
+X
+X
+X#include <iostream.h>
+X
+Xenum Boolean {FALSE=0, TRUE=1};
+X
+X
+XBoolean Verify()
+X{
+X
+X    int v, e;
+X    cin >> v;
+X    cin >> e;
+X
+X    int A[e], B[e], color[e];
+X
+X    for (int i=0; i<e; i++) 
+X	cin >> A[i] >> B[i] >> color[i];
+X
+X
+X
+X
+X
+X    for (int j=0; j<e; j++) 
+X	for (int k=0; k<e; k++) {
+X	    if (A[j]==A[k] && B[j]!=B[k] && color[j] == color[k])
+X		return FALSE;
+X	    if (A[j] != A[k] && B[j]==B[k] && color[j] == color[k])
+X		return FALSE;
+X	    if (A[j] == B[k] && A[k] != B[j] && color[j] == color[k])
+X		return FALSE;
+X	}
+X    
+X    return TRUE;
+X}
+X
+X
+Xmain()
+X{
+X
+X    if (Verify())
+X	cout << "Correct!"<<endl;
+X    else
+X	cout <<"Wrong!"<<endl;
+X}
+X	
+X
+X
+X
+END_OF_verify.cc
+if test 1085 -ne `wc -c <verify.cc`; then
+    echo shar: \"verify.cc\" unpacked with wrong size!
+fi
+# end of overwriting check
+fi
+echo shar: End of shell archive.
+exit 0

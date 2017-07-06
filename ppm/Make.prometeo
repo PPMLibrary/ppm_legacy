@@ -1,0 +1,85 @@
+#-------------------------------------------------------------------------
+#  File         :  Sample Make.include
+#-------------------------------------------------------------------------
+#
+#  Purpose      :  Set build environment variables
+#
+#  Remarks      :
+#
+#  References   :
+#
+#  Revisions    :
+#-------------------------------------------------------------------------
+#  $Log: Make.prometeo,v $
+#  Revision 1.1.1.1  2007/07/13 10:16:28  ivos
+#  CBL version of the PPM library
+#
+#  Revision 1.1  2005/04/20 14:22:55  pchatela
+#  Initial insertion
+#
+#
+#
+#-------------------------------------------------------------------------
+#  Parallel Particle Mesh Library (PPM)
+#  Institute of Computational Science
+#  ETH Zentrum, Hirschengraben 84
+#  CH-8092 Zurich, Switzerland
+#-------------------------------------------------------------------------
+
+
+# Have to define a VERSION: DEBUG or OPTIMIZED
+# (can also be defined in SHELL and passed by using 
+#  make -e )
+VERSION := OPTIMIZED
+
+
+MPILIBDIR   := /sx5/usr/lib/
+MPIINCLDIR  := /sx5//usr/include/
+FFTWLIBDIR  := ./lib/
+FFTWINCLDIR := ./include/
+CPPINCLDIR  := 
+# Pre-compiler
+# One for dependency generation
+DEPCPP  := /sx5/usr/lib/sxcpp
+# and one for F90 code generation
+CPP     := /sx5/usr/lib/sxcpp
+# Compiler
+FC      := /sx5/usr/bin/sxmpif90
+# Linker/Archiver
+AR      := /sx5/usr/bin/sxar
+# Linker Flags
+ARFLAGS := crus
+
+# Module redirection stuff !NOT USED, SEE MAIN MAKEFILE
+ifeq ($(strip $(FC)), xlf)
+MODREDIR := -qmoddir=
+endif
+ifeq ($(strip $(FC)), sxf90)
+MODREDIR := -qmoddir=
+endif
+
+
+# Various compiler options depending on version
+DEFINE = 
+DEBUG_FFLAGS = $(DEFINE) -C -g -O0 
+OPTIMIZED_FFLAGS = $(DEFINE) -R5 -C hopt -f4 -float0 -Wf"-L fmtlist transform summary -pvctl loopcnt=100000000 shape=100000000" -ftrace 
+NOOPT_FFLAGS = $(DEFINE) -O0 
+
+# We can now set the INCL FLAGS
+INCL   := -I$(MPIINCLDIR) -I$(FFTWINCLDIR) -I$(CPPINCLDIR)
+# and the LIBS
+LIBS   := -L$(FFTWLIBDIR) -L../lib -lppm -lvizing -L/sx5/usr/local/mathkeisan/lib -lfft
+
+ifeq "$(VERSION)" "DEBUG"
+FFLAGS := $(DEBUG_FFLAGS)
+BUILDDIR:= ./
+endif
+ifeq "$(VERSION)" "OPTIMIZED"
+FFLAGS := $(OPTIMIZED_FFLAGS)
+BUILDDIR:= ./
+endif
+ifeq "$(VERSION)" "NOOPT"
+FFLAGS := $(NOOPT_FFLAGS)
+BUILDDIR:= ./
+endif
+

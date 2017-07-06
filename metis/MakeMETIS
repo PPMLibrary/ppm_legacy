@@ -1,0 +1,10 @@
+#!/bin/sh
+tar zxvf metis-4.0.tar.gz
+cp -f Makefile.in metis-4.0/
+cd metis-4.0
+make
+cp libmetis.a ../../lib/
+rm -rf *
+cd ../
+rmdir metis-4.0/
+
