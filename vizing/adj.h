@@ -8,6 +8,7 @@
 #include "edge.h"
 //#include <iostream.h>
 
+using namespace std;
 
 class Adj {
 

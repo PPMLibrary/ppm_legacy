@@ -2,8 +2,8 @@
 
 #ifndef EDGE_H
 #define EDGE_H
-#include <iostream.h>
-
+#include <iostream>
+using namespace std;
 
 typedef int Color;
 

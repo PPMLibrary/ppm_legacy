@@ -10,18 +10,15 @@
 #----------------------------------------------------------------------
 
 #----------------------------------------------------------------------
-#  Compiler settings (gcc)
+#  Compiler settings (icpc)
 #----------------------------------------------------------------------
-CC          = g++
+CC          = icpc
 LD          = $(CC)
 AR          = ar
 INC         =
 DEBUG       = 
-# on the IBM G5 processors:
-#OPT         = -O3 -faltivec
-OPT         = -O3
+OPT         = -O3 -msse3
 CFLAGS      = -w -fPIC $(OPT) $(DEBUG)
 ARFLAGS     = rvs
 LIBS        = 
-#DEFINE      = -D__XLF
 DEFINE      = 

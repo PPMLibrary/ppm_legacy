@@ -9,7 +9,7 @@
 #define ARRAY_H
 
 #include "Boolean.h"
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
 #include <assert.h>
 #include "edge.h"

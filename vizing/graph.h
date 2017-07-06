@@ -6,6 +6,7 @@
 #include "adj.h"
 //#include "edge.h"
 
+using namespace std;
 
 class Graph {
 

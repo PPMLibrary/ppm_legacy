@@ -5,6 +5,8 @@
 #include "graph.h"
 #include <assert.h>
 
+using namespace std;
+
 typedef Color* ColorPtr;
   
 //if color = 0, the edge is uncolored (default value);
