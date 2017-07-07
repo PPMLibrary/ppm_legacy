@@ -128,13 +128,13 @@
       !-------------------------------------------------------------------------
       !  Arguments
       !-------------------------------------------------------------------------
-      REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
-      REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: min_sub,max_sub
-      REAL(MK), DIMENSION(:  ), POINTER       :: cost
-      REAL(MK), DIMENSION(:  ), OPTIONAL, INTENT(IN) :: pcost
-      INTEGER , DIMENSION(:,:), INTENT(IN   ) :: nnodes
-      INTEGER                 , INTENT(IN   ) :: Np,nsubs
-      INTEGER                 , INTENT(  OUT) :: info
+      REAL(MK), DIMENSION(:,:), POINTER,  INTENT(IN   ) :: xp
+      REAL(MK), DIMENSION(:,:),           INTENT(IN   ) :: min_sub,max_sub
+      REAL(MK), DIMENSION(:  ), POINTER                 :: cost
+      REAL(MK), DIMENSION(:  ), OPTIONAL, INTENT(IN   ) :: pcost
+      INTEGER , DIMENSION(:,:),           INTENT(IN   ) :: nnodes
+      INTEGER                 ,           INTENT(IN   ) :: Np,nsubs
+      INTEGER                 ,           INTENT(  OUT) :: info
       !-------------------------------------------------------------------------
       !  Local variables
       !-------------------------------------------------------------------------
@@ -189,7 +189,7 @@
                   ENDIF
               ENDDO
           ENDDO
-          IF (Np .GT. 0) THEN
+          IF (Np.GT.0.AND.ASSOCIATED(xp))THEN
               IF (SIZE(xp,2) .LT. Np) THEN
                   info = ppm_error_error
                   CALL ppm_error(ppm_err_argument,'ppm_topo_cost',  &

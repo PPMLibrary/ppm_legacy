@@ -878,8 +878,7 @@
       !-------------------------------------------------------------------------
       IF (decomp .NE. ppm_param_decomp_user_defined) THEN
           IF (PRESENT(pcost)) THEN
-              CALL ppm_topo_cost(xp,Npart,min_sub,max_sub,nsubs,ndata,cost,  &
-                                  info,pcost)
+              CALL ppm_topo_cost(xp,Npart,min_sub,max_sub,nsubs,ndata,cost,info,pcost)
           ELSE
               CALL ppm_topo_cost(xp,Npart,min_sub,max_sub,nsubs,ndata,cost,info)
           ENDIF

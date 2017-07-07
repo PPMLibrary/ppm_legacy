@@ -198,7 +198,7 @@
       INTEGER, DIMENSION(:  ), POINTER  :: nneigh,nchld
       REAL(MK)                          :: t0,parea,sarea,larea,lmyeps
       REAL(MK), DIMENSION(ppm_dim)      :: gsvec
-      REAL(MK), DIMENSION(1,1)          :: xpdummy
+      REAL(MK), DIMENSION(:,:), POINTER :: xpdummy
       LOGICAL , DIMENSION(ppm_dim)      :: fixed
       REAL(MK), DIMENSION(3,2)          :: weights
       REAL(MK), DIMENSION(:,:), POINTER :: min_box,max_box
@@ -324,12 +324,11 @@
          topo_id = -1
       ENDIF
 
-      NULLIFY(ineigh,subs_bc,nneigh,nchld,min_box,max_box)
+      NULLIFY(ineigh,subs_bc,nneigh,nchld,min_box,max_box,xpdummy)
 
       !-------------------------------------------------------------------------
       !  Dummy arguments for non-existing particles and meshes
       !-------------------------------------------------------------------------
-      xpdummy(1,1)  = 0.0_MK
       Nmdummy(1)    = 0
       nnodes(1:3,1) = 0
 
