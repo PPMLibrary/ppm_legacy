@@ -338,7 +338,7 @@
       REAL(MK)                , INTENT(IN   ) :: ghostsize
       REAL(MK), DIMENSION(:,:), POINTER       :: min_sub,max_sub
       REAL(MK), DIMENSION(:  ), POINTER       :: cost
-      REAL(MK), DIMENSION(:  ), OPTIONAL, INTENT(IN) :: pcost
+      REAL(MK), DIMENSION(:  ), OPTIONAL, INTENT(IN   ) :: pcost
       INTEGER , DIMENSION(:  ), INTENT(IN   ) :: bcdef
       INTEGER , DIMENSION(:  ), POINTER       :: sub2proc
       INTEGER , DIMENSION(:  ), POINTER       :: isublist

@@ -325,7 +325,7 @@
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
       REAL(MK), DIMENSION(:  ), INTENT(IN   ) :: min_dom,max_dom,minboxsize
       REAL(MK), DIMENSION(3,2), INTENT(IN   ) :: weights
-      REAL(MK), DIMENSION(:  ), OPTIONAL, INTENT(IN) :: pcost
+      REAL(MK), DIMENSION(:  ), OPTIONAL, INTENT(IN   ) :: pcost
       LOGICAL , DIMENSION(:  ), INTENT(IN   ) :: fixed
       LOGICAL                 , INTENT(IN   ) :: pruneboxes
       REAL(MK), DIMENSION(:,:), POINTER       :: min_box,max_box

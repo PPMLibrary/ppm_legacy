@@ -124,7 +124,7 @@
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: min_box,max_box
       REAL(MK), DIMENSION(3  ), INTENT(IN   ) :: weights
-      REAL(MK), DIMENSION(:  ), OPTIONAL, INTENT(IN) :: pcost
+      REAL(MK), DIMENSION(:  ), OPTIONAL, INTENT(IN   ) :: pcost
       INTEGER                 , INTENT(IN   ) :: nbox
       INTEGER , DIMENSION(:  ), INTENT(IN   ) :: lhbx,lpdx
       INTEGER , DIMENSION(:,:), INTENT(IN   ) :: Nm

@@ -155,7 +155,7 @@
            FUNCTION rhsfunc(xp,up,dup,lda,npart,ipack,&
                 &lpack,rpack,info)
              INTEGER                          , INTENT(IN)  :: lda,npart
-             INTEGER                          , INTENT(OUT) :: info
+             INTEGER                          , INTENT(  OUT) :: info
 #if     __MODE == __SCA
              REAL(KIND(1.0E0)), DIMENSION(:,:), POINTER     :: xp
              REAL(KIND(1.0E0)), DIMENSION(:),   POINTER     :: up
@@ -176,7 +176,7 @@
            FUNCTION rhsfunc(xp,up,dup,lda,npart,ipack,&
                 &lpack,rpack,info)
              INTEGER                          , INTENT(IN)  :: lda,npart
-             INTEGER                          , INTENT(OUT) :: info
+             INTEGER                          , INTENT(  OUT) :: info
 #if     __MODE == __SCA
              REAL(KIND(1.0D0)), DIMENSION(:,:), POINTER     :: xp
              REAL(KIND(1.0D0)), DIMENSION(:),   POINTER     :: up

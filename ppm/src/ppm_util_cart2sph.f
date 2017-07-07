@@ -80,7 +80,7 @@
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:), INTENT(IN)  :: x,y,z
       REAL(MK),               INTENT(IN)  :: x0,y0,z0
-      REAL(MK), DIMENSION(:), INTENT(OUT) :: r,theta,phi
+      REAL(MK), DIMENSION(:), INTENT(  OUT) :: r,theta,phi
       INTEGER, INTENT(IN)                :: n
       INTEGER, INTENT(OUT)               :: info
       !-------------------------------------------------------------------------

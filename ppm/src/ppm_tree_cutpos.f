@@ -81,7 +81,7 @@
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: min_box,max_box
       REAL(MK), DIMENSION(3  ), INTENT(IN   ) :: minboxsize,weights
-      REAL(MK), DIMENSION(:  ), OPTIONAL, INTENT(IN) :: pcost
+      REAL(MK), DIMENSION(:  ), OPTIONAL, INTENT(IN   ) :: pcost
       INTEGER                 , INTENT(IN   ) :: Npart,ncut,cutbox
       INTEGER , DIMENSION(:  ), INTENT(IN   ) :: icut
       REAL(MK), DIMENSION(:  ), POINTER       :: cpos

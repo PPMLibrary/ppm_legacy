@@ -173,8 +173,8 @@
 #elif __KIND == __DOUBLE_PRECISION | __KIND == __DOUBLE_PRECISION_COMPLEX
               INTEGER, PARAMETER :: MK = KIND(1.0D0)
 #endif
-              REAL(MK), INTENT(IN) :: x
-              REAL(MK), DIMENSION(:), INTENT(IN) :: kpar
+              REAL(MK), INTENT(IN   ) :: x
+              REAL(MK), DIMENSION(:), INTENT(IN   ) :: kpar
               REAL(MK) :: kernel
           END FUNCTION kernel
       END INTERFACE
@@ -188,8 +188,8 @@
 #elif __KIND == __DOUBLE_PRECISION | __KIND == __DOUBLE_PRECISION_COMPLEX
               INTEGER, PARAMETER :: MK = KIND(1.0D0)
 #endif
-              REAL(MK), INTENT(IN) :: x
-              COMPLEX(MK), DIMENSION(:), INTENT(IN) :: kpar
+              REAL(MK), INTENT(IN   ) :: x
+              COMPLEX(MK), DIMENSION(:), INTENT(IN   ) :: kpar
               COMPLEX(MK) :: kernel
           END FUNCTION kernel
       END INTERFACE

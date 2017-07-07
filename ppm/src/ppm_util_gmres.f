@@ -78,9 +78,9 @@
 #if     __KIND == __SINGLE_PRECISION
       INTERFACE
          FUNCTION A(in,out,ninout,info)
-         INTEGER                          , INTENT(OUT) :: info
+         INTEGER                          , INTENT(  OUT) :: info
          REAL(KIND(1.0E0)), DIMENSION(:),   INTENT(IN)  :: in
-         REAL(KIND(1.0E0)), DIMENSION(:),   INTENT(OUT) :: out
+         REAL(KIND(1.0E0)), DIMENSION(:),   INTENT(  OUT) :: out
          INTEGER                          , INTENT(IN)  :: ninout
          INTEGER                                        :: A
          END FUNCTION A
@@ -88,9 +88,9 @@
 #else
       INTERFACE
          FUNCTION A(in,out,ninout,info)
-         INTEGER                          , INTENT(OUT) :: info
+         INTEGER                          , INTENT(  OUT) :: info
          REAL(KIND(1.0D0)), DIMENSION(:),   INTENT(IN)  :: in
-         REAL(KIND(1.0D0)), DIMENSION(:),   INTENT(OUT) :: out
+         REAL(KIND(1.0D0)), DIMENSION(:),   INTENT(  OUT) :: out
          INTEGER                          , INTENT(IN)  :: ninout
          INTEGER                                        :: A
          END FUNCTION A

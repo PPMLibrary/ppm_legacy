@@ -111,7 +111,7 @@
       !-------------------------------------------------------------------------
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
       REAL(MK), DIMENSION(:)  , INTENT(IN   ) :: min_phys,max_phys
-      REAL(MK), DIMENSION(:)  , OPTIONAL, INTENT(IN) :: pcost
+      REAL(MK), DIMENSION(:)  , OPTIONAL, INTENT(IN   ) :: pcost
       REAL(MK)                , INTENT(IN   ) :: ghostsize
       REAL(MK), DIMENSION(:,:), POINTER       :: min_sub,max_sub
       INTEGER                 , INTENT(IN   ) :: Npart

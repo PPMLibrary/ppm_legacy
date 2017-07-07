@@ -122,7 +122,7 @@
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: xp
       REAL(MK), DIMENSION(:,:), INTENT(IN   ) :: min_box,max_box
       REAL(MK), DIMENSION(3  ), INTENT(IN   ) :: minboxsize,weights
-      REAL(MK), DIMENSION(:  ), OPTIONAL, INTENT(IN) :: pcost
+      REAL(MK), DIMENSION(:  ), OPTIONAL, INTENT(IN   ) :: pcost
       INTEGER                 , INTENT(IN   ) :: Npart,ncut,cutbox
       LOGICAL , DIMENSION(:  ), INTENT(IN   ) :: fixed
       INTEGER , DIMENSION(:  ), POINTER       :: icut
