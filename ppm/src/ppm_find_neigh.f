@@ -166,6 +166,8 @@
       !-------------------------------------------------------------------------
       CALL substart('ppm_find_neigh',t0,info)
 
+      NULLIFY(ctrs,subid,lhbx,lpdx,inp,jnp)
+
       !-------------------------------------------------------------------------
       !  Allocate memory for subdomain IDs
       !-------------------------------------------------------------------------
@@ -178,8 +180,6 @@
      &        'Sub IDs SUBID',__LINE__,info)
           GOTO 9999
       ENDIF
-
-      NULLIFY(ctrs,subid,lhbx,lpdx,inp,jnp)
 
       !-------------------------------------------------------------------------
       !  Initialize the ID
